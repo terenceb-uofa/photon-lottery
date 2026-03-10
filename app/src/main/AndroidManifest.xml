@@ -12,25 +12,25 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.GetOutThere">
         <activity
-            android:name=".NotificationLogsActivity"
+            android:name=".admin.NotificationLogsActivity"
             android:exported="false" />
         <activity
-            android:name=".ManageOrganizersActivity"
+            android:name=".admin.ManageOrganizersActivity"
             android:exported="false" />
         <activity
-            android:name=".ManageImagesActivity"
+            android:name=".admin.ManageImagesActivity"
             android:exported="false" />
         <activity
-            android:name=".ManageProfilesActivity"
+            android:name=".admin.ManageProfilesActivity"
             android:exported="false" />
         <activity
-            android:name=".ManageEventsActivity"
+            android:name=".admin.ManageEventsActivity"
             android:exported="false" />
         <activity
-            android:name=".AdminDashboardActivity"
+            android:name=".admin.AdminDashboardActivity"
             android:exported="false" />
         <activity
-            android:name=".ProfileActivity"
+            android:name=".entrant.ProfileActivity"
             android:exported="false" />
         <activity
             android:name=".MainActivity"

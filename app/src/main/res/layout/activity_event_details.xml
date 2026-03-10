@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="24dp">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/tvEventName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Event Name"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:paddingBottom="16dp"/>
+
+        <TextView
+            android:id="@+id/tvEventDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Event Description"
+            android:paddingBottom="16dp"/>
+
+        <TextView
+            android:id="@+id/tvEventDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Event Date"
+            android:paddingBottom="16dp"/>
+
+        <TextView
+            android:id="@+id/tvEventCapacity"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Capacity"
+            android:paddingBottom="24dp"/>
+
+        <Button
+            android:id="@+id/btnJoinWaitingList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Join Waiting List"
+            android:layout_marginBottom="16dp"/>
+
+        <Button
+            android:id="@+id/btnLeaveWaitingList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Leave Waiting List"/>
+
+    </LinearLayout>
+</ScrollView>

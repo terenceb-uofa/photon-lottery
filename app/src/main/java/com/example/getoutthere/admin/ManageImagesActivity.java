@@ -1,4 +1,4 @@
-package com.example.getoutthere;
+package com.example.getoutthere.admin;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,25 +11,27 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-public class ManageOrganizersActivity extends AppCompatActivity {
+import com.example.getoutthere.R;
+
+public class ManageImagesActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_manage_organizers);
+        setContentView(R.layout.activity_manage_images);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
 
-        Button OrganizerManagerBackButton = findViewById(R.id.OrganizerManagerBackButton);
+        Button ImagesManagerBackButton = findViewById(R.id.ImagesManagerBackButton);
 
-        OrganizerManagerBackButton.setOnClickListener(new View.OnClickListener() {
+        ImagesManagerBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(ManageOrganizersActivity.this, AdminDashboardActivity.class);
+                Intent intent = new Intent(ManageImagesActivity.this, AdminDashboardActivity.class);
                 startActivity(intent);
             }
         });

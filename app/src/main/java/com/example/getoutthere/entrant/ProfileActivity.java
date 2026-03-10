@@ -1,4 +1,4 @@
-package com.example.getoutthere;
+package com.example.getoutthere.entrant;
 
 import android.os.Bundle;
 import android.provider.Settings;
@@ -12,12 +12,13 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.getoutthere.R;
+
 public class ProfileActivity extends AppCompatActivity {
 
     private EditText nameInput, emailInput, phoneInput;
     private Button saveButton, deleteButton;
     private String deviceId;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

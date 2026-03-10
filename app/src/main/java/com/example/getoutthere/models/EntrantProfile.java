@@ -1,4 +1,4 @@
-package com.example.getoutthere;
+package com.example.getoutthere.models;
 
 public class EntrantProfile {
     private String deviceId; // No password login
