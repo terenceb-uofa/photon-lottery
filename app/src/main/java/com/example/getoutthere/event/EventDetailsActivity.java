@@ -12,22 +12,20 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.getoutthere.R;
 import com.example.getoutthere.models.EntrantProfile;
 import com.example.getoutthere.utils.FirebaseHelper;
-import com.example.getoutthere.R;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-
-// Shows the details of a single event - name ,description, etc.
-// Has functionality to join and leave waiting list.
 
 public class EventDetailsActivity extends AppCompatActivity {
 
-    private TextView tvName, tvDescription, tvDate, tvCapacity;
+    private TextView eventName, eventAddress, eventDate, eventCapacity, eventFee;
     private Button btnJoin, btnLeave;
+
     private String eventId;
     private Event event;
     private EntrantProfile entrant;
+
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     @Override
@@ -35,6 +33,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_event_details);
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -42,40 +41,46 @@ public class EventDetailsActivity extends AppCompatActivity {
         });
 
         // UI elements
-        tvName = findViewById(R.id.tvEventName);
-        tvDescription = findViewById(R.id.tvEventDescription);
-        tvDate = findViewById(R.id.tvEventDate);
-        tvCapacity = findViewById(R.id.tvEventCapacity);
+        eventName = findViewById(R.id.EventName);
+        eventAddress = findViewById(R.id.EventAddress);
+        eventDate = findViewById(R.id.EventDate);
+        eventCapacity = findViewById(R.id.EventCapacity);
+        eventFee = findViewById(R.id.EventSignupFee);
+
         btnJoin = findViewById(R.id.btnJoinWaitingList);
         btnLeave = findViewById(R.id.btnLeaveWaitingList);
 
-        // Get eventId from intent
+        // Get event ID from intent
         eventId = getIntent().getStringExtra("eventId");
 
-        // Get entrant info
+        // Get device ID for entrant
         String deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
         entrant = new EntrantProfile();
         entrant.setDeviceId(deviceId);
 
         // Fetch event from Firestore
         db.collection("events").document(eventId).get().addOnSuccessListener(documentSnapshot -> {
+
             if (documentSnapshot.exists()) {
+
                 event = documentSnapshot.toObject(Event.class);
                 event.setId(documentSnapshot.getId());
-                tvName.setText(event.getName());
-                tvDescription.setText(event.getDescription());
-                tvDate.setText(event.getDate());
-                tvCapacity.setText("Capacity: " + event.getCapacity());
+
+                eventName.setText(event.getName());
+                eventAddress.setText("Address: " + event.getDescription());
+                eventDate.setText("Lottery Draw Date: " + event.getDate());
+                eventCapacity.setText("Spots Available: " + event.getCapacity());
+                eventFee.setText("Signup Fee: $" + event.getSignupFee());
             }
         });
 
-        // Join button
+        // Join waiting list
         btnJoin.setOnClickListener(v -> {
             FirebaseHelper.joinWaitingList(event, entrant);
             Toast.makeText(this, "Joined waiting list!", Toast.LENGTH_SHORT).show();
         });
 
-        // Leave button
+        // Leave waiting list
         btnLeave.setOnClickListener(v -> {
             FirebaseHelper.leaveWaitingList(event, entrant);
             Toast.makeText(this, "Left waiting list!", Toast.LENGTH_SHORT).show();

@@ -12,7 +12,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.getoutthere.admin.AdminDashboardActivity;
-import com.example.getoutthere.admin.EntrantDashboardActivity;
+import com.example.getoutthere.entrant.EntrantDashboardActivity;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -38,17 +38,15 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-        /* Entrant dashboard functionality
         Button NavToEntrantDashboard = findViewById(R.id.NavToEntrantDashboard);
 
-        NavToAdminDashboard.setOnClickListener(new View.OnClickListener() {
+        NavToEntrantDashboard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, EntrantDashboardActivity.class);
                 startActivity(intent);
             }
         });
-        */
 
     }
 }

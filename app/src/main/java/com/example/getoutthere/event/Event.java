@@ -6,6 +6,7 @@ public class Event {
     private String description;
     private String date;
     private int capacity;
+    private double signupFee;
 
     // Empty constructor required for Firestore
     public Event() {}
@@ -44,5 +45,9 @@ public class Event {
     }
     public void setCapacity(int capacity) {
         this.capacity = capacity;
+    }
+
+    public double getSignupFee() {
+        return signupFee;
     }
 }

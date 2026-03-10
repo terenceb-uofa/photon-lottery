@@ -22,7 +22,6 @@ import java.util.List;
 
 //Show list of available events
 
-
 public class EventListActivity extends AppCompatActivity {
 
     private ListView listView;
@@ -41,7 +40,7 @@ public class EventListActivity extends AppCompatActivity {
             return insets;
         });
 
-        listView = findViewById(R.id.listViewEvents);
+        listView = findViewById(R.id.listOfEvents);
 
         // Fetch events from Firestore
         db.collection("events").get().addOnSuccessListener(queryDocumentSnapshots -> {
