@@ -19,7 +19,7 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
-        android:id="@+id/NavToEventManager"
+        android:id="@+id/NavToCreateEventManager"
         android:layout_width="match_parent"
         android:layout_marginHorizontal="50dp"
         android:layout_height="wrap_content"
@@ -32,7 +32,7 @@
         app:layout_constraintVertical_chainStyle="packed" />
 
     <Button
-        android:id="@+id/NavToProfileManager"
+        android:id="@+id/NavToNotificationBoardManager"
         android:layout_width="match_parent"
         android:layout_marginHorizontal="50dp"
         android:layout_height="wrap_content"
@@ -40,10 +40,10 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.501"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/NavToEventManager" />
+        app:layout_constraintTop_toBottomOf="@+id/NavToCreateEventManager" />
 
     <Button
-        android:id="@+id/NavToImageManager"
+        android:id="@+id/NavToOpenEventsManager"
         android:layout_width="match_parent"
         android:layout_marginHorizontal="50dp"
         android:layout_height="wrap_content"
@@ -51,10 +51,10 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.501"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/NavToProfileManager" />
+        app:layout_constraintTop_toBottomOf="@+id/NavToNotificationBoardManager" />
 
     <Button
-        android:id="@+id/NavToOrganizerManager"
+        android:id="@+id/NavToEventHistoryManager"
         android:layout_width="match_parent"
         android:layout_marginHorizontal="50dp"
         android:layout_height="wrap_content"
@@ -62,10 +62,10 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/NavToImageManager" />
+        app:layout_constraintTop_toBottomOf="@+id/NavToOpenEventsManager" />
 
     <Button
-        android:id="@+id/NavToNotificationLogs"
+        android:id="@+id/NavToProfile"
         android:layout_width="match_parent"
         android:layout_marginHorizontal="50dp"
         android:layout_height="wrap_content"
@@ -73,7 +73,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/NavToOrganizerManager" />
+        app:layout_constraintTop_toBottomOf="@+id/NavToEventHistoryManager" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -26,7 +26,7 @@ public class AdminDashboardActivity extends AppCompatActivity {
             return insets;
         });
 
-    Button NavToEventManager = findViewById(R.id.NavToEventManager);
+    Button NavToEventManager = findViewById(R.id.NavToCreateEventManager);
 
         NavToEventManager.setOnClickListener(new View.OnClickListener() {
         @Override
@@ -36,7 +36,7 @@ public class AdminDashboardActivity extends AppCompatActivity {
         }
     });
 
-    Button NavToProfileManager = findViewById(R.id.NavToProfileManager);
+    Button NavToProfileManager = findViewById(R.id.NavToNotificationBoardManager);
 
         NavToProfileManager.setOnClickListener(new View.OnClickListener() {
         @Override
@@ -46,7 +46,7 @@ public class AdminDashboardActivity extends AppCompatActivity {
         }
     });
 
-    Button NavToImageManager = findViewById(R.id.NavToImageManager);
+    Button NavToImageManager = findViewById(R.id.NavToOpenEventsManager);
 
         NavToImageManager.setOnClickListener(new View.OnClickListener() {
         @Override
@@ -56,7 +56,7 @@ public class AdminDashboardActivity extends AppCompatActivity {
         }
     });
 
-    Button NavToOrganizerManager = findViewById(R.id.NavToOrganizerManager);
+    Button NavToOrganizerManager = findViewById(R.id.NavToEventHistoryManager);
 
         NavToOrganizerManager.setOnClickListener(new View.OnClickListener() {
         @Override
@@ -66,7 +66,7 @@ public class AdminDashboardActivity extends AppCompatActivity {
         }
     });
 
-    Button NavToNotificationLogs = findViewById(R.id.NavToNotificationLogs);
+    Button NavToNotificationLogs = findViewById(R.id.NavToProfile);
 
         NavToNotificationLogs.setOnClickListener(new View.OnClickListener() {
         @Override
