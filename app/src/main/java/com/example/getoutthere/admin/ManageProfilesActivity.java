@@ -19,7 +19,6 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.getoutthere.R;
 import com.example.getoutthere.models.EntrantProfile;
-import com.example.getoutthere.utils.DeletionUtils;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -150,19 +149,20 @@ public class ManageProfilesActivity extends AppCompatActivity {
                         .setPositiveButton("Delete", (dialog, which) -> {
 
                             //Try deleting document from firebase
-                            DeletionUtils.deleteProfileAndCascadeEvents(
-                                    profileToDelete.getDeviceId(),
-                                    () -> {
-                                        // Success: Remove from list and re-render
+                            FirebaseFirestore db = FirebaseFirestore.getInstance();
+                            db.collection("profiles").document(profileToDelete.getDeviceId())
+                                    .delete()
+                                    .addOnSuccessListener(aVoid -> {
+                                        //Database delete was successful! Now remove it from the local list
                                         profileList.remove(profileToDelete);
+
+                                        // Redraw the UI so the row disappears
                                         render();
-                                        Toast.makeText(v.getContext(), "Deleted profile and associated events", Toast.LENGTH_SHORT).show();
-                                    },
-                                    () -> {
-                                        // Failure
-                                        Toast.makeText(v.getContext(), "Failed to delete", Toast.LENGTH_SHORT).show();
-                                    }
-                            );
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        //Tell the user if it failed
+                                        Log.e("DeleteProfile", "Error deleting document", e);
+                                    });
 
                         })
                         .setNegativeButton("Cancel", null)
