@@ -2,30 +2,34 @@ package com.example.getoutthere.admin;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+
 
 import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.arch.core.executor.ArchTaskExecutor;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.getoutthere.R;
+import com.example.getoutthere.event.Event;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ManageEventsActivity extends AppCompatActivity {
-
-    private List<Integer> Ids   = new ArrayList<>();
-    private List<String>  Names = new ArrayList<>();
-    private List<String>  Organizers = new ArrayList<>();
-    private List<String>  Dates = new ArrayList<>();
-    private List<String>  Statuses = new ArrayList<>();
+    //Replaced Dummy Data with unified eventList
+    private List<Event> eventList = new ArrayList<>();
 
     private LinearLayout eventsContainer;
 
@@ -61,26 +65,27 @@ public class ManageEventsActivity extends AppCompatActivity {
 
     private void grabData() {
 
-        // TODO: Add to lists based on data from database rather than random data
-        Ids.add(1);
-        Ids.add(2);
-        Ids.add(3);
 
-        Names.add("Birthday");
-        Names.add("Funeral");
-        Names.add("Fundraiser");
-
-        Organizers.add("Bob");
-        Organizers.add("Joe");
-        Organizers.add("Alice");
-
-        Dates.add("11-03-2026");
-        Dates.add("01-03-2026");
-        Dates.add("05-03-2026");
-
-        Statuses.add("Open");
-        Statuses.add("Past");
-        Statuses.add("Closed");
+        FirebaseFirestore.getInstance().collection("events").get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    eventList.clear(); // Clear old data
+                    for (DocumentSnapshot doc : queryDocumentSnapshots) {
+                        // Convert the Firestore document directly into local Event class objects
+                        try {
+                            Event event = doc.toObject(Event.class);
+                            if (event != null) {
+                                eventList.add(event);
+                            }
+                        }catch (Exception e){
+                            // If we're here it means the event data is incompatible (probably due to the Timestamp String change)
+                            Toast.makeText(ManageEventsActivity.this, "Unable to load" + doc.get("name"), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                    render(); // Redraw the UI after data is loaded
+                })
+                .addOnFailureListener(e -> {
+                    //TODO: Toast Message for Error
+                });
 
     }
 
@@ -88,7 +93,9 @@ public class ManageEventsActivity extends AppCompatActivity {
 
         eventsContainer.removeAllViews();  // clearing anything previously present
 
-        for (int index = 0; index < Ids.size(); index++) {
+        for (int index = 0; index < eventList.size(); index++) {
+
+            Event currentEvent = eventList.get(index);
 
             LinearLayout row = new LinearLayout(this);
             row.setOrientation(LinearLayout.HORIZONTAL);
@@ -115,7 +122,7 @@ public class ManageEventsActivity extends AppCompatActivity {
             // adding horizontal text views for name, organizer, date, and status
 
             TextView name = new TextView(this);
-            name.setText("EVENT: " + Names.get(index));
+            name.setText("EVENT: " + currentEvent.getName());
             name.setTextColor(0xFFFFFFFF);
             name.setTextSize(13f);
             name.setPadding(0, 0, 12, 0);
@@ -126,7 +133,7 @@ public class ManageEventsActivity extends AppCompatActivity {
             attributesLayout.addView(name);
 
             TextView organizer = new TextView(this);
-            organizer.setText("ORGANIZER: " + Organizers.get(index));
+            organizer.setText("ORGANIZER: " + currentEvent.getOrganizerId());
             organizer.setTextColor(0xFFFFFFFF);
             organizer.setTextSize(13f);
             organizer.setPadding(0, 0, 12, 0);
@@ -137,7 +144,7 @@ public class ManageEventsActivity extends AppCompatActivity {
             attributesLayout.addView(organizer);
 
             TextView date = new TextView(this);
-            date.setText("DATE: " + Dates.get(index));
+            date.setText("DATE: " + currentEvent.getStartDate());
             date.setTextColor(0xFFFFFFFF);
             date.setTextSize(13f);
             date.setPadding(0, 0, 12, 0);
@@ -148,7 +155,7 @@ public class ManageEventsActivity extends AppCompatActivity {
             attributesLayout.addView(date);
 
             TextView status = new TextView(this);
-            status.setText("STATUS: " + Statuses.get(index));
+            status.setText("STATUS: " + currentEvent.getStatus());
             status.setTextColor(0xFFFFFFFF);
             status.setTextSize(13f);
             status.setPadding(0, 0, 12, 0);
@@ -163,14 +170,43 @@ public class ManageEventsActivity extends AppCompatActivity {
             deleteButton.setBackgroundColor(0xFFCC0000);
             deleteButton.setTextColor(0xFFFFFFFF);
             deleteButton.setPadding(16, 8, 16, 8);
+            deleteButton.setEnabled(true);
             LinearLayout.LayoutParams btnParams = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.WRAP_CONTENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
             );
-            deleteButton.setLayoutParams(btnParams);
 
+            deleteButton.setLayoutParams(btnParams);
+            int finalIndex = index;
             deleteButton.setOnClickListener(v -> {
-                // TODO: Delete items from database upon clicking of this button (Terence)
+                // Get the specific event for this button
+                Event eventToDelete = eventList.get(finalIndex);
+                //System.out.println("Delete clicked");
+
+                new AlertDialog.Builder(v.getContext())
+                        .setTitle("Delete Event")
+                        .setMessage("Are you sure you want to delete '" + eventToDelete.getName() + "'?")
+                        .setPositiveButton("Delete", (dialog, which) -> {
+
+                           //Try deleting document from firebase
+                            FirebaseFirestore db = FirebaseFirestore.getInstance();
+                            db.collection("events").document(eventToDelete.getId())
+                                    .delete()
+                                    .addOnSuccessListener(aVoid -> {
+                                        //Database delete was successful! Now remove it from the local list
+                                        eventList.remove(eventToDelete);
+
+                                        // Redraw the UI so the row disappears
+                                        render();
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        //Tell the user if it failed
+                                        Log.e("DeleteEvent", "Error deleting document", e);
+                                    });
+
+                        })
+                        .setNegativeButton("Cancel", null)
+                        .show();
             });
 
             row.addView(attributesLayout);

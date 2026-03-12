@@ -2,6 +2,7 @@ package com.example.getoutthere.admin;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
@@ -10,21 +11,24 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.getoutthere.R;
+import com.example.getoutthere.models.EntrantProfile;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ManageProfilesActivity extends AppCompatActivity {
 
-    private List<Integer> Ids   = new ArrayList<>();
-    private List<String>  Names = new ArrayList<>();
-    private List<String>  Roles = new ArrayList<>();
+    //Replaced Dummy Data with unified profileList
+    private List<EntrantProfile> profileList = new ArrayList<>();
 
     private LinearLayout profilesContainer;
 
@@ -57,27 +61,35 @@ public class ManageProfilesActivity extends AppCompatActivity {
 
     private void grabData() {
 
-        // TODO: Add to lists based on data from database rather than random data
-        Ids.add(1);
-        Ids.add(2);
-        Ids.add(3);
-
-        Names.add("Roy Harper");
-        Names.add("Dick Grayson");
-        Names.add("Kory Anders");
-
-        Roles.add("Admin");
-        Roles.add("Admin");
-        Roles.add("User");
-
+        FirebaseFirestore.getInstance().collection("profiles").get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    profileList.clear(); // Clear old data
+                    for (DocumentSnapshot doc : queryDocumentSnapshots) {
+                        // Convert the Firestore document directly into local profile class objects
+                        try {
+                            EntrantProfile profile = doc.toObject(EntrantProfile.class);
+                            if (profile != null) {
+                                profileList.add(profile);
+                            }
+                        }catch (Exception e){
+                            // If we're here it means the profile data is incompatible (probably due to the Timestamp String change)
+                            Toast.makeText(ManageProfilesActivity.this, "Unable to load" + doc.get("name"), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                    render(); // Redraw the UI after data is loaded
+                })
+                .addOnFailureListener(e -> {
+                    //TODO: Toast Message for Error
+                });
     }
 
     private void render(){
 
         profilesContainer.removeAllViews();  // clearing anything previously present
 
-        for (int index = 0; index < Ids.size(); index++) {
+        for (int index = 0; index < profileList.size(); index++) {
 
+            EntrantProfile currentProfile = profileList.get(index);
             LinearLayout row = new LinearLayout(this);
             row.setOrientation(LinearLayout.HORIZONTAL);
             row.setBackgroundColor(0xFF59A91E);
@@ -93,7 +105,7 @@ public class ManageProfilesActivity extends AppCompatActivity {
 
             // adding vertical views for name and role (vertical)
             TextView nameView = new TextView(this);
-            nameView.setText(Names.get(index));
+            nameView.setText(currentProfile.getName());
             nameView.setTextColor(0xFFFFFFFF);
             nameView.setTextSize(16f);
             nameView.setTypeface(null, android.graphics.Typeface.BOLD);
@@ -103,7 +115,7 @@ public class ManageProfilesActivity extends AppCompatActivity {
             nameView.setLayoutParams(nameParams);
 
             TextView roleView = new TextView(this);
-            roleView.setText(Roles.get(index));
+            roleView.setText(currentProfile.getRole());
             roleView.setTextColor(0xFFFFFFFF);
             roleView.setTextSize(14f);
             LinearLayout.LayoutParams roleParams = new LinearLayout.LayoutParams(
@@ -122,8 +134,36 @@ public class ManageProfilesActivity extends AppCompatActivity {
             );
             deleteButton.setLayoutParams(btnParams);
 
+            int finalIndex = index;
             deleteButton.setOnClickListener(v -> {
-                // TODO: Delete items from database upon clicking of this button (Terence)
+                // Get the specific profile for this button
+                EntrantProfile profileToDelete = profileList.get(finalIndex);
+                //System.out.println("Delete clicked");
+
+                new AlertDialog.Builder(v.getContext())
+                        .setTitle("Delete Profile")
+                        .setMessage("Are you sure you want to delete '" + profileToDelete.getName() + "'?")
+                        .setPositiveButton("Delete", (dialog, which) -> {
+
+                            //Try deleting document from firebase
+                            FirebaseFirestore db = FirebaseFirestore.getInstance();
+                            db.collection("profiles").document(profileToDelete.getDeviceId())
+                                    .delete()
+                                    .addOnSuccessListener(aVoid -> {
+                                        //Database delete was successful! Now remove it from the local list
+                                        profileList.remove(profileToDelete);
+
+                                        // Redraw the UI so the row disappears
+                                        render();
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        //Tell the user if it failed
+                                        Log.e("DeleteProfile", "Error deleting document", e);
+                                    });
+
+                        })
+                        .setNegativeButton("Cancel", null)
+                        .show();
             });
 
             row.addView(nameView);

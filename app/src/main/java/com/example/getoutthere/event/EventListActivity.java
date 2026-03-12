@@ -2,7 +2,6 @@ package com.example.getoutthere.event;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -13,14 +12,14 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.getoutthere.R;
-import com.example.getoutthere.event.EventDetailsActivity;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
 
-//Show list of available events
+// Shows list of currently available events user can enroll in.
+// Clicking an invidual event displays its data
 
 public class EventListActivity extends AppCompatActivity {
 
@@ -28,6 +27,7 @@ public class EventListActivity extends AppCompatActivity {
     private List<Event> events = new ArrayList<>();
     private List<String> eventNames = new ArrayList<>();
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

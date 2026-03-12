@@ -12,6 +12,24 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.getoutthere.R;
+import com.example.getoutthere.event.Event;
+import com.example.getoutthere.models.EntrantProfile;
+import com.example.getoutthere.utils.DeletionUtils;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+/**
+ * Activity for administrative management of Organizers.
+ * Role: Provides UI to view and delete the profiles of organizers from Firebase.
+ * Outstanding issues: Currently uses basic UI; polish planned for final sprint.
+ */
 
 public class ManageOrganizersActivity extends AppCompatActivity {
 

@@ -5,6 +5,8 @@ public class EntrantProfile {
     private String name;
     private String email;
     private String phoneNumber;
+
+    private String role; //'admin' or 'user'
     public EntrantProfile() {}
 
     public EntrantProfile(String deviceId, String name, String email, String phoneNumber) {
@@ -44,5 +46,13 @@ public class EntrantProfile {
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 }
