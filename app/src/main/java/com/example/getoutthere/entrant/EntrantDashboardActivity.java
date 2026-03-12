@@ -80,7 +80,7 @@ public class EntrantDashboardActivity extends AppCompatActivity {
         NavToNotificationLogs.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(EntrantDashboardActivity.this, NotificationLogsActivity.class);
+                Intent intent = new Intent(EntrantDashboardActivity.this, ProfileActivity.class);
                 startActivity(intent);
             }
         });
