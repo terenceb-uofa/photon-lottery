@@ -17,7 +17,7 @@ import com.example.getoutthere.admin.ManageOrganizersActivity;
 import com.example.getoutthere.admin.ManageProfilesActivity;
 import com.example.getoutthere.admin.NotificationLogsActivity;
 import com.example.getoutthere.event.EventListActivity;
-import com.example.getoutthere.organizer.OrganizerEventDetailsActivity;
+import com.example.getoutthere.organizer.OrganizerCreateEventActivity;
 
 // Dashboard for entrant
 public class EntrantDashboardActivity extends AppCompatActivity {
@@ -40,7 +40,7 @@ public class EntrantDashboardActivity extends AppCompatActivity {
         NavToEventManager.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(EntrantDashboardActivity.this, ManageEventsActivity.class);
+                Intent intent = new Intent(EntrantDashboardActivity.this, OrganizerCreateEventActivity.class);
                 startActivity(intent);
             }
         });
@@ -80,17 +80,18 @@ public class EntrantDashboardActivity extends AppCompatActivity {
         NavToNotificationLogs.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(EntrantDashboardActivity.this, NotificationLogsActivity.class);
+                Intent intent = new Intent(EntrantDashboardActivity.this, ProfileActivity.class);
                 startActivity(intent);
             }
         });
 
-        // TEMPORARY TEST BUTTON - REMOVE LATER
-        Button btnTestOrganizerView = findViewById(R.id.btnTestOrganizerView);
-        btnTestOrganizerView.setOnClickListener(v -> {
-            Intent intent = new Intent(EntrantDashboardActivity.this, OrganizerEventDetailsActivity.class);
-            intent.putExtra("eventId", "testEvent123");
-            startActivity(intent);
+        Button btnMyEvents = findViewById(R.id.btnMyEvents);
+        btnMyEvents.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(EntrantDashboardActivity.this, com.example.getoutthere.organizer.OrganizerEventListActivity.class);
+                startActivity(intent);
+            }
         });
 
     }
