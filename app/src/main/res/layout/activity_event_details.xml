@@ -1,66 +1,88 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="24dp">
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <!-- Scrollable content -->
+    <ScrollView
+        android:id="@+id/scrollContent"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/EventDetailsBackButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/EventName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Event Name"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:paddingBottom="20dp"/>
+
+            <TextView
+                android:id="@+id/EventAddress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Address"
+                android:paddingBottom="12dp"/>
+
+            <TextView
+                android:id="@+id/EventDate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Lottery Draw Date"
+                android:paddingBottom="12dp"/>
+
+            <TextView
+                android:id="@+id/EventCapacity"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Spots Available"
+                android:paddingBottom="12dp"/>
+
+            <TextView
+                android:id="@+id/EventSignupFee"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Signup Fee"
+                android:paddingBottom="24dp"/>
+
+            <Button
+                android:id="@+id/btnToggleWaitingList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Join Waiting List"
+                android:backgroundTint="@color/green"
+                android:textColor="@android:color/white"
+                android:layout_marginBottom="16dp"/>
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Back button anchored bottom-left -->
+    <Button
+        android:id="@+id/EventDetailsBackButton"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_margin="16dp"
+        android:layout_marginStart="1dp"
+        android:layout_marginBottom="1dp"
+        android:backgroundTint="#CD59A91E"
+        android:text="⬅️ Back"
+        android:textColor="@android:color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/scrollContent" />
 
-        <TextView
-            android:id="@+id/EventName"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Event Name"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:paddingBottom="20dp" />
-
-        <TextView
-            android:id="@+id/EventAddress"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Address"
-            android:paddingBottom="12dp" />
-
-        <TextView
-            android:id="@+id/EventDate"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Lottery Draw Date"
-            android:paddingBottom="12dp" />
-
-        <TextView
-            android:id="@+id/EventCapacity"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Spots Available"
-            android:paddingBottom="12dp" />
-
-        <TextView
-            android:id="@+id/EventSignupFee"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Signup Fee"
-            android:paddingBottom="24dp" />
-
-        <Button
-            android:id="@+id/btnJoinWaitingList"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Join Waiting List"
-            android:layout_marginBottom="16dp" />
-
-        <Button
-            android:id="@+id/btnLeaveWaitingList"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Leave Waiting List" />
-
-    </LinearLayout>
-
-</ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

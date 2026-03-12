@@ -16,14 +16,18 @@ import com.example.getoutthere.R;
 import com.example.getoutthere.models.EntrantProfile;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.HashMap;
+
 public class EventDetailsActivity extends AppCompatActivity {
 
     private TextView eventName, eventAddress, eventDate, eventCapacity, eventFee;
-    private Button btnJoin, btnLeave;
+    private Button btnToggleWaitingList, btnBack;
 
     private String eventId;
     private Event event;
     private EntrantProfile entrant;
+
+    private boolean isOnWaitingList = false;
 
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -45,9 +49,11 @@ public class EventDetailsActivity extends AppCompatActivity {
         eventDate = findViewById(R.id.EventDate);
         eventCapacity = findViewById(R.id.EventCapacity);
         eventFee = findViewById(R.id.EventSignupFee);
+        btnToggleWaitingList = findViewById(R.id.btnToggleWaitingList);
+        btnBack = findViewById(R.id.EventDetailsBackButton);
 
-        btnJoin = findViewById(R.id.btnJoinWaitingList);
-        btnLeave = findViewById(R.id.btnLeaveWaitingList);
+        // Back button
+        btnBack.setOnClickListener(v -> finish());
 
         // Get event ID from intent
         eventId = getIntent().getStringExtra("eventId");
@@ -59,9 +65,7 @@ public class EventDetailsActivity extends AppCompatActivity {
 
         // Fetch event from Firestore
         db.collection("events").document(eventId).get().addOnSuccessListener(documentSnapshot -> {
-
             if (documentSnapshot.exists()) {
-
                 event = documentSnapshot.toObject(Event.class);
                 event.setId(documentSnapshot.getId());
 
@@ -70,45 +74,72 @@ public class EventDetailsActivity extends AppCompatActivity {
                 eventDate.setText("Lottery Draw Date: " + event.getDrawDate());
                 eventCapacity.setText("Spots Available: " + event.getCapacity());
                 eventFee.setText("Signup Fee: $" + event.getSignupFee());
+
+                // Check if user is already on waiting list
+                db.collection("events")
+                        .document(eventId)
+                        .collection("waitingList")
+                        .document(entrant.getDeviceId())
+                        .get()
+                        .addOnSuccessListener(doc -> {
+                            if (doc.exists()) {
+                                isOnWaitingList = true;
+                            }
+                            updateToggleButton();
+                        });
             }
         });
 
-        // Join waiting list
-        btnJoin.setOnClickListener(v -> {
-            if (event != null) {
+        // Toggle waiting list button
+        btnToggleWaitingList.setOnClickListener(v -> {
+            if (event == null) return;
+
+            if (!isOnWaitingList) {
+                // Join waiting list
                 db.collection("events")
                         .document(event.getId())
                         .collection("waitingList")
                         .document(entrant.getDeviceId())
-                        .set(new java.util.HashMap<String, Object>() {{
+                        .set(new HashMap<String, Object>() {{
                             put("name", entrant.getName());
                             put("email", entrant.getEmail());
                             put("phone", entrant.getPhoneNumber());
                         }})
-                        .addOnSuccessListener(aVoid ->
-                                Toast.makeText(EventDetailsActivity.this, "Joined waiting list!", Toast.LENGTH_SHORT).show()
-                        )
+                        .addOnSuccessListener(aVoid -> {
+                            isOnWaitingList = true;
+                            updateToggleButton();
+                            Toast.makeText(EventDetailsActivity.this, "Joined waiting list!", Toast.LENGTH_SHORT).show();
+                        })
                         .addOnFailureListener(e ->
                                 Toast.makeText(EventDetailsActivity.this, "Failed to join waiting list", Toast.LENGTH_SHORT).show()
                         );
-            }
-        });
-
-        // Leave waiting list
-        btnLeave.setOnClickListener(v -> {
-            if (event != null) {
+            } else {
+                // Leave waiting list
                 db.collection("events")
                         .document(event.getId())
                         .collection("waitingList")
                         .document(entrant.getDeviceId())
                         .delete()
-                        .addOnSuccessListener(aVoid ->
-                                Toast.makeText(EventDetailsActivity.this, "Left waiting list!", Toast.LENGTH_SHORT).show()
-                        )
+                        .addOnSuccessListener(aVoid -> {
+                            isOnWaitingList = false;
+                            updateToggleButton();
+                            Toast.makeText(EventDetailsActivity.this, "Left waiting list!", Toast.LENGTH_SHORT).show();
+                        })
                         .addOnFailureListener(e ->
                                 Toast.makeText(EventDetailsActivity.this, "Failed to leave waiting list", Toast.LENGTH_SHORT).show()
                         );
             }
         });
+    }
+
+    // Update button text and color based on status
+    private void updateToggleButton() {
+        if (isOnWaitingList) {
+            btnToggleWaitingList.setText("Leave Waiting List");
+            btnToggleWaitingList.setBackgroundTintList(getResources().getColorStateList(R.color.red, null));
+        } else {
+            btnToggleWaitingList.setText("Join Waiting List");
+            btnToggleWaitingList.setBackgroundTintList(getResources().getColorStateList(R.color.green, null));
+        }
     }
 }
