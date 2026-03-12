@@ -20,6 +20,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 
+// To contain and display the information of a single event.
+
 public class EventDetailsActivity extends AppCompatActivity {
 
     private TextView eventName, eventAddress, eventDateRange, eventCapacity, eventFee, eventDrawDate;
