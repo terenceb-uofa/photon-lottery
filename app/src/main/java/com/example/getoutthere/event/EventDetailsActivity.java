@@ -14,7 +14,6 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.getoutthere.R;
 import com.example.getoutthere.models.EntrantProfile;
-import com.example.getoutthere.utils.FirebaseHelper;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class EventDetailsActivity extends AppCompatActivity {
