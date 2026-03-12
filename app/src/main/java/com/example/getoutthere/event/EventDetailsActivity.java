@@ -76,14 +76,40 @@ public class EventDetailsActivity extends AppCompatActivity {
 
         // Join waiting list
         btnJoin.setOnClickListener(v -> {
-            FirebaseHelper.joinWaitingList(event, entrant);
-            Toast.makeText(this, "Joined waiting list!", Toast.LENGTH_SHORT).show();
+            if (event != null) {
+                db.collection("events")
+                        .document(event.getId())
+                        .collection("waitingList")
+                        .document(entrant.getDeviceId())
+                        .set(new java.util.HashMap<String, Object>() {{
+                            put("name", entrant.getName());
+                            put("email", entrant.getEmail());
+                            put("phone", entrant.getPhoneNumber());
+                        }})
+                        .addOnSuccessListener(aVoid ->
+                                Toast.makeText(EventDetailsActivity.this, "Joined waiting list!", Toast.LENGTH_SHORT).show()
+                        )
+                        .addOnFailureListener(e ->
+                                Toast.makeText(EventDetailsActivity.this, "Failed to join waiting list", Toast.LENGTH_SHORT).show()
+                        );
+            }
         });
 
         // Leave waiting list
         btnLeave.setOnClickListener(v -> {
-            FirebaseHelper.leaveWaitingList(event, entrant);
-            Toast.makeText(this, "Left waiting list!", Toast.LENGTH_SHORT).show();
+            if (event != null) {
+                db.collection("events")
+                        .document(event.getId())
+                        .collection("waitingList")
+                        .document(entrant.getDeviceId())
+                        .delete()
+                        .addOnSuccessListener(aVoid ->
+                                Toast.makeText(EventDetailsActivity.this, "Left waiting list!", Toast.LENGTH_SHORT).show()
+                        )
+                        .addOnFailureListener(e ->
+                                Toast.makeText(EventDetailsActivity.this, "Failed to leave waiting list", Toast.LENGTH_SHORT).show()
+                        );
+            }
         });
     }
 }
