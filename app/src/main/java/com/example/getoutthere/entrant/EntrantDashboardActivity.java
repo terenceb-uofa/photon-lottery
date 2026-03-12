@@ -17,6 +17,7 @@ import com.example.getoutthere.admin.ManageOrganizersActivity;
 import com.example.getoutthere.admin.ManageProfilesActivity;
 import com.example.getoutthere.admin.NotificationLogsActivity;
 import com.example.getoutthere.event.EventListActivity;
+import com.example.getoutthere.organizer.OrganizerCreateEventActivity;
 
 // Dashboard for entrant
 public class EntrantDashboardActivity extends AppCompatActivity {
@@ -39,7 +40,7 @@ public class EntrantDashboardActivity extends AppCompatActivity {
         NavToEventManager.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(EntrantDashboardActivity.this, ManageEventsActivity.class);
+                Intent intent = new Intent(EntrantDashboardActivity.this, OrganizerCreateEventActivity.class);
                 startActivity(intent);
             }
         });

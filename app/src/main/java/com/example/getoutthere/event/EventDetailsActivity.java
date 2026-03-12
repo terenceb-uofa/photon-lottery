@@ -68,7 +68,7 @@ public class EventDetailsActivity extends AppCompatActivity {
 
                 eventName.setText(event.getName());
                 eventAddress.setText("Address: " + event.getDescription());
-                eventDate.setText("Lottery Draw Date: " + event.getDate());
+                eventDate.setText("Lottery Draw Date: " + event.getDrawDate());
                 eventCapacity.setText("Spots Available: " + event.getCapacity());
                 eventFee.setText("Signup Fee: $" + event.getSignupFee());
             }
