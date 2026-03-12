@@ -37,7 +37,6 @@ import java.util.Set;
  * Outstanding issues: Currently uses basic UI; polish planned for final sprint.
  */
 
-
 public class ManageOrganizersActivity extends AppCompatActivity {
     private Map<String, List<Event>> organizerEventsMap = new HashMap<>(); // Cache the events organizers own, indexed by organizer
     private List<EntrantProfile> organizersList = new ArrayList<>();
