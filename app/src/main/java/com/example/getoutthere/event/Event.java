@@ -25,6 +25,7 @@ public class Event {
 
     private String posterUrl;
     private String qrCodeContent;
+    private String status;
 
     public Event() {}
 
@@ -154,5 +155,12 @@ public class Event {
 
     public void setQrCodeContent(String qrCodeContent) {
         this.qrCodeContent = qrCodeContent;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+    public void setStatus(String status) {
+        this.status = status;
     }
 }
