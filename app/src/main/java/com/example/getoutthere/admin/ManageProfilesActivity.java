@@ -120,88 +120,92 @@ public class ManageProfilesActivity extends AppCompatActivity {
         profilesContainer.removeAllViews();  // clearing anything previously present
 
         for (int index = 0; index < profileList.size(); index++) {
+            //Junk data shield, skip invalid entries
+            try {
+                EntrantProfile currentProfile = profileList.get(index);
+                LinearLayout row = new LinearLayout(this);
+                row.setOrientation(LinearLayout.HORIZONTAL);
+                row.setBackgroundColor(0xFF59A91E);
+                row.setGravity(Gravity.CENTER_VERTICAL);
+                row.setPadding(24, 16, 16, 16);
 
-            EntrantProfile currentProfile = profileList.get(index);
-            LinearLayout row = new LinearLayout(this);
-            row.setOrientation(LinearLayout.HORIZONTAL);
-            row.setBackgroundColor(0xFF59A91E);
-            row.setGravity(Gravity.CENTER_VERTICAL);
-            row.setPadding(24, 16, 16, 16);
+                LinearLayout.LayoutParams rowParams = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                );
+                rowParams.setMargins(0, 0, 0, 8);
+                row.setLayoutParams(rowParams);
 
-            LinearLayout.LayoutParams rowParams = new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT
-            );
-            rowParams.setMargins(0, 0, 0, 8);
-            row.setLayoutParams(rowParams);
+                // adding vertical views for name and role (vertical)
+                TextView nameView = new TextView(this);
+                nameView.setText(currentProfile.getName());
+                nameView.setTextColor(0xFFFFFFFF);
+                nameView.setTextSize(16f);
+                nameView.setTypeface(null, android.graphics.Typeface.BOLD);
+                LinearLayout.LayoutParams nameParams = new LinearLayout.LayoutParams(
+                        0, LinearLayout.LayoutParams.WRAP_CONTENT, 2f
+                );
+                nameView.setLayoutParams(nameParams);
 
-            // adding vertical views for name and role (vertical)
-            TextView nameView = new TextView(this);
-            nameView.setText(currentProfile.getName());
-            nameView.setTextColor(0xFFFFFFFF);
-            nameView.setTextSize(16f);
-            nameView.setTypeface(null, android.graphics.Typeface.BOLD);
-            LinearLayout.LayoutParams nameParams = new LinearLayout.LayoutParams(
-                    0, LinearLayout.LayoutParams.WRAP_CONTENT, 2f
-            );
-            nameView.setLayoutParams(nameParams);
+                TextView roleView = new TextView(this);
+                roleView.setText(currentProfile.getRole());
+                roleView.setTextColor(0xFFFFFFFF);
+                roleView.setTextSize(14f);
+                LinearLayout.LayoutParams roleParams = new LinearLayout.LayoutParams(
+                        0, LinearLayout.LayoutParams.WRAP_CONTENT, 2f
+                );
+                roleView.setLayoutParams(roleParams);
 
-            TextView roleView = new TextView(this);
-            roleView.setText(currentProfile.getRole());
-            roleView.setTextColor(0xFFFFFFFF);
-            roleView.setTextSize(14f);
-            LinearLayout.LayoutParams roleParams = new LinearLayout.LayoutParams(
-                    0, LinearLayout.LayoutParams.WRAP_CONTENT, 2f
-            );
-            roleView.setLayoutParams(roleParams);
+                Button deleteButton = new Button(this);
+                deleteButton.setText("DELETE");
+                deleteButton.setBackgroundColor(0xFFCC0000);
+                deleteButton.setTextColor(0xFFFFFFFF);
+                deleteButton.setPadding(16, 8, 16, 8);
+                LinearLayout.LayoutParams btnParams = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                );
+                deleteButton.setLayoutParams(btnParams);
 
-            Button deleteButton = new Button(this);
-            deleteButton.setText("DELETE");
-            deleteButton.setBackgroundColor(0xFFCC0000);
-            deleteButton.setTextColor(0xFFFFFFFF);
-            deleteButton.setPadding(16, 8, 16, 8);
-            LinearLayout.LayoutParams btnParams = new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT
-            );
-            deleteButton.setLayoutParams(btnParams);
+                int finalIndex = index;
+                deleteButton.setOnClickListener(v -> {
+                    // Get the specific profile for this button
+                    EntrantProfile profileToDelete = profileList.get(finalIndex);
+                    //System.out.println("Delete clicked");
 
-            int finalIndex = index;
-            deleteButton.setOnClickListener(v -> {
-                // Get the specific profile for this button
-                EntrantProfile profileToDelete = profileList.get(finalIndex);
-                //System.out.println("Delete clicked");
+                    new AlertDialog.Builder(v.getContext())
+                            .setTitle("Delete Profile")
+                            .setMessage("Are you sure you want to delete '" + profileToDelete.getName() + "'?")
+                            .setPositiveButton("Delete", (dialog, which) -> {
 
-                new AlertDialog.Builder(v.getContext())
-                        .setTitle("Delete Profile")
-                        .setMessage("Are you sure you want to delete '" + profileToDelete.getName() + "'?")
-                        .setPositiveButton("Delete", (dialog, which) -> {
+                                //Try deleting document from firebase
+                                FirebaseFirestore db = FirebaseFirestore.getInstance();
+                                db.collection("profiles").document(profileToDelete.getDeviceId())
+                                        .delete()
+                                        .addOnSuccessListener(aVoid -> {
+                                            //Database delete was successful! Now remove it from the local list
+                                            profileList.remove(profileToDelete);
 
-                            //Try deleting document from firebase
-                            FirebaseFirestore db = FirebaseFirestore.getInstance();
-                            db.collection("profiles").document(profileToDelete.getDeviceId())
-                                    .delete()
-                                    .addOnSuccessListener(aVoid -> {
-                                        //Database delete was successful! Now remove it from the local list
-                                        profileList.remove(profileToDelete);
+                                            // Redraw the UI so the row disappears
+                                            render();
+                                        })
+                                        .addOnFailureListener(e -> {
+                                            //Tell the user if it failed
+                                            Log.e("DeleteProfile", "Error deleting document", e);
+                                        });
 
-                                        // Redraw the UI so the row disappears
-                                        render();
-                                    })
-                                    .addOnFailureListener(e -> {
-                                        //Tell the user if it failed
-                                        Log.e("DeleteProfile", "Error deleting document", e);
-                                    });
+                            })
+                            .setNegativeButton("Cancel", null)
+                            .show();
+                });
 
-                        })
-                        .setNegativeButton("Cancel", null)
-                        .show();
-            });
-
-            row.addView(nameView);
-            row.addView(roleView);
-            row.addView(deleteButton);
-            profilesContainer.addView(row);
+                row.addView(nameView);
+                row.addView(roleView);
+                row.addView(deleteButton);
+                profilesContainer.addView(row);
+            }catch(Exception e){
+                Log.e("Render", "Skipping corrupted profile at index " + index, e);
+            }
         }
     }
 }

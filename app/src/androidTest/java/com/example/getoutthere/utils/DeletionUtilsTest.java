@@ -29,12 +29,12 @@ public class DeletionUtilsTest {
         String fakeUserId = "test_cascade_user_123";
         String fakeEventId = "test_cascade_event_123";
 
-        // 1. SETUP: Create a fake profile in the database
+        //  Create a fake profile in the database
         Map<String, Object> fakeProfile = new HashMap<>();
         fakeProfile.put("name", "Cascade Tester");
         Tasks.await(db.collection("profiles").document(fakeUserId).set(fakeProfile));
 
-        // 2. SETUP: Create a fake event linked to that profile (organizerId)
+        //  Create a fake event linked to that profile (organizerId)
         Map<String, Object> fakeEvent = new HashMap<>();
         fakeEvent.put("organizerId", fakeUserId);
         fakeEvent.put("eventName", "Cascade Test Event");
@@ -44,7 +44,7 @@ public class DeletionUtilsTest {
         assertTrue(Tasks.await(db.collection("profiles").document(fakeUserId).get()).exists());
         assertTrue(Tasks.await(db.collection("events").document(fakeEventId).get()).exists());
 
-        // 3. ACTION: Call the DeletionUtils method using a CountDownLatch to wait for the callback
+        // Call the DeletionUtils method using a CountDownLatch to wait for the callback
         CountDownLatch latch = new CountDownLatch(1);
         final boolean[] successFlag = {false};
 
@@ -61,10 +61,10 @@ public class DeletionUtilsTest {
         // Wait up to 5 seconds for the async deletion callbacks to fire
         latch.await(5, TimeUnit.SECONDS);
 
-        // 4. ASSERT: Verify the success callback was triggered
+        // Verify the success callback was triggered
         assertTrue("The onSuccess callback should have been triggered", successFlag[0]);
 
-        // 5. ASSERT: Verify the profile and the event are physically gone from the database
+        // Verify the profile and the event are physically gone from the database
         DocumentSnapshot deletedProfile = Tasks.await(db.collection("profiles").document(fakeUserId).get());
         DocumentSnapshot deletedEvent = Tasks.await(db.collection("events").document(fakeEventId).get());
 
