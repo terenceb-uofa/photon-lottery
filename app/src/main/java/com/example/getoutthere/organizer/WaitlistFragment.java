@@ -130,28 +130,104 @@ public class WaitlistFragment extends Fragment {
     }
 
     /**
-     * Loads all entrants with status "waiting" from Firestore.
+     * Fetches all entrants from the selected event's waiting list collection in Firestore.
+     * It stores each entrant's device ID and loads their profile name so it can
+     * be displayed in the ListView.
+     * If the waiting list is empty it displays "No one is on the waiting list."
      */
     private void loadWaitlistEntrants() {
         db.collection("events")
                 .document(eventId)
                 .collection("waitingList")
-                .whereEqualTo("status", "waiting")
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
                     waitlistEntrants.clear();
-                    for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
-                        Map<String, String> entrant = new HashMap<>();
-                        entrant.put("deviceId", doc.getId());
-                        entrant.put("name", doc.getString("name"));
-                        entrant.put("email", doc.getString("email"));
-                        entrant.put("phone", doc.getString("phone"));
-                        waitlistEntrants.add(entrant);
+
+                    if (querySnapshot.isEmpty()) {
+                        adapter.updateData(waitlistEntrants);
+                        Toast.makeText(getContext(), "No entrants on waitlist", Toast.LENGTH_SHORT).show();
+                        return;
                     }
-                    adapter.updateData(waitlistEntrants);
+
+                    for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
+                        String deviceId = doc.getId();
+
+                        // status code not integrated correctly so,
+                        // If status exists and is not waiting, skip it.
+                        // If status does NOT exist, still include it so old data still works.
+                        String status = doc.getString("status");
+                        if (status != null && !status.equals("waiting")) {
+                            continue;
+                        }
+
+                        Map<String, String> entrant = new HashMap<>();
+                        entrant.put("deviceId", deviceId);
+                        entrant.put("name", "Loading...");
+                        entrant.put("email", "");
+                        entrant.put("phone", "");
+
+                        waitlistEntrants.add(entrant);
+                        int index = waitlistEntrants.size() - 1;
+
+                        loadProfileInfo(deviceId, index);
+                    }
+
+                    adapter.updateData(new ArrayList<>(waitlistEntrants));
                 })
                 .addOnFailureListener(e ->
                         Toast.makeText(getContext(), "Failed to load waitlist: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+    }
+    /**
+     *
+     * Fetches the entrant's profile name from Firestore using their device ID.
+     * If a name is found, it replaces the temporary loading text in the ListView.
+     * If the profile cannot be loaded, the entrant is shown as an unknown user.
+     *
+     * @param deviceId the device ID of the entrant whose profile is being loaded
+     * @param index the position in the list where the entrant's name should be updated
+     */
+    private void loadProfileInfo(String deviceId, int index) {
+        db.collection("profiles")
+                .document(deviceId)
+                .get()
+                .addOnSuccessListener(profileDoc -> {
+                    if (index < 0 || index >= waitlistEntrants.size()) return;
+
+                    Map<String, String> entrant = waitlistEntrants.get(index);
+
+                    String name = "Unknown user";
+                    String email = "";
+                    String phone = "";
+
+                    if (profileDoc.exists()) {
+                        String fetchedName = profileDoc.getString("name");
+                        String fetchedEmail = profileDoc.getString("email");
+                        String fetchedPhone = profileDoc.getString("phone");
+
+                        if (fetchedName != null && !fetchedName.isEmpty()) {
+                            name = fetchedName;
+                        }
+                        if (fetchedEmail != null) {
+                            email = fetchedEmail;
+                        }
+                        if (fetchedPhone != null) {
+                            phone = fetchedPhone;
+                        }
+                    }
+
+                    entrant.put("name", name);
+                    entrant.put("email", email);
+                    entrant.put("phone", phone);
+
+                    adapter.updateData(new ArrayList<>(waitlistEntrants));
+                })
+                .addOnFailureListener(e -> {
+                    if (index < 0 || index >= waitlistEntrants.size()) return;
+
+                    Map<String, String> entrant = waitlistEntrants.get(index);
+                    entrant.put("name", "Unknown user");
+                    adapter.updateData(new ArrayList<>(waitlistEntrants));
+                });
     }
 
     /**

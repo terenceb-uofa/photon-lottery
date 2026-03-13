@@ -30,7 +30,20 @@ import com.google.firebase.Timestamp;
 import java.util.Locale;
 import java.util.Calendar;
 
-
+/**
+ * Allows organizers to edit an existing event.
+ * <p>
+ * The code below is based on OrganizerCreateEventActivity.java
+ * This activity loads an existing event, displays its information in editable
+ * input fields, allows the organizer to update the event details and poster,
+ * and saves the updated event to Firebase.
+ * <p>
+ * Outstanding Issues:
+ * - None
+ *
+ * @author Yousaf Cheema
+ * @version 1.0
+ */
 public class OrganizerEditEventActivity extends AppCompatActivity {
 
     private String eventId;
@@ -76,6 +89,11 @@ public class OrganizerEditEventActivity extends AppCompatActivity {
     private Timestamp registrationStartTimestamp;
     private Timestamp registrationEndTimestamp;
 
+    /**
+     * Launches the system image picker so the organizer can select a poster image.
+     * If an image is selected, it is stored and previewed on the screen.
+     * If no image is selected, a message is shown to the user.
+     */
     private final ActivityResultLauncher<PickVisualMediaRequest> pickMedia =
             registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri -> {
                 if (uri != null) {
@@ -87,7 +105,15 @@ public class OrganizerEditEventActivity extends AppCompatActivity {
             });
 
 
-
+    /**
+     * Initializes the activity, connects the input fields and buttons to the layout,
+     * sets up the date and time pickers, retrieves the event ID, and loads the
+     * event information for editing.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after being
+     * shut down then this Bundle contains the data it most recently
+     * supplied. Otherwise it is null.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -162,7 +188,11 @@ public class OrganizerEditEventActivity extends AppCompatActivity {
         screenTitle.setText("Edit Event");
     }
 
-
+    /**
+     * Reads the updated event information from the input fields, validates the input,
+     * creates an updated Event object, and saves the changes to Firebase.
+     * If the update is successful, the activity closes.
+     */
     private void updateExistingEvent() {
         if (existingEvent == null) {
             Toast.makeText(this, "Event not loaded yet", Toast.LENGTH_SHORT).show();
@@ -332,18 +362,35 @@ public class OrganizerEditEventActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Updates the screen while the event is being saved.
+     * This disables or enables buttons and changes the button text.
+     *
+     * @param isSaving true if the event is currently being saved, false otherwise
+     */
     private void setSavingState(boolean isSaving) {
         createEventButton.setEnabled(!isSaving);
         uploadPosterButton.setEnabled(!isSaving);
         createEventButton.setText(isSaving ? "Saving..." : "Save Changes");
     }
 
-
+    /**
+     * Listener interface used to return the Timestamp chosen in the date and time picker.
+     */
     private interface TimestampSelectionListener {
         void onTimestampSelected(Timestamp timestamp);
     }
 
+    /**
+     * Opens a date picker followed by a time picker, then stores the selected
+     * date and time as a Firebase Timestamp and displays it in the chosen input field.
+     *
+     * @param targetInput the input field that will display the selected date and time
+     * @param listener listener used to return the selected Timestamp
+     */
 
+    // Used https://developer.android.com/develop/ui/views/components/pickers as a resource
+    // Used https://www.geeksforgeeks.org/android/datepicker-in-android/ as a resource
     private void showDateTimePicker(EditText targetInput, TimestampSelectionListener listener) {
         Calendar calendar = Calendar.getInstance();
 
@@ -393,11 +440,19 @@ public class OrganizerEditEventActivity extends AppCompatActivity {
         datePickerDialog.show();
     }
 
+    /**
+     * Gets the current device ID to use as the organizer's user ID.
+     *
+     * @return the Android device ID for the current user
+     */
     private String getCurrentUserId() {
         return Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
     }
 
-
+    /**
+     * Fetches the event from Firebase using the event ID and fills the input fields
+     * with the existing event information so it can be edited.
+     */
     private void loadEventForEditing() {
         eventRepository.getEventById(eventId, new EventRepository.RepositoryCallback<Event>() {
             @Override
@@ -466,6 +521,14 @@ public class OrganizerEditEventActivity extends AppCompatActivity {
         });
     }
 
+
+    /**
+     * Converts a Firebase Timestamp into a formatted date and time string
+     * so it can be displayed in the input fields.
+     *
+     * @param timestamp the timestamp to format
+     * @return the formatted date and time string
+     */
     private String formatTimestamp(Timestamp timestamp) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(timestamp.toDate());

@@ -100,7 +100,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         });
 
         buttonViewWaitlist.setOnClickListener(v -> {
-            Intent intent = new Intent(OrganizerEventDetailsActivity.this, EntrantListActivity.class);
+            Intent intent = new Intent(OrganizerEventDetailsActivity.this, OrganizerWaitlistActivity.class);
             intent.putExtra("eventId", eventId);
             startActivity(intent);
         });

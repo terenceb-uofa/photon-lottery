@@ -21,6 +21,19 @@ import com.google.zxing.WriterException;
 
 import java.io.OutputStream;
 
+/**
+ * Displays the QR code for an event.
+ * <p>
+ * This activity loads the selected event, generates its QR code, displays it
+ * on the screen, and allows the organizer to export the QR code image to the
+ * device photo gallery.
+ * <p>
+ * Outstanding Issues:
+ * - None
+ *
+ * @author Yousaf Cheema
+ * @version 1.0
+ */
 public class EventQrCodeActivity extends AppCompatActivity {
 
     private ImageView qrCodeImage;
@@ -31,6 +44,15 @@ public class EventQrCodeActivity extends AppCompatActivity {
 
     private Bitmap qrCodeBitmap;
 
+    /**
+     * Initializes the activity, connects the views to the layout, retrieves the
+     * event ID, loads the event data, generates the QR code, and sets up the
+     * back and export buttons.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after being
+     * shut down then this Bundle contains the data it most recently
+     * supplied. Otherwise it is null.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -93,6 +115,16 @@ public class EventQrCodeActivity extends AppCompatActivity {
             }
         });
     }
+
+    /**
+     * Saves the generated QR code image to the device photo gallery.
+     * It creates an image entry in MediaStore, writes the bitmap to it,
+     * and returns whether the save was successful.
+     *
+     * @param bitmap the QR code image to save
+     * @param fileName the name used for the saved image file
+     * @return true if the image was saved successfully, false otherwise
+     */
 
     // used https://stackoverflow.com/questions/71729415/saving-an-image-and-displaying-it-in-gallery as a resource, 2026-03-13
     // https://developer.android.com/reference/android/provider/MediaStore

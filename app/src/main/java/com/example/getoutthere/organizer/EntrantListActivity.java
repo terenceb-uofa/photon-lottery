@@ -15,6 +15,18 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Displays the list of entrants currently on the event's waiting list.
+ * <p>
+ * This activity retrieves all entrants from the selected event's waiting list,
+ * looks up their profile names in Firestore, and displays the names in a ListView.
+ * <p>
+ * Outstanding Issues:
+ * - None
+ *
+ * @author Yousaf Cheema
+ * @version 1.0
+ */
 public class EntrantListActivity extends AppCompatActivity {
 
     private ListView listView;
@@ -28,6 +40,14 @@ public class EntrantListActivity extends AppCompatActivity {
 
     private Button backButton;
 
+    /**
+     * Initializes the activity, connects the ListView and button to the layout,
+     * retrieves the event ID, and loads the entrants on the waiting list.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after being
+     * shut down then this Bundle contains the data it most recently
+     * supplied. Otherwise it is null.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,6 +77,12 @@ public class EntrantListActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * Fetches all entrants from the selected event's waiting list collection in Firestore.
+     * It stores each entrant's device ID and loads their profile name so it can
+     * be displayed in the ListView.
+     * If the waiting list is empty it displays "No one is on the waiting list."
+     */
     private void loadWaitlistEntrants() {
         db.collection("events")
                 .document(eventId)
@@ -89,6 +115,14 @@ public class EntrantListActivity extends AppCompatActivity {
                 );
     }
 
+    /**
+     * Fetches the entrant's profile name from Firestore using their device ID.
+     * If a name is found, it replaces the temporary loading text in the ListView.
+     * If the profile cannot be loaded, the entrant is shown as an unknown user.
+     *
+     * @param deviceId the device ID of the entrant whose profile is being loaded
+     * @param index the position in the list where the entrant's name should be updated
+     */
     private void loadProfileName(String deviceId, int index) {
         db.collection("profiles")
                 .document(deviceId)
