@@ -35,5 +35,4 @@ public class QRCodeGenerator {
         BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
         return barcodeEncoder.encodeBitmap(text, BarcodeFormat.QR_CODE, 400, 400);
     }
-
 }
