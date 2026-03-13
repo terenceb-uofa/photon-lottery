@@ -34,7 +34,6 @@ public class ManageOrganizersActivityTest {
         when(p.getRole()).thenReturn(role);
         return p;
     }
-
     // Helper to mock Event class
     private Event makeEvent(String id, String name, String organizerId) {
         Event e = mock(Event.class);
