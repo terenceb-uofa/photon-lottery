@@ -2,8 +2,12 @@ package com.example.getoutthere.admin;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -11,9 +15,22 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.bumptech.glide.Glide;
 import com.example.getoutthere.R;
+import com.example.getoutthere.event.Event;
+import com.example.getoutthere.models.EntrantProfile;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class ManageImagesActivity extends AppCompatActivity {
+
+    private List<Event> eventList = new ArrayList<>();
+
+    private LinearLayout imagesContainer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,5 +52,87 @@ public class ManageImagesActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        imagesContainer = findViewById(R.id.imagesContainer);
+
+        grabData();
+        render();
     }
+
+    private void grabData(){
+
+        // putting all events into eventList
+
+        FirebaseFirestore.getInstance().collection("events").get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    eventList.clear(); // Clear old data
+                    for (DocumentSnapshot doc : queryDocumentSnapshots) {
+                        // Convert the Firestore document directly into local Event class objects
+                        try {
+                            Event event = doc.toObject(Event.class);
+                            if (event != null) {
+                                eventList.add(event);
+                            }
+                        }catch (Exception e){
+                            // If we're here it means the event data is incompatible (probably due to the Timestamp String change)
+                            Toast.makeText(ManageImagesActivity.this, "Unable to load" + doc.get("name"), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                    render(); // Redraw the UI after data is loaded
+                })
+                .addOnFailureListener(e -> {
+                    //TODO: Toast Message for Error
+                });
+
+    }
+
+    private void render() {
+
+        imagesContainer.removeAllViews();  // clearing anything previously present
+
+        for (int index = 0; index < eventList.size(); index++) {
+
+            Event currentEvent = eventList.get(index);
+
+            // creating linear layout for image + delete button
+            LinearLayout row = new LinearLayout(this);
+            row.setOrientation(LinearLayout.HORIZONTAL);
+            row.setBackgroundColor(0xFF59A91E);
+            row.setGravity(Gravity.CENTER_VERTICAL);
+            row.setPadding(24, 16, 16, 16);
+
+            LinearLayout.LayoutParams rowParams = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+            );
+            rowParams.setMargins(0, 0, 0, 8);
+            row.setLayoutParams(rowParams);
+
+
+            ImageView imageView = new ImageView(this);
+            imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+            LinearLayout.LayoutParams imageParams = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 2f);
+            imageParams.height = 300;
+            imageView.setLayoutParams(imageParams);
+
+            Glide.with(this).load(currentEvent.getPosterUrl()).into(imageView);  // converting image url into actual image
+
+
+            Button deleteButton = new Button(this);
+            deleteButton.setText("DELETE");
+            deleteButton.setBackgroundColor(0xFFCC0000);
+            deleteButton.setTextColor(0xFFFFFFFF);
+            deleteButton.setPadding(16, 8, 16, 8);
+            LinearLayout.LayoutParams btnParams = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+            );
+            btnParams.setMargins(8, 0, 0, 0);
+            deleteButton.setLayoutParams(btnParams);
+            row.addView(imageView);
+            row.addView(deleteButton);
+            imagesContainer.addView(row);
+        }
+    }
+
 }
