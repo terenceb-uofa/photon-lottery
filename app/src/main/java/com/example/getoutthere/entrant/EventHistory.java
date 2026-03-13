@@ -16,6 +16,17 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
+
+/**
+ * Displays a history of events the Entrant has interacted with, specifically
+ * focusing on events where they are currently on the waiting list.
+ * <p>
+ * This Activity acts as a control class for the Event History screen. It queries
+ * Firestore for event data and populates a ListView with the entrant's current status.
+ * <p>
+ * Outstanding Issues:
+ * - None
+ */
 public class EventHistory extends AppCompatActivity {
     private ListView listView;
     private Button backButton;
@@ -25,6 +36,14 @@ public class EventHistory extends AppCompatActivity {
     private List<String> historyDisplayList = new ArrayList<>();
     private ArrayAdapter<String> adapter;
 
+    /**
+     * Initializes the Activity, sets up the user interface elements (ListView and Back Button),
+     * and triggers the loading of the user's event history from the database.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after being
+     * shut down then this Bundle contains the data it most recently
+     * supplied. Otherwise it is null.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,6 +62,11 @@ public class EventHistory extends AppCompatActivity {
         loadEventHistory();
     }
 
+    /**
+     * Fetches all events from Firestore and iterates through their waiting lists
+     * to determine if the current device ID is registered. If found, it updates
+     * the ListView to show the user is on the waiting list.
+     */
     private void loadEventHistory() {
         // Fetch all events to see which ones the user is registered for
         db.collection("events").get()

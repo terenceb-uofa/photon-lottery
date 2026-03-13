@@ -13,6 +13,16 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Displays a list of Events created by the current user.
+ * <p>
+ * This Activity queries the Firebase database to retrieve events matching the
+ * user's device ID. It populates a ListView with the event names, and
+ * allows the organizer to click on an event to view or edit its details.
+ * <p>
+ * Outstanding Issues:
+ * None
+ */
 public class OrganizerEventListActivity extends AppCompatActivity {
 
     private ListView listView;
@@ -20,6 +30,14 @@ public class OrganizerEventListActivity extends AppCompatActivity {
     private List<Event> myEvents = new ArrayList<>();
     private List<String> eventNames = new ArrayList<>();
 
+    /**
+     * Initializes the Activity, sets up the list view, and fetches the organizer's events.
+     * Sets an onItemClickListener to fire an Intent to OrganizerEventDetailsActivity.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after being
+     * shut down then this Bundle contains the data it most recently
+     * supplied. Otherwise it is null.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

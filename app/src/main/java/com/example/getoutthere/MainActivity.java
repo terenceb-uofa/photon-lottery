@@ -18,10 +18,27 @@ import com.example.getoutthere.entrant.EntrantDashboardActivity;
 import com.example.getoutthere.entrant.SignUpActivity;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+/**
+ * The initial entry point of the Get Out There application.
+ * <p>
+ * This Activity acts as the main routing hub. It provides navigation to the Admin
+ * Dashboard and handles Entrant routing by querying the database to check if the
+ * current device already has a registered profile.
+ * <p>
+ * Outstanding Issues:
+ * None
+ */
 public class MainActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private String deviceId;
 
+    /**
+     * Initializes the Activity, binds UI elements, and sets up click listeners
+     * for the main navigation buttons.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after previously being
+     * shut down then this Bundle contains the data it most recently supplied.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
+        // Setup Admin Navigation
         Button NavToAdminDashboard = findViewById(R.id.NavToAdminDashboard);
         NavToAdminDashboard.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -46,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        // Setup Entrant Navigation
         Button NavToEntrantDashboard = findViewById(R.id.NavToEntrantDashboard);
         NavToEntrantDashboard.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -54,12 +73,20 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+    /**
+     * Queries the Firestore "profiles" collection using the device's unique Android ID.
+     * If a profile exists, the user is routed to the EntrantDashboardActivity.
+     * If no profile is found, the user is routed to the SignUpActivity to register.
+     */
     private void checkEntrantProfileAndNavigate() {
         db.collection("profiles").document(deviceId).get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
+                        // Profile found, go to Dashboard
                         startActivity(new Intent(MainActivity.this, EntrantDashboardActivity.class));
                     } else {
+                        // No profile found, force user to Sign Up
                         startActivity(new Intent(MainActivity.this, SignUpActivity.class));
                     }
                 })

@@ -2,10 +2,16 @@ package com.example.getoutthere.admin;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -32,6 +38,10 @@ import java.util.Set;
  */
 
 public class ManageOrganizersActivity extends AppCompatActivity {
+    private Map<String, List<Event>> organizerEventsMap = new HashMap<>(); // Cache the events organizers own, indexed by organizer
+    private List<EntrantProfile> organizersList = new ArrayList<>();
+
+    private LinearLayout organizersContainer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,5 +63,154 @@ public class ManageOrganizersActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+
+        organizersContainer = findViewById(R.id.organizersContainer);
+
+        grabData();
+        render();
+
+    }
+
+
+    private void grabData() {
+        FirebaseFirestore.getInstance().collection("events").get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    organizerEventsMap.clear(); // Reset map
+                    Set<String> uniqueOrgIds = new HashSet<>();
+                    for (DocumentSnapshot doc : queryDocumentSnapshots) {
+                        Event e = doc.toObject(Event.class);
+                        if (e != null) {
+                            String orgId = e.getOrganizerId();
+                            // Add event to map
+                            organizerEventsMap.computeIfAbsent(orgId, k -> new ArrayList<>()).add(e);
+                            if (e.getOrganizerId() != null) uniqueOrgIds.add(e.getOrganizerId());
+                        }
+                    }
+
+                    // Fetch profiles for the unique IDs found
+                    for (String id : uniqueOrgIds) {
+                        FirebaseFirestore.getInstance().collection("profiles").document(id).get()
+                                .addOnSuccessListener(doc -> {
+                                    EntrantProfile profile = doc.toObject(EntrantProfile.class);
+                                    if (profile != null) {
+                                        organizersList.add(profile);
+                                        render();
+                                    }
+                                });
+                    }
+                });
+    }
+
+
+    private void render(){
+
+        organizersContainer.removeAllViews();  // clearing anything previously present
+
+        for (int index = 0; index < organizersList.size(); index++) {
+
+            EntrantProfile currentProfile = organizersList.get(index);
+            LinearLayout row = new LinearLayout(this);
+            row.setOrientation(LinearLayout.HORIZONTAL);
+            row.setBackgroundColor(0xFF59A91E);
+            row.setGravity(Gravity.CENTER_VERTICAL);
+            row.setPadding(24, 16, 16, 16);
+
+            LinearLayout.LayoutParams rowParams = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+            );
+            rowParams.setMargins(0, 0, 0, 8);
+            row.setLayoutParams(rowParams);
+
+            // adding vertical views for name and role (vertical)
+            TextView nameView = new TextView(this);
+            nameView.setText(currentProfile.getName());
+            nameView.setTextColor(0xFFFFFFFF);
+            nameView.setTextSize(16f);
+            nameView.setTypeface(null, android.graphics.Typeface.BOLD);
+            LinearLayout.LayoutParams nameParams = new LinearLayout.LayoutParams(
+                    0, LinearLayout.LayoutParams.WRAP_CONTENT, 2f
+            );
+            nameView.setLayoutParams(nameParams);
+
+            TextView roleView = new TextView(this);
+            roleView.setText(currentProfile.getRole());
+            roleView.setTextColor(0xFFFFFFFF);
+            roleView.setTextSize(14f);
+            LinearLayout.LayoutParams roleParams = new LinearLayout.LayoutParams(
+                    0, LinearLayout.LayoutParams.WRAP_CONTENT, 2f
+            );
+
+            List<Event> myEvents = organizerEventsMap.get(currentProfile.getDeviceId());
+
+            TextView eventsView = new TextView(this);
+            if (myEvents != null && !myEvents.isEmpty()) {
+                StringBuilder eventNames = new StringBuilder();
+                for (Event e : myEvents) {
+                    eventNames.append(e.getName()).append(", ");
+                }
+
+
+                eventsView.setText("Events: " + eventNames.toString());
+                eventsView.setTextColor(0xFFCCCCCC);
+                eventsView.setTextSize(12f);
+            }
+
+
+            roleView.setLayoutParams(roleParams);
+
+            Button deleteButton = new Button(this);
+            deleteButton.setText("DELETE");
+            deleteButton.setBackgroundColor(0xFFCC0000);
+            deleteButton.setTextColor(0xFFFFFFFF);
+            deleteButton.setPadding(16, 8, 16, 8);
+            LinearLayout.LayoutParams btnParams = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+            );
+            deleteButton.setLayoutParams(btnParams);
+
+            int finalIndex = index;
+            deleteButton.setOnClickListener(v -> {
+                // Get the specific profile for this button
+                EntrantProfile profileToDelete = organizersList.get(finalIndex);
+                //System.out.println("Delete clicked");
+
+                new AlertDialog.Builder(v.getContext())
+                        .setTitle("Delete Organizer Profile")
+                        .setMessage("Are you sure you want to delete '" + profileToDelete.getName() + "'?")
+                        .setPositiveButton("Delete", (dialog, which) -> {
+
+                            //Try deleting document from firebase
+
+                            DeletionUtils.deleteProfileAndCascadeEvents(
+                                profileToDelete.getDeviceId(),
+                                () -> {
+                                    // Success: Remove from list and re-render
+                                    organizersList.remove(profileToDelete);
+                                    render();
+                                    Toast.makeText(v.getContext(), "Deleted profile and associated events", Toast.LENGTH_SHORT).show();
+                                },
+                                () -> {
+                                    // Failure
+                                    Toast.makeText(v.getContext(), "Failed to delete", Toast.LENGTH_SHORT).show();
+                                }
+                                );
+
+                                        // Redraw the UI so the row disappears
+                                        render();
+
+                        })
+                        .setNegativeButton("Cancel", null)
+                        .show();
+            });
+
+            row.addView(nameView);
+            row.addView(roleView);
+            row.addView(eventsView);
+            row.addView(deleteButton);
+            organizersContainer.addView(row);
+        }
     }
 }

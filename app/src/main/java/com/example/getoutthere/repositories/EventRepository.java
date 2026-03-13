@@ -36,9 +36,9 @@ public class EventRepository {
         // set default waitlist value for new event
         event.setCurrentWaitlistCount(0);
 
-        // Qrcode
+        // create qrcode deeplink for the event using the event id
         if (event.getQrCodeContent() == null || event.getQrCodeContent().isEmpty()) {
-            event.setQrCodeContent("event:" + newEventId);
+            event.setQrCodeContent("getoutthere://event/" + newEventId);
         }
 
         // save to firestore
@@ -67,7 +67,7 @@ public class EventRepository {
                         }).addOnFailureListener(callback::onFailure)
                 )
                 .addOnFailureListener(e -> {
-                    // Save without poster if upload fails
+                    // save without the poster if the upload fails
                     saveEventToFirestore(event, callback);
                 });
     }

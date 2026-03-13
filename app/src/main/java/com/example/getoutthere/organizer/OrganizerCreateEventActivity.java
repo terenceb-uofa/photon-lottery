@@ -10,6 +10,7 @@ import android.provider.Settings;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -29,6 +30,9 @@ import java.util.Calendar;
 
 
 public class OrganizerCreateEventActivity extends AppCompatActivity {
+
+    //Text Views
+    private TextView screenTitle;
 
     // Image Views
     private ImageView posterPreview;
@@ -50,6 +54,8 @@ public class OrganizerCreateEventActivity extends AppCompatActivity {
 
     private Button uploadPosterButton;
     private Button createEventButton;
+
+    private Button backButton;
 
 
     @Nullable
@@ -137,6 +143,9 @@ public class OrganizerCreateEventActivity extends AppCompatActivity {
         );
 
         createEventButton.setOnClickListener(v -> saveEvent());
+
+        Button backButton = findViewById(R.id.backButton);
+        backButton.setOnClickListener(v -> finish());
     }
 
 

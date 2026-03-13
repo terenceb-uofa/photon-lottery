@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 // Shows list of currently available events user can enroll in.
-// Clicking an invidual event displays its data
+// Clicking an individual event displays its data.
 
 public class EventListActivity extends AppCompatActivity {
 

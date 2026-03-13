@@ -13,8 +13,38 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.getoutthere.R;
 
+
+/**
+ * Acts as the primary navigation dashboard for Administrators.
+ * <p>
+ *     Allows an administrator to access different parts of the app by
+ *     clicking on different buttons, taking them to screens that showcase
+ *     different features of the app's participants.
+ * </p>
+ *
+ * Outstanding Issues:
+ * - Currently, some buttons such as "View Notification Logs" lead to screens who's
+ * functionality is yet to be implemented.
+ */
+
+
+/**
+ * Represents the screen that can be used to view navigation options.
+ * This class handles the structuring and displaying of the navigation options.
+ * * @author Hassan Ali + Terence Bedell
+ * @version 1.0
+ */
+
 public class AdminDashboardActivity extends AppCompatActivity {
 
+    /**
+     * Initializes the activity and showcases navigation options for the
+     * administrator.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after being
+     * shut down then this Bundle contains the data it most recently
+     * supplied. Otherwise it is null.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
