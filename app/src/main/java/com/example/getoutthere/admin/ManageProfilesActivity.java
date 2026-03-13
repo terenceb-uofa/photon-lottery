@@ -25,9 +25,31 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Allows administrators to view the profiles for all users.
+ * Outstanding Issues:
+ * - None
+ */
+
+/**
+ * Represents the screen that can be used to view profiles.
+ * This class handles the structuring and displaying of the profiles,
+ * as well as a delete functionality that deletes the profiles from the database.
+ * * @author Hassan Ali + Terence Bedell
+ * @version 1.0
+ */
 public class ManageProfilesActivity extends AppCompatActivity {
 
-    //Replaced Dummy Data with unified profileList
+    /**
+     * Initializes the activity and showcases user profiles to the
+     * administrator. Allows the administrator to delete the profiles.
+     * Also creates a button element that allows the user to
+     * return to the admin dashboard.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after being
+     * shut down then this Bundle contains the data it most recently
+     * supplied. Otherwise it is null.
+     */
     private List<EntrantProfile> profileList = new ArrayList<>();
 
     private LinearLayout profilesContainer;
@@ -59,6 +81,10 @@ public class ManageProfilesActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Fetches the data from the database and populates the profileList
+     * so the profile attributes can be rendered onto the screen.
+     */
     private void grabData() {
 
         FirebaseFirestore.getInstance().collection("profiles").get()
@@ -79,10 +105,16 @@ public class ManageProfilesActivity extends AppCompatActivity {
                     render(); // Redraw the UI after data is loaded
                 })
                 .addOnFailureListener(e -> {
-                    //TODO: Toast Message for Error
+                    Log.e("FetchProfile", "Error fetching profile", e);
                 });
     }
 
+
+    /**
+     * Renders the data present in the profileList onto the user's screen,
+     * and allows for the user to delete the profile from the database upon
+     * clicking the "Delete" button beside a profile.
+     */
     private void render(){
 
         profilesContainer.removeAllViews();  // clearing anything previously present

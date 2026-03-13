@@ -30,7 +30,40 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * Allows administrators to view details for all events
+ * <p>
+ *     Showcases events' attributes including organizer name, event name,
+ *     event date, and event status to the administrator.
+ * </p>
+ *
+ * Outstanding Issues:
+ * - Currently, the event status is defaulted to null. It will be updated
+ * as functionality is implemented regarding notifying winners and losers.
+ */
+
+
+/**
+ * Represents the screen that can be used to view events.
+ * This class handles the structuring and displaying of the event attributes,
+ * as well as a delete functionality that deletes the events from the database.
+ * * @author Hassan Ali + Terence Bedell
+ * @version 1.0
+ */
+
 public class ManageEventsActivity extends AppCompatActivity {
+
+    /**
+     * Initializes the activity and showcases events to the
+     * administrator. Allows the administrator to delete the events.
+     * Also creates a button element that allows the user to
+     * return to the admin dashboard.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after being
+     * shut down then this Bundle contains the data it most recently
+     * supplied. Otherwise it is null.
+     */
+
     //Replaced Dummy Data with unified eventList
     private List<Event> eventList = new ArrayList<>();
 
@@ -65,7 +98,10 @@ public class ManageEventsActivity extends AppCompatActivity {
 
     }
 
-
+    /**
+     * Fetches the data from the database and populates the eventList
+     * so event information can be rendered onto the screen.
+     */
     private void grabData() {
 
 
@@ -87,11 +123,16 @@ public class ManageEventsActivity extends AppCompatActivity {
                     render(); // Redraw the UI after data is loaded
                 })
                 .addOnFailureListener(e -> {
-                    //TODO: Toast Message for Error
+                    Log.e("FetchEvent", "Error fetching event", e);
                 });
 
     }
 
+    /**
+     * Renders the data present in the eventList onto the user's screen,
+     * and allows for the user to delete the event from the database upon
+     * clicking the "Delete" button beside an event.
+     */
     private void render() {
 
         eventsContainer.removeAllViews();  // clearing anything previously present

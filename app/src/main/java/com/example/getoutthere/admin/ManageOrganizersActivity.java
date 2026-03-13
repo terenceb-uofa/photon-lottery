@@ -27,12 +27,30 @@ import java.util.Set;
 
 /**
  * Activity for administrative management of Organizers.
- * Role: Provides UI to view and delete the profiles of organizers from Firebase.
- * Outstanding issues: Currently uses basic UI; polish planned for final sprint.
+ * Outstanding issues:
+ * - Currently uses basic UI; polish planned for final sprint.
+ */
+
+
+/**
+ * Represents the screen that can be used to view organizer profiless.
+ * This class handles the structuring and displaying of the organizers,
+ * as well as a delete functionality that deletes the organizers from the database.
+ * * @author Hassan Ali + Terence Bedell
+ * @version 1.0
  */
 
 public class ManageOrganizersActivity extends AppCompatActivity {
-
+    /**
+     * Initializes the activity and showcases organizers to the
+     * administrator. Allows the administrator to delete the organizers.
+     * Also creates a button element that allows the user to
+     * return to the admin dashboard.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after being
+     * shut down then this Bundle contains the data it most recently
+     * supplied. Otherwise it is null.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
