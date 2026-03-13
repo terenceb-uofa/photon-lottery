@@ -54,6 +54,17 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
     // Event ID passed from OrganizerEventListActivity
     private String eventId;
 
+
+    /**
+     * Initializes the activity, connects the input fields, image preview, and buttons
+     * to the layout, sets up navigation actions for the back, edit, QR code, and
+     * waitlist buttons, retrieves the event ID from the intent, validates it,
+     * and loads the event information for display.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after being
+     *                           shut down then this Bundle contains the data it most
+     *                           recently supplied. Otherwise it is null.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
