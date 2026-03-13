@@ -35,9 +35,9 @@ public class EventHistory extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
         deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 
-        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, historyDisplayList);
+        adapter = new ArrayAdapter<>(this, R.layout.item_history_row, historyDisplayList);
         listView.setAdapter(adapter);
-
+        listView.setEmptyView(findViewById(R.id.emptyHistoryText));
         backButton.setOnClickListener(v -> finish()); // Closes the activity and goes back
 
         loadEventHistory();

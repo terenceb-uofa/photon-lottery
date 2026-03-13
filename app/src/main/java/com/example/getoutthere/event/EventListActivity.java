@@ -53,8 +53,7 @@ public class EventListActivity extends AppCompatActivity {
                 eventNames.add(event.getName());
             }
 
-            ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
-                    android.R.layout.simple_list_item_1, eventNames);
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.item_history_row, eventNames);
             listView.setAdapter(adapter);
         });
 
