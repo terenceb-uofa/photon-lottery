@@ -175,7 +175,7 @@ public class EventDetailsActivity extends AppCompatActivity {
             btnToggleWaitingList.setBackgroundTintList(getResources().getColorStateList(R.color.red, null));
         } else {
             btnToggleWaitingList.setText("Join Waiting List");
-            btnToggleWaitingList.setBackgroundTintList(getResources().getColorStateList(R.color.green, null));
+            btnToggleWaitingList.setBackgroundTintList(getResources().getColorStateList(R.color.lightGreen, null));
         }
     }
 }
