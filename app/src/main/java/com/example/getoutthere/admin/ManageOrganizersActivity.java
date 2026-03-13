@@ -37,6 +37,7 @@ import java.util.Set;
  * - Currently uses basic UI; polish planned for final sprint.
  */
 
+
 /**
  * Represents the screen that can be used to view event and delete
  * event organizers as required by the administrator.
@@ -100,6 +101,7 @@ public class ManageOrganizersActivity extends AppCompatActivity {
         FirebaseFirestore.getInstance().collection("events").get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     organizerEventsMap.clear(); // Reset map
+                    organizersList.clear();
                     Set<String> uniqueOrgIds = new HashSet<>();
                     for (DocumentSnapshot doc : queryDocumentSnapshots) {
                         Event e = doc.toObject(Event.class);
@@ -111,6 +113,9 @@ public class ManageOrganizersActivity extends AppCompatActivity {
                         }
                     }
 
+
+                    // Tracker to only render when the last profile is fetched
+
                     // Fetch profiles for the unique IDs found
                     for (String id : uniqueOrgIds) {
                         FirebaseFirestore.getInstance().collection("profiles").document(id).get()
@@ -118,7 +123,8 @@ public class ManageOrganizersActivity extends AppCompatActivity {
                                     EntrantProfile profile = doc.toObject(EntrantProfile.class);
                                     if (profile != null) {
                                         organizersList.add(profile);
-                                        render();
+                                            render();
+
                                     }
                                 });
                     }
@@ -131,114 +137,93 @@ public class ManageOrganizersActivity extends AppCompatActivity {
      * Allows for the user to delete the organizer from the database upon
      * clicking the "Delete" button beside an image.
      */
-    private void render(){
-
-        organizersContainer.removeAllViews();  // clearing anything previously present
+    private void render() {
+        organizersContainer.removeAllViews();
 
         for (int index = 0; index < organizersList.size(); index++) {
+            try {
+                EntrantProfile currentProfile = organizersList.get(index);
 
-            EntrantProfile currentProfile = organizersList.get(index);
-            LinearLayout row = new LinearLayout(this);
-            row.setOrientation(LinearLayout.HORIZONTAL);
-            row.setBackgroundColor(0xFF59A91E);
-            row.setGravity(Gravity.CENTER_VERTICAL);
-            row.setPadding(24, 16, 16, 16);
+                // Create the outer container
+                LinearLayout row = new LinearLayout(this);
+                row.setOrientation(LinearLayout.HORIZONTAL);
+                row.setBackgroundColor(0xFF59A91E);
+                row.setGravity(Gravity.CENTER_VERTICAL);
+                row.setPadding(24, 16, 24, 16);
+                LinearLayout.LayoutParams rowParams = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                rowParams.setMargins(0, 0, 0, 12);
+                row.setLayoutParams(rowParams);
 
-            LinearLayout.LayoutParams rowParams = new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT
-            );
-            rowParams.setMargins(0, 0, 0, 8);
-            row.setLayoutParams(rowParams);
 
-            // adding vertical views for name and role (vertical)
-            TextView nameView = new TextView(this);
-            nameView.setText(currentProfile.getName());
-            nameView.setTextColor(0xFFFFFFFF);
-            nameView.setTextSize(16f);
-            nameView.setTypeface(null, android.graphics.Typeface.BOLD);
-            LinearLayout.LayoutParams nameParams = new LinearLayout.LayoutParams(
-                    0, LinearLayout.LayoutParams.WRAP_CONTENT, 2f
-            );
-            nameView.setLayoutParams(nameParams);
+                // Create a neat vertical column
+                LinearLayout textColumn = new LinearLayout(this);
+                textColumn.setOrientation(LinearLayout.VERTICAL);
+                LinearLayout.LayoutParams colParams = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
+                textColumn.setLayoutParams(colParams);
 
-            TextView roleView = new TextView(this);
-            roleView.setText(currentProfile.getRole());
-            roleView.setTextColor(0xFFFFFFFF);
-            roleView.setTextSize(14f);
-            LinearLayout.LayoutParams roleParams = new LinearLayout.LayoutParams(
-                    0, LinearLayout.LayoutParams.WRAP_CONTENT, 2f
-            );
+                // Name + Role Row
+                TextView nameView = new TextView(this);
+                nameView.setText(currentProfile.getName() + " (" + currentProfile.getRole() + ")");
+                nameView.setTextColor(0xFFFFFFFF);
+                nameView.setTextSize(16f);
+                nameView.setTypeface(null, android.graphics.Typeface.BOLD);
+                textColumn.addView(nameView);
+                textColumn.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
 
-            List<Event> myEvents = organizerEventsMap.get(currentProfile.getDeviceId());
-
-            TextView eventsView = new TextView(this);
-            if (myEvents != null && !myEvents.isEmpty()) {
-                StringBuilder eventNames = new StringBuilder();
-                for (Event e : myEvents) {
-                    eventNames.append(e.getName()).append(", ");
+                // Events List to be displayed on a separate row
+                List<Event> myEvents = organizerEventsMap.get(currentProfile.getDeviceId());
+                if (myEvents != null && !myEvents.isEmpty()) {
+                    StringBuilder eventNames = new StringBuilder("Events: ");
+                    for (Event e : myEvents) {
+                        eventNames.append(e.getName()).append(", ");
+                    }
+                    TextView eventsView = new TextView(this);
+                    // Trim trailing comma
+                    String displayStr = eventNames.toString().replaceAll(", $", "");
+                    eventsView.setText(displayStr);
+                    eventsView.setTextColor(0xFFEEEEEE);
+                    eventsView.setTextSize(12f);
+                    eventsView.setPadding(0, 4, 0, 0);
+                    textColumn.addView(eventsView);
                 }
 
+                // Create delete button
+                Button deleteButton = new Button(this);
+                deleteButton.setText("DELETE");
+                deleteButton.setBackgroundColor(0xFFCC0000);
+                deleteButton.setTextColor(0xFFFFFFFF);
+                deleteButton.setPadding(12, 8, 12, 8);
 
-                eventsView.setText("Events: " + eventNames.toString());
-                eventsView.setTextColor(0xFFCCCCCC);
-                eventsView.setTextSize(12f);
-            }
-
-
-            roleView.setLayoutParams(roleParams);
-
-            Button deleteButton = new Button(this);
-            deleteButton.setText("DELETE");
-            deleteButton.setBackgroundColor(0xFFCC0000);
-            deleteButton.setTextColor(0xFFFFFFFF);
-            deleteButton.setPadding(16, 8, 16, 8);
-            LinearLayout.LayoutParams btnParams = new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT
-            );
-            deleteButton.setLayoutParams(btnParams);
-
-            int finalIndex = index;
-            deleteButton.setOnClickListener(v -> {
-                // Get the specific profile for this button
-                EntrantProfile profileToDelete = organizersList.get(finalIndex);
-                //System.out.println("Delete clicked");
-
-                new AlertDialog.Builder(v.getContext())
-                        .setTitle("Delete Organizer Profile")
-                        .setMessage("Are you sure you want to delete '" + profileToDelete.getName() + "'?")
-                        .setPositiveButton("Delete", (dialog, which) -> {
-
-                            //Try deleting document from firebase
-
-                            DeletionUtils.deleteProfileAndCascadeEvents(
-                                profileToDelete.getDeviceId(),
-                                () -> {
-                                    // Success: Remove from list and re-render
-                                    organizersList.remove(profileToDelete);
-                                    render();
-                                    Toast.makeText(v.getContext(), "Deleted profile and associated events", Toast.LENGTH_SHORT).show();
-                                },
-                                () -> {
-                                    // Failure
-                                    Toast.makeText(v.getContext(), "Failed to delete", Toast.LENGTH_SHORT).show();
-                                }
+                // Use the delete object directly for click event listening
+                deleteButton.setOnClickListener(v -> {
+                    new AlertDialog.Builder(v.getContext())
+                            .setTitle("Delete Organizer Profile")
+                            .setMessage("Delete '" + currentProfile.getName() + "' and all their events?")
+                            .setPositiveButton("Delete", (dialog, which) -> {
+                                DeletionUtils.deleteProfileAndCascadeEvents(
+                                        currentProfile.getDeviceId(),
+                                        () -> {
+                                            organizersList.remove(currentProfile);
+                                            render();
+                                            Toast.makeText(this, "Deleted successfully", Toast.LENGTH_SHORT).show();
+                                        },
+                                        () -> Toast.makeText(this, "Delete failed", Toast.LENGTH_SHORT).show()
                                 );
+                            })
+                            .setNegativeButton("Cancel", null)
+                            .show();
+                });
 
-                                        // Redraw the UI so the row disappears
-                                        render();
+                // Assemble views together into an item
+                row.addView(textColumn);
+                row.addView(deleteButton);
 
-                        })
-                        .setNegativeButton("Cancel", null)
-                        .show();
-            });
+                organizersContainer.addView(row);
 
-            row.addView(nameView);
-            row.addView(roleView);
-            row.addView(eventsView);
-            row.addView(deleteButton);
-            organizersContainer.addView(row);
+            } catch (Exception e) {
+                Log.e("Render", "Error rendering profile at index " + index, e);
+            }
         }
     }
 }
