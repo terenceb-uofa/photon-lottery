@@ -21,11 +21,14 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.getoutthere.R;
 import com.example.getoutthere.event.Event;
+import com.example.getoutthere.models.EntrantProfile;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class ManageEventsActivity extends AppCompatActivity {
     //Replaced Dummy Data with unified eventList
@@ -133,7 +136,25 @@ public class ManageEventsActivity extends AppCompatActivity {
             attributesLayout.addView(name);
 
             TextView organizer = new TextView(this);
-            organizer.setText("ORGANIZER: " + currentEvent.getOrganizerId());
+
+            String organizerId = currentEvent.getOrganizerId();
+            FirebaseFirestore.getInstance().collection("profiles")
+                    .whereEqualTo("deviceId", organizerId)
+                    .get()
+                    .addOnSuccessListener(queryDocumentSnapshots -> {
+                        if (!queryDocumentSnapshots.isEmpty()) {
+                            DocumentSnapshot matching_profile = queryDocumentSnapshots.getDocuments().get(0);
+                            String organizerName = matching_profile.getString("name");
+                            organizer.setText("ORGANIZER: " + organizerName);
+                        } else {
+                            organizer.setText("ORGANIZER: Unknown");
+                        }
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.e("Fetch Organizer", "Error finding organizer", e);
+                    });
+
+
             organizer.setTextColor(0xFFFFFFFF);
             organizer.setTextSize(13f);
             organizer.setPadding(0, 0, 12, 0);
@@ -144,7 +165,9 @@ public class ManageEventsActivity extends AppCompatActivity {
             attributesLayout.addView(organizer);
 
             TextView date = new TextView(this);
-            date.setText("DATE: " + currentEvent.getStartDate());
+            SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy", Locale.getDefault());
+            String dateString = format.format(currentEvent.getStartDate().toDate());
+            date.setText("DATE: " + dateString);
             date.setTextColor(0xFFFFFFFF);
             date.setTextSize(13f);
             date.setPadding(0, 0, 12, 0);
