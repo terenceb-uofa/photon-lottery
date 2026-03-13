@@ -17,7 +17,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
 // Tests the functionality of EventDetailsActivityTest
