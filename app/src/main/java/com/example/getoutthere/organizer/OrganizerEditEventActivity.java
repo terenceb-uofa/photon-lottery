@@ -7,6 +7,7 @@ import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.text.TextUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -19,6 +20,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.bumptech.glide.Glide;
 import com.example.getoutthere.R;
 import com.example.getoutthere.event.Event;
 import com.example.getoutthere.repositories.EventRepository;
@@ -29,7 +31,10 @@ import java.util.Locale;
 import java.util.Calendar;
 
 
-public class OrganizerCreateEventActivity extends AppCompatActivity {
+public class OrganizerEditEventActivity extends AppCompatActivity {
+
+    private String eventId;
+    private Event existingEvent;
 
     //Text Views
     private TextView screenTitle;
@@ -136,31 +141,37 @@ public class OrganizerCreateEventActivity extends AppCompatActivity {
         );
 
 
-        uploadPosterButton.setOnClickListener(v ->
-                pickMedia.launch(new PickVisualMediaRequest.Builder()
-                        .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
-                        .build())
-        );
+        eventId = getIntent().getStringExtra("eventId");
 
-        createEventButton.setOnClickListener(v -> saveEvent());
+        if (eventId == null || eventId.isEmpty()) {
+            Toast.makeText(this, "Missing event id", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+
+        createEventButton.setText("Save Changes");
+
+        loadEventForEditing();
+
+        createEventButton.setOnClickListener(v -> updateExistingEvent());
 
         Button backButton = findViewById(R.id.backButton);
         backButton.setOnClickListener(v -> finish());
 
         TextView screenTitle = findViewById(R.id.screenTitle);
-        screenTitle.setText("Create Event");
+        screenTitle.setText("Edit Event");
     }
 
 
-    private void saveEvent() {
+    private void updateExistingEvent() {
+        if (existingEvent == null) {
+            Toast.makeText(this, "Event not loaded yet", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         String name = nameInput.getText().toString().trim();
         String description = descriptionInput.getText().toString().trim();
         String address = addressInput.getText().toString().trim();
-        String startDate = startDateInput.getText().toString().trim();
-        String endDate = endDateInput.getText().toString().trim();
-        String drawDate = drawDateInput.getText().toString().trim();
-        String registrationStart = registrationStartInput.getText().toString().trim();
-        String registrationEnd = registrationEndInput.getText().toString().trim();
         String capacityText = capacityInput.getText().toString().trim();
         String feeText = feeInput.getText().toString().trim();
         String waitlistLimitText = waitlistLimitInput.getText().toString().trim();
@@ -183,31 +194,31 @@ public class OrganizerCreateEventActivity extends AppCompatActivity {
             return;
         }
 
-        if (startDate.isEmpty()) {
+        if (startDateTimestamp == null) {
             startDateInput.setError("Start date is required");
             startDateInput.requestFocus();
             return;
         }
 
-        if (endDate.isEmpty()) {
+        if (endDateTimestamp == null) {
             endDateInput.setError("End date is required");
             endDateInput.requestFocus();
             return;
         }
 
-        if (drawDate.isEmpty()) {
+        if (drawDateTimestamp == null) {
             drawDateInput.setError("Draw date is required");
             drawDateInput.requestFocus();
             return;
         }
 
-        if (registrationStart.isEmpty()) {
+        if (registrationStartTimestamp == null) {
             registrationStartInput.setError("Registration start is required");
             registrationStartInput.requestFocus();
             return;
         }
 
-        if (registrationEnd.isEmpty()) {
+        if (registrationEndTimestamp == null) {
             registrationEndInput.setError("Registration end is required");
             registrationEndInput.requestFocus();
             return;
@@ -270,28 +281,36 @@ public class OrganizerCreateEventActivity extends AppCompatActivity {
             }
         }
 
-        Event event = new Event();
-        event.setName(name);
-        event.setOrganizerId(getCurrentUserId());
-        event.setDescription(description);
-        event.setAddress(address);
-        event.setStartDate(startDateTimestamp);
-        event.setEndDate(endDateTimestamp);
-        event.setDrawDate(drawDateTimestamp);
-        event.setRegistrationStart(registrationStartTimestamp);
-        event.setRegistrationEnd(registrationEndTimestamp);
-        event.setCapacity(capacity);
-        event.setSignupFee(signupFee);
-        event.setWaitlistLimit(waitlistLimit);
+        Event updatedEvent = new Event();
+
+        // keep existing input fields
+        updatedEvent.setId(existingEvent.getId());
+        updatedEvent.setOrganizerId(existingEvent.getOrganizerId());
+        updatedEvent.setCurrentWaitlistCount(existingEvent.getCurrentWaitlistCount());
+        updatedEvent.setPosterUrl(existingEvent.getPosterUrl());
+        updatedEvent.setQrCodeContent(existingEvent.getQrCodeContent());
+
+        // update editable input fields
+        updatedEvent.setName(name);
+        updatedEvent.setDescription(description);
+        updatedEvent.setAddress(address);
+        updatedEvent.setStartDate(startDateTimestamp);
+        updatedEvent.setEndDate(endDateTimestamp);
+        updatedEvent.setDrawDate(drawDateTimestamp);
+        updatedEvent.setRegistrationStart(registrationStartTimestamp);
+        updatedEvent.setRegistrationEnd(registrationEndTimestamp);
+        updatedEvent.setCapacity(capacity);
+        updatedEvent.setSignupFee(signupFee);
+        updatedEvent.setWaitlistLimit(waitlistLimit);
 
         setSavingState(true);
 
-        eventRepository.createEvent(event, selectedImageUri, new EventRepository.RepositoryCallback<String>() {
+        eventRepository.updateEvent(updatedEvent, new EventRepository.RepositoryCallback<Void>() {
             @Override
-            public void onSuccess(String eventId) {
+            public void onSuccess(Void result) {
                 runOnUiThread(() -> {
-                    Toast.makeText(OrganizerCreateEventActivity.this,
-                            "Event created successfully",
+                    Toast.makeText(OrganizerEditEventActivity.this,
+                            "Event updated successfully",
                             Toast.LENGTH_SHORT).show();
                     finish();
                 });
@@ -301,8 +320,8 @@ public class OrganizerCreateEventActivity extends AppCompatActivity {
             public void onFailure(Exception e) {
                 runOnUiThread(() -> {
                     setSavingState(false);
-                    Toast.makeText(OrganizerCreateEventActivity.this,
-                            "Failed to create event: " + e.getMessage(),
+                    Toast.makeText(OrganizerEditEventActivity.this,
+                            "Failed to update event: " + e.getMessage(),
                             Toast.LENGTH_LONG).show();
                 });
             }
@@ -374,5 +393,88 @@ public class OrganizerCreateEventActivity extends AppCompatActivity {
         return Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
     }
 
+
+    private void loadEventForEditing() {
+        eventRepository.getEventById(eventId, new EventRepository.RepositoryCallback<Event>() {
+            @Override
+            public void onSuccess(Event event) {
+                runOnUiThread(() -> {
+                    existingEvent = event;
+
+                    nameInput.setText(event.getName());
+                    descriptionInput.setText(event.getDescription());
+                    addressInput.setText(event.getAddress());
+
+                    if (event.getStartDate() != null) {
+                        startDateTimestamp = event.getStartDate();
+                        startDateInput.setText(formatTimestamp(event.getStartDate()));
+                    }
+
+                    if (event.getEndDate() != null) {
+                        endDateTimestamp = event.getEndDate();
+                        endDateInput.setText(formatTimestamp(event.getEndDate()));
+                    }
+
+                    if (event.getDrawDate() != null) {
+                        drawDateTimestamp = event.getDrawDate();
+                        drawDateInput.setText(formatTimestamp(event.getDrawDate()));
+                    }
+
+                    if (event.getRegistrationStart() != null) {
+                        registrationStartTimestamp = event.getRegistrationStart();
+                        registrationStartInput.setText(formatTimestamp(event.getRegistrationStart()));
+                    }
+
+                    if (event.getRegistrationEnd() != null) {
+                        registrationEndTimestamp = event.getRegistrationEnd();
+                        registrationEndInput.setText(formatTimestamp(event.getRegistrationEnd()));
+                    }
+
+                    capacityInput.setText(String.valueOf(event.getCapacity()));
+                    feeInput.setText(String.valueOf(event.getSignupFee()));
+
+                    if (event.getWaitlistLimit() != null) {
+                        waitlistLimitInput.setText(String.valueOf(event.getWaitlistLimit()));
+                    }
+
+
+                    String posterUrl = event.getPosterUrl();
+                    if (!TextUtils.isEmpty(posterUrl)) {
+                        Glide.with(OrganizerEditEventActivity.this)
+                                .load(posterUrl)
+                                .into(posterPreview);
+                    } else {
+                        posterPreview.setImageResource(android.R.drawable.ic_menu_gallery);
+                    }
+
+                });
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                runOnUiThread(() -> {
+                    Toast.makeText(OrganizerEditEventActivity.this,
+                            "Failed to load event: " + e.getMessage(),
+                            Toast.LENGTH_LONG).show();
+                    finish();
+                });
+            }
+        });
+    }
+
+    private String formatTimestamp(Timestamp timestamp) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(timestamp.toDate());
+
+        return String.format(
+                Locale.getDefault(),
+                "%04d-%02d-%02d %02d:%02d",
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH) + 1,
+                calendar.get(Calendar.DAY_OF_MONTH),
+                calendar.get(Calendar.HOUR_OF_DAY),
+                calendar.get(Calendar.MINUTE)
+        );
+    }
 
 }
