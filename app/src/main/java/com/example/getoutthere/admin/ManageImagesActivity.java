@@ -1,5 +1,4 @@
-<<<<<<< HEAD
-=======
+
 package com.example.getoutthere.admin;
 
 import android.content.Intent;
@@ -49,6 +48,24 @@ public class ManageImagesActivity extends AppCompatActivity {
     private List<Event> eventList = new ArrayList<>();
 
     private LinearLayout imagesContainer;
+
+
+
+    /**
+     * Helper method to clear the posterUrl in Firestore and refresh the UI.
+     * @param event The event whose image is being removed.
+     */
+    private void removeImageUrlFromFirestore(Event event) {
+        FirebaseFirestore.getInstance().collection("events")
+                .document(event.getId())
+                .update("posterUrl", null)
+                .addOnSuccessListener(aVoid -> {
+                    eventList.remove(event);
+                    render();
+                    Toast.makeText(this, "Image record removed", Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e -> Log.e("ManageImages", "Firestore update failed", e));
+    }
 
     /**
      * Initializes the activity and showcases event posters to the
@@ -175,8 +192,35 @@ public class ManageImagesActivity extends AppCompatActivity {
             row.addView(imageView);
             row.addView(deleteButton);
             imagesContainer.addView(row);
+
+            deleteButton.setOnClickListener(v -> {
+                new AlertDialog.Builder(v.getContext())
+                        .setTitle("Delete Event Image")
+                        .setMessage("Are you sure you want to permanently delete the image for '" + currentEvent.getName() + "'?")
+                        .setPositiveButton("Delete", (dialog, which) -> {
+
+                            String imageUrl = currentEvent.getPosterUrl();
+
+                            // Check if it's an actual user image and not Hassan's placeholder URL
+                            if (imageUrl != null && !imageUrl.contains("placeholder-image.png")) {
+                                // Delete from Storage
+                                FirebaseStorage.getInstance().getReferenceFromUrl(imageUrl).delete()
+                                        .addOnCompleteListener(task -> {
+                                // Regardless of storage outcome, clear the link in Firestore
+                                            removeImageUrlFromFirestore(currentEvent);
+                                        });
+                            } else {
+                            // Just clear Firestore if it's already empty or a placeholder
+                                removeImageUrlFromFirestore(currentEvent);
+                            }
+                        })
+                        .setNegativeButton("Cancel", null)
+                        .show();
+            });
         }
     }
 
 }
->>>>>>> 8c6977f9ed1ffa8ebaf98457a7ea5586168b5e9d
+
+
+

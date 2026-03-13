@@ -56,5 +56,5 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-intents:3.5.1")
     implementation("com.google.zxing:core:3.5.4")
     implementation("com.journeyapps:zxing-android-embedded:4.3.0")
-
+    implementation("com.github.bumptech.glide:glide:4.16.0")
 }

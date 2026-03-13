@@ -87,8 +87,7 @@ public class ManageOrganizersActivity extends AppCompatActivity {
         render();
 
     }
-<<<<<<< HEAD
-=======
+
 
     /**
      * Fetches the data from the database and populates the organizersList
@@ -96,7 +95,7 @@ public class ManageOrganizersActivity extends AppCompatActivity {
      * regarding the organizer can be used to render the organizer
      * name onto the screen.
      */
->>>>>>> 8c6977f9ed1ffa8ebaf98457a7ea5586168b5e9d
+
     private void grabData() {
         FirebaseFirestore.getInstance().collection("events").get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
