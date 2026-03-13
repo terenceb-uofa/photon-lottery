@@ -16,23 +16,24 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.getoutthere.R;
 import com.example.getoutthere.models.EntrantProfile;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 
-// To contain and display the information of a single event.
+// Contains the details of an event (eg. name, address, capacity etc.)_
+// Enables functionality to join and leave an event.
 
 public class EventDetailsActivity extends AppCompatActivity {
-
     private TextView eventName, eventAddress, eventDateRange, eventCapacity, eventFee, eventDrawDate;
     private Button btnToggleWaitingList, btnBack;
 
     private String eventId;
-    private Event event;
+    Event event;
     private EntrantProfile entrant;
 
-    private boolean isOnWaitingList = false;
+    boolean isOnWaitingList = false;
 
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -42,6 +43,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_event_details);
 
+        // Handle window insets
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -58,7 +60,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         btnToggleWaitingList = findViewById(R.id.btnToggleWaitingList);
         btnBack = findViewById(R.id.EventDetailsBackButton);
 
-        // Device ID for entrant
+        // Entrant info
         String deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
         entrant = new EntrantProfile();
         entrant.setDeviceId(deviceId);
@@ -71,21 +73,17 @@ public class EventDetailsActivity extends AppCompatActivity {
 
         // Fetch event from Firestore
         db.collection("events").document(eventId).get().addOnSuccessListener(documentSnapshot -> {
-
             if (documentSnapshot.exists()) {
-
                 event = documentSnapshot.toObject(Event.class);
                 event.setId(documentSnapshot.getId());
 
-                // Event name
+                // Set UI
                 eventName.setText(event.getName());
-                eventAddress.setText("Address: " + event.getDescription());
-                eventCapacity.setText("Spots Available: " + event.getCapacity());
-                eventFee.setText("Signup Fee: $" + event.getSignupFee());
+                eventAddress.setText(event.getAddress());
+                eventFee.setText("Signup fee: $" + event.getSignupFee());
 
+                // Check if the event has a poster
                 ImageView eventPoster = findViewById(R.id.EventPoster);
-
-                // Check if the event has a poster URL saved
                 if (event.getPosterUrl() != null && !event.getPosterUrl().isEmpty()) {
                     Glide.with(EventDetailsActivity.this)
                             .load(event.getPosterUrl())
@@ -103,22 +101,16 @@ public class EventDetailsActivity extends AppCompatActivity {
                     eventDateRange.setText(dateRange);
                 }
 
-                // Address
-                eventAddress.setText(event.getAddress());
-
-                // Signup fee
-                eventFee.setText("Signup fee: $" + event.getSignupFee());
-
-                // Spots available
-                eventCapacity.setText(event.getCurrentWaitlistCount() + "/" + event.getCapacity() + " spots available");
-
                 // Draw date
                 if (event.getDrawDate() != null) {
                     String drawStr = new SimpleDateFormat("MM/dd/yyyy").format(event.getDrawDate().toDate());
                     eventDrawDate.setText("Draws on " + drawStr);
                 }
 
-                // Check if user is on waiting list
+                // Spots available
+                updateSpotsUI();
+
+                // Check if user is already on waiting list
                 db.collection("events")
                         .document(eventId)
                         .collection("waitingList")
@@ -131,11 +123,17 @@ public class EventDetailsActivity extends AppCompatActivity {
             }
         });
 
-        // Toggle waiting list
+        // Toggle waiting list button
         btnToggleWaitingList.setOnClickListener(v -> {
             if (event == null) return;
 
             if (!isOnWaitingList) {
+                // If event is full, user cannot join
+                if (event.getCurrentWaitlistCount() >= event.getCapacity()) {
+                    Toast.makeText(EventDetailsActivity.this, "Event is full! Cannot join waiting list.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 // Join waiting list
                 db.collection("events")
                         .document(event.getId())
@@ -148,6 +146,15 @@ public class EventDetailsActivity extends AppCompatActivity {
                         }})
                         .addOnSuccessListener(aVoid -> {
                             isOnWaitingList = true;
+
+                            // Atomically increment in Firestore
+                            db.collection("events")
+                                    .document(event.getId())
+                                    .update("currentWaitlistCount", FieldValue.increment(1));
+
+                            // Update UI locally
+                            event.setCurrentWaitlistCount(event.getCurrentWaitlistCount() + 1);
+                            updateSpotsUI();
                             updateToggleButton();
                             Toast.makeText(EventDetailsActivity.this, "Joined waiting list!", Toast.LENGTH_SHORT).show();
                         })
@@ -161,6 +168,15 @@ public class EventDetailsActivity extends AppCompatActivity {
                         .delete()
                         .addOnSuccessListener(aVoid -> {
                             isOnWaitingList = false;
+
+                            // Atomically decrement in Firestore
+                            db.collection("events")
+                                    .document(event.getId())
+                                    .update("currentWaitlistCount", FieldValue.increment(-1));
+
+                            // Update UI locally
+                            event.setCurrentWaitlistCount(event.getCurrentWaitlistCount() - 1);
+                            updateSpotsUI();
                             updateToggleButton();
                             Toast.makeText(EventDetailsActivity.this, "Left waiting list!", Toast.LENGTH_SHORT).show();
                         })
@@ -169,6 +185,17 @@ public class EventDetailsActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Updates the capacity
+     */
+    void updateSpotsUI() {
+        int spotsAvailable = event.getCapacity() - event.getCurrentWaitlistCount();
+        eventCapacity.setText(spotsAvailable + "/" + event.getCapacity() + " spots available");
+    }
+
+    /**
+     * Updates the join/leave toggle button and color
+     */
     private void updateToggleButton() {
         if (isOnWaitingList) {
             btnToggleWaitingList.setText("Leave Waiting List");

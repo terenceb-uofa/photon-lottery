@@ -1,7 +1,5 @@
 package com.example.getoutthere.organizer;
 
-import android.content.Intent;
-
 import androidx.test.espresso.intent.Intents;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;

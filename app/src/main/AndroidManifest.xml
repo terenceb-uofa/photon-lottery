@@ -12,6 +12,15 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.GetOutThere">
         <activity
+            android:name=".organizer.OrganizerEventDetailsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".organizer.OrganizerWaitlistActivity"
+            android:exported="false" />
+        <activity
+            android:name=".organizer.OrganizerEventListActivity"
+            android:exported="false" />
+        <activity
             android:name=".admin.NotificationLogsActivity"
             android:exported="false" />
         <activity android:name=".entrant.EventHistory"
@@ -75,8 +84,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".organizer.OrganizerEventListActivity" />
-        <activity android:name=".organizer.OrganizerEventDetailsActivity" />
     </application>
 
 </manifest>

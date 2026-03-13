@@ -1,7 +1,8 @@
 package com.example.getoutthere.event;
 
-import java.util.List;
 import com.google.firebase.Timestamp;
+
+// Represents an event within the application.
 
 public class Event {
     private String id;

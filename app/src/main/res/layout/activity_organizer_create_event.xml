@@ -9,16 +9,19 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="24dp">
+        android:padding="24dp"
+        android:paddingBottom="100dp">
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/backButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Back"
+            android:text="⬅️ Back"
+            android:textColor="#FFFFFF"
+            app:backgroundTint="#333333"
+            app:cornerRadius="8dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
-
 
         <TextView
             android:id="@+id/screenTitle"
@@ -28,6 +31,7 @@
             android:textColor="#59A91E"
             android:textSize="36sp"
             android:textStyle="bold"
+            android:layout_marginTop="16dp"
             android:layout_marginBottom="16dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -37,7 +41,7 @@
             android:id="@+id/posterPreview"
             android:layout_width="0dp"
             android:layout_height="180dp"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="16dp"
             android:background="#1E1E1E"
             android:contentDescription="Poster preview"
             android:scaleType="centerCrop"
@@ -239,7 +243,7 @@
                 app:boxStrokeColor="#59A91E"
                 app:boxStrokeWidth="1dp"
                 app:hintTextColor="#59A91E"
-                android:hint="Registration Start">
+                android:hint="Reg. Start">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/registrationStartInput"
@@ -262,7 +266,7 @@
                 app:boxStrokeColor="#59A91E"
                 app:boxStrokeWidth="1dp"
                 app:hintTextColor="#59A91E"
-                android:hint="Registration End">
+                android:hint="Reg. End">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/registrationEndInput"
@@ -351,13 +355,11 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
-            android:layout_marginBottom="24dp"
             android:minHeight="56dp"
             android:text="Create Event"
             android:textColor="#FFFFFF"
             app:backgroundTint="#59A91E"
             app:cornerRadius="8dp"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/waitlistLimitInputLayout" />

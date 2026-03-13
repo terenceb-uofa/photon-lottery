@@ -33,16 +33,32 @@ import java.util.Set;
 
 /**
  * Activity for administrative management of Organizers.
- * Role: Provides UI to view and delete the profiles of organizers from Firebase.
- * Outstanding issues: Currently uses basic UI; polish planned for final sprint.
+ * Outstanding issues:
+ * - Currently uses basic UI; polish planned for final sprint.
  */
 
+/**
+ * Represents the screen that can be used to view event and delete
+ * event organizers as required by the administrator.
+ * * @author Hassan Ali + Terence Bedell
+ * @version 1.0
+ */
 public class ManageOrganizersActivity extends AppCompatActivity {
     private Map<String, List<Event>> organizerEventsMap = new HashMap<>(); // Cache the events organizers own, indexed by organizer
     private List<EntrantProfile> organizersList = new ArrayList<>();
 
     private LinearLayout organizersContainer;
 
+    /**
+     * Initializes the activity and showcases event organizers to the
+     * administrator. Allows the administrator to delete the organizers.
+     * Also creates a button element that allows the user to
+     * return to the admin dashboard.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after being
+     * shut down then this Bundle contains the data it most recently
+     * supplied. Otherwise it is null.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,6 +87,16 @@ public class ManageOrganizersActivity extends AppCompatActivity {
         render();
 
     }
+<<<<<<< HEAD
+=======
+
+    /**
+     * Fetches the data from the database and populates the organizersList
+     * and organizerEventsMap so the data that the event holds
+     * regarding the organizer can be used to render the organizer
+     * name onto the screen.
+     */
+>>>>>>> 8c6977f9ed1ffa8ebaf98457a7ea5586168b5e9d
     private void grabData() {
         FirebaseFirestore.getInstance().collection("events").get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
@@ -100,7 +126,12 @@ public class ManageOrganizersActivity extends AppCompatActivity {
                 });
     }
 
-
+    /**
+     * Renders the data present in the eventList onto the user's screen,
+     * by taking deviceId and using it to find the host name.
+     * Allows for the user to delete the organizer from the database upon
+     * clicking the "Delete" button beside an image.
+     */
     private void render(){
 
         organizersContainer.removeAllViews();  // clearing anything previously present

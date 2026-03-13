@@ -1,4 +1,9 @@
 <resources>
     <string name="app_name">GetOutThere</string>
+    <string name="details">Details</string>
+    <string name="draw_lottery">Draw Lottery</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="lt"><![CDATA[<]]></string>
+    <string name="notify_all_applicants">Notify All Applicants</string>
     <string name="backButton">⬅️ Back</string>
 </resources>

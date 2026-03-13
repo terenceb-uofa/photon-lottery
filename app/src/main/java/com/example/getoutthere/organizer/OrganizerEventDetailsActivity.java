@@ -19,8 +19,14 @@ import com.google.firebase.Timestamp;
 import java.util.Calendar;
 import java.util.Locale;
 
+/**
+ * Activity for organizer to view details of a specific event.
+ * Displays event information such as name, dates, capacity, and poster.
+ * Provides navigation to edit the event, view its QR code, and manage entrants.
+ */
 public class OrganizerEventDetailsActivity extends AppCompatActivity {
 
+    // UI elements for displaying event details
     private TextView nameInput;
     private TextView descriptionInput;
     private TextView addressInput;
@@ -33,14 +39,19 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
     private TextView feeInput;
     private TextView waitlistLimitInput;
 
+    // Buttons for navigation
     private Button backButton;
     private Button editButton;
     private Button buttonQRCode;
     private Button buttonViewWaitlist;
 
+    // Event poster image
     private ImageView posterPreview;
 
+    // Repository for fetching event data
     private EventRepository eventRepository;
+
+    // Event ID passed from OrganizerEventListActivity
     private String eventId;
 
     @Override
@@ -48,6 +59,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_organizer_event_details);
 
+        // Initialize UI elements
         backButton = findViewById(R.id.backButton);
         editButton = findViewById(R.id.editButton);
         buttonQRCode = findViewById(R.id.buttonQRCode);
@@ -70,25 +82,29 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         eventRepository = new EventRepository();
         eventId = getIntent().getStringExtra("eventId");
 
+        // Back button
         backButton.setOnClickListener(v -> finish());
 
+        // Navigate to edit event screen
         editButton.setOnClickListener(v -> {
             Intent intent = new Intent(OrganizerEventDetailsActivity.this, OrganizerEditEventActivity.class);
             intent.putExtra("eventId", eventId);
             startActivity(intent);
         });
 
+        // Navigate to QR code screen
         buttonQRCode.setOnClickListener(v -> {
             Intent intent = new Intent(OrganizerEventDetailsActivity.this, EventQrCodeActivity.class);
             intent.putExtra("eventId", eventId);
             startActivity(intent);
         });
 
-//        buttonViewWaitlist.setOnClickListener(v -> {
-//            Intent intent = new Intent(OrganizerEventDetailsActivity.this, OrganizerWaitlistActivity.class);
-//            intent.putExtra("eventId", eventId);
-//            startActivity(intent);
-//        });
+        // Navigate to waitlist management screen
+        buttonViewWaitlist.setOnClickListener(v -> {
+            Intent intent = new Intent(OrganizerEventDetailsActivity.this, OrganizerWaitlistActivity.class);
+            intent.putExtra("eventId", eventId);
+            startActivity(intent);
+        });
 
         if (eventId == null || eventId.isEmpty()) {
             Toast.makeText(this, "Event ID not found", Toast.LENGTH_SHORT).show();
@@ -99,6 +115,9 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         loadEvent();
     }
 
+    /**
+     * Fetches the event data from Firestore and populates the UI.
+     */
     private void loadEvent() {
         eventRepository.getEventById(eventId, new EventRepository.RepositoryCallback<Event>() {
             @Override
@@ -118,6 +137,11 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Populates the UI with the event details.
+     *
+     * @param event The event object containing all event details.
+     */
     private void populateEventDetails(Event event) {
         nameInput.setText(event.getName() == null ? "" : event.getName());
         descriptionInput.setText("Description: " + (event.getDescription() == null ? "" : event.getDescription()));
@@ -143,8 +167,12 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         }
     }
 
-
-
+    /**
+     * Formats a Firestore Timestamp into a readable date string.
+     *
+     * @param timestamp The Firestore Timestamp to format.
+     * @return A formatted date string in the format "YYYY-MM-DD HH:MM".
+     */
     private String formatTimestamp(Timestamp timestamp) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(timestamp.toDate());
@@ -160,11 +188,13 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         );
     }
 
-    // update event when edited
+    /**
+     * Reloads the event details when the activity resumes.
+     * Ensures the UI is up to date after editing.
+     */
     @Override
     protected void onResume() {
         super.onResume();
-
         if (eventId != null && !eventId.isEmpty()) {
             loadEvent();
         }
