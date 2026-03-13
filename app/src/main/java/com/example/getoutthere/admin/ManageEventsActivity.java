@@ -207,7 +207,12 @@ public class ManageEventsActivity extends AppCompatActivity {
 
             TextView date = new TextView(this);
             SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy", Locale.getDefault());
-            String dateString = format.format(currentEvent.getStartDate().toDate());
+            String dateString;
+            if (currentEvent.getStartDate() != null) {
+                dateString = format.format(currentEvent.getStartDate().toDate());
+            } else {
+                dateString = "No date set";
+            }
             date.setText("DATE: " + dateString);
             date.setTextColor(0xFFFFFFFF);
             date.setTextSize(13f);
