@@ -143,6 +143,7 @@ public class EventDetailsActivity extends AppCompatActivity {
                             put("name", entrant.getName());
                             put("email", entrant.getEmail());
                             put("phone", entrant.getPhoneNumber());
+                            put("status", "waiting");
                         }})
                         .addOnSuccessListener(aVoid -> {
                             isOnWaitingList = true;
