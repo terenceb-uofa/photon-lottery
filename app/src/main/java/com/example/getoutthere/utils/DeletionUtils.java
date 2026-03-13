@@ -5,10 +5,20 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 /**
  * Utility class for handling complex cascade deletions to ensure data integrity.
+ * <p>
+ * Outstanding Issues:
+ * - This method deletes documents individually rather than doing it in a batch.
+ * If the app loses internet connection during the loop, it could result in a
+ * partial deletion state where some events are deleted but the profile remains.
  */
 public class DeletionUtils {
+
     /**
-     * Deletes a profile and all events associated with that organizer.
+     * Deletes a user profile and cascades the deletion to all events associated
+     * with that user (where the user is the organizer).
+     * * @param userId    The unique document ID of the user's profile to be deleted.
+     * @param onSuccess A Runnable callback to execute if the entire deletion process succeeds.
+     * @param onFailure A Runnable callback to execute if any part of the deletion process fails.
      */
     public static void deleteProfileAndCascadeEvents(String userId, Runnable onSuccess, Runnable onFailure) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();

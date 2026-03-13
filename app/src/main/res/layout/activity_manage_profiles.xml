@@ -5,56 +5,55 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#000000"
+    android:background="#121212"
     tools:context=".admin.ManageProfilesActivity">
 
     <TextView
         android:id="@+id/ProfilesTitle"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="#CD59A91E"
-        android:gravity="center"
-        android:padding="16dp"
+        android:layout_marginTop="32dp"
         android:text="All Profiles"
-        android:textColor="#FFFFFF"
-        android:textSize="40sp"
+        android:textColor="#59A91E"
+        android:textSize="36sp"
         android:textStyle="bold"
-        android:layout_marginTop="30dp"
-        android:layout_marginHorizontal="30dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
-        android:id="@+id/ProfilesManagerBackButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="⬅️Back"
-        app:backgroundTint="#CD59A91E"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/profilesScrollView"/>
-
     <ScrollView
         android:id="@+id/profilesScrollView"
-        android:fillViewport="true"
-        android:layout_height="0dp"
         android:layout_width="0dp"
-        android:layout_marginTop="12dp"
-        android:layout_marginBottom="8dp"
+        android:layout_height="0dp"
         android:layout_marginHorizontal="16dp"
-        app:layout_constraintTop_toBottomOf="@id/ProfilesTitle"
+        android:layout_marginTop="24dp"
+        android:layout_marginBottom="16dp"
+        android:fillViewport="true"
         app:layout_constraintBottom_toTopOf="@id/ProfilesManagerBackButton"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintTop_toBottomOf="@id/ProfilesTitle">
 
         <LinearLayout
             android:id="@+id/profilesContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="4dp"/>
+            android:padding="4dp" />
 
     </ScrollView>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/ProfilesManagerBackButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:text="⬅️ Back"
+        android:textColor="#FFFFFF"
+        app:backgroundTint="#333333"
+        app:cornerRadius="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

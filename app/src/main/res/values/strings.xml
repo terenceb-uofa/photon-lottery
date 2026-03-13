@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">GetOutThere</string>
+    <string name="backButton">⬅️ Back</string>
 </resources>

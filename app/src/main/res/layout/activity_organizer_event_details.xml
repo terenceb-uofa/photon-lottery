@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/backButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Back" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <Button
+                android:id="@+id/editButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Edit" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/nameInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Event Name"
+            android:textSize="20sp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="16dp" />
+
+        <ImageView
+            android:id="@+id/posterPreview"
+            android:layout_width="match_parent"
+            android:layout_height="220dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            android:contentDescription="Event Poster"
+            android:src="@android:drawable/ic_menu_gallery" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/startDateInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Start Date:"
+                android:paddingBottom="12dp" />
+
+            <TextView
+                android:id="@+id/endDateInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="End Date:"
+                android:paddingBottom="12dp" />
+
+            <TextView
+                android:id="@+id/addressInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Address:"
+                android:paddingBottom="12dp" />
+
+            <TextView
+                android:id="@+id/feeInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Signup Fee:"
+                android:paddingBottom="12dp" />
+
+            <TextView
+                android:id="@+id/capacityInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Capacity:"
+                android:paddingBottom="12dp" />
+
+            <TextView
+                android:id="@+id/waitlistLimitInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Waitlist Limit:"
+                android:paddingBottom="12dp" />
+
+            <TextView
+                android:id="@+id/drawDateInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Draw Date:"
+                android:paddingBottom="12dp" />
+
+            <TextView
+                android:id="@+id/registrationStartInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Registration Start:"
+                android:paddingBottom="12dp" />
+
+            <TextView
+                android:id="@+id/registrationEndInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Registration End:"
+                android:paddingBottom="12dp" />
+
+            <TextView
+                android:id="@+id/descriptionInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Description:"
+                android:paddingBottom="24dp" />
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/buttonQRCode"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="QR Code" />
+
+            <View
+                android:layout_width="12dp"
+                android:layout_height="wrap_content" />
+
+            <Button
+                android:id="@+id/buttonViewWaitlist"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="View Waitlist" />
+        </LinearLayout>
+
+
+
+    </LinearLayout>
+</ScrollView>

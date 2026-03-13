@@ -18,10 +18,29 @@ import com.example.getoutthere.admin.ManageProfilesActivity;
 import com.example.getoutthere.admin.NotificationLogsActivity;
 import com.example.getoutthere.event.EventListActivity;
 import com.example.getoutthere.organizer.OrganizerCreateEventActivity;
+import com.example.getoutthere.organizer.OrganizerEventListActivity;
 
-// Dashboard for entrant
+/**
+ * Acts as the primary navigation dashboard for Entrant users.
+ * <p>
+ * This serves as a control class that provides a menu interface for entrants
+ * to access various parts of the application, such as viewing events, managing their
+ * profile, and viewing event history.
+ * <p>
+ * Outstanding Issues:
+ * - Many navigation buttons are currently using placeholder intents and redirecting to
+ * incorrect or Admin-level activities instead of their proper Entrant destinations.
+ */
 public class EntrantDashboardActivity extends AppCompatActivity {
 
+    /**
+     * Initializes the dashboard Activity, sets up the user interface, and binds
+     * click listeners to the navigation buttons to launch other activities via Intents.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after being
+     * shut down then this Bundle contains the data it most recently
+     * supplied. Otherwise it is null.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,9 +52,7 @@ public class EntrantDashboardActivity extends AppCompatActivity {
             return insets;
         });
 
-
-        // TODO: Change the buttons so they redirect to the proper activities
-        // TODO: Should redirect to Create Events
+        // Create Events
         Button NavToEventManager = findViewById(R.id.button1);
         NavToEventManager.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -45,7 +62,7 @@ public class EntrantDashboardActivity extends AppCompatActivity {
             }
         });
 
-        // TODO: Should redirect to Notification Board
+        // Notifications
         Button NavToProfileManager = findViewById(R.id.button2);
         NavToProfileManager.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -55,7 +72,7 @@ public class EntrantDashboardActivity extends AppCompatActivity {
             }
         });
 
-        // TODO: Should redirect to Open Events (Events list) [Caleb]
+        // Open Events
         Button NavToEventList = findViewById(R.id.button3);
         NavToEventList.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -65,25 +82,34 @@ public class EntrantDashboardActivity extends AppCompatActivity {
             }
         });
 
-        // TODO: Should redirect to Event History
+        // Event History
         Button NavToOrganizerManager = findViewById(R.id.button4);
         NavToOrganizerManager.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(EntrantDashboardActivity.this, ManageOrganizersActivity.class);
+                Intent intent = new Intent(EntrantDashboardActivity.this, EventHistory.class);
                 startActivity(intent);
             }
         });
 
-        // TODO: Should redirect to User Profile
+        // User Profile
         Button NavToNotificationLogs = findViewById(R.id.button5);
         NavToNotificationLogs.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(EntrantDashboardActivity.this, NotificationLogsActivity.class);
+                Intent intent = new Intent(EntrantDashboardActivity.this, ProfileActivity.class);
                 startActivity(intent);
             }
         });
 
+        // My Events
+        Button btnMyEvents = findViewById(R.id.btnMyEvents);
+        btnMyEvents.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(EntrantDashboardActivity.this, OrganizerEventListActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 }

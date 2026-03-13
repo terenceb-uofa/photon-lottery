@@ -14,6 +14,10 @@
         <activity
             android:name=".admin.NotificationLogsActivity"
             android:exported="false" />
+        <activity android:name=".entrant.EventHistory"
+            android:exported="false" />
+        <activity android:name=".entrant.SignUpActivity"
+            android:exported="false" />
         <activity
             android:name=".admin.ManageOrganizersActivity"
             android:exported="false" />
@@ -38,7 +42,29 @@
         <activity
             android:name=".event.EventListActivity"
             android:exported="false" />
+        <activity
+            android:name=".event.EventDetailsActivity"
+            android:exported="false" />
         <activity android:name=".organizer.OrganizerCreateEventActivity"
+            android:exported="false" />
+        <activity
+            android:name=".organizer.EventQrCodeActivity"
+            android:exported="false" />
+        <activity
+            android:name=".utils.DeepLinkRouterActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:scheme="getoutthere"
+                    android:host="event" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".organizer.OrganizerEditEventActivity"
             android:exported="false" />
         <activity
             android:name=".MainActivity"
@@ -49,6 +75,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".organizer.OrganizerEventListActivity" />
+        <activity android:name=".organizer.OrganizerEventDetailsActivity" />
     </application>
 
 </manifest>

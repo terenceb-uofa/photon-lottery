@@ -46,4 +46,12 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:34.10.0"))
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-firestore:24.9.1")
+    implementation("com.google.firebase:firebase-storage")
+    implementation("com.github.bumptech.glide:glide:4.16.0")
+    testImplementation("junit:junit:4.13.2")
+    testImplementation("org.mockito:mockito-core:5.3.1")
+    androidTestImplementation("androidx.test.espresso:espresso-intents:3.5.1")
+    implementation("com.google.zxing:core:3.5.4")
+    implementation("com.journeyapps:zxing-android-embedded:4.3.0")
+
 }
