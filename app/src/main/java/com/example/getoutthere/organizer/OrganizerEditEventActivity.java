@@ -287,7 +287,7 @@ public class OrganizerEditEventActivity extends AppCompatActivity {
         updatedEvent.setId(existingEvent.getId());
         updatedEvent.setOrganizerId(existingEvent.getOrganizerId());
         updatedEvent.setCurrentWaitlistCount(existingEvent.getCurrentWaitlistCount());
-        updatedEvent.setPosterUrl(existingEvent.getPosterUrl());
+
         updatedEvent.setQrCodeContent(existingEvent.getQrCodeContent());
 
         // update editable input fields
@@ -303,9 +303,13 @@ public class OrganizerEditEventActivity extends AppCompatActivity {
         updatedEvent.setSignupFee(signupFee);
         updatedEvent.setWaitlistLimit(waitlistLimit);
 
+        if (selectedImageUri == null) {
+            updatedEvent.setPosterUrl(existingEvent.getPosterUrl());
+        }
+
         setSavingState(true);
 
-        eventRepository.updateEvent(updatedEvent, new EventRepository.RepositoryCallback<Void>() {
+        eventRepository.updateEvent(updatedEvent, selectedImageUri, new EventRepository.RepositoryCallback<Void>() {
             @Override
             public void onSuccess(Void result) {
                 runOnUiThread(() -> {

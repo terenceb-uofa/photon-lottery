@@ -106,14 +106,34 @@ public class EventRepository {
 
     }
 
-    public void updateEvent(@NonNull Event event, @NonNull RepositoryCallback<Void> callback){
+    public void updateEvent(Event event,
+                            @Nullable Uri posterUri,
+                            @NonNull RepositoryCallback<Void> callback) {
 
-        db.collection("events")
-                .document(event.getId())
-                .set(event)
-                .addOnSuccessListener(unused -> callback.onSuccess(null))
-                .addOnFailureListener(callback::onFailure);
+        if (posterUri != null) {
+            StorageReference posterRef = storageRef.child("event_posters/" + event.getId() + ".jpg");
 
+            posterRef.putFile(posterUri)
+                    .addOnSuccessListener(taskSnapshot ->
+                            posterRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                                event.setPosterUrl(uri.toString());
+
+                                db.collection("events")
+                                        .document(event.getId())
+                                        .set(event)
+                                        .addOnSuccessListener(unused -> callback.onSuccess(null))
+                                        .addOnFailureListener(callback::onFailure);
+                            }).addOnFailureListener(callback::onFailure)
+                    )
+                    .addOnFailureListener(callback::onFailure);
+
+        } else {
+            db.collection("events")
+                    .document(event.getId())
+                    .set(event)
+                    .addOnSuccessListener(unused -> callback.onSuccess(null))
+                    .addOnFailureListener(callback::onFailure);
+        }
     }
 
 

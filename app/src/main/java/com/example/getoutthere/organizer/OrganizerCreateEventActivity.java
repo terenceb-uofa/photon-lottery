@@ -3,6 +3,7 @@ package com.example.getoutthere.organizer;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.Intent;
 import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
@@ -293,6 +294,10 @@ public class OrganizerCreateEventActivity extends AppCompatActivity {
                     Toast.makeText(OrganizerCreateEventActivity.this,
                             "Event created successfully",
                             Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(OrganizerCreateEventActivity.this, OrganizerEventDetailsActivity.class);
+                    intent.putExtra("eventId", eventId);
+                    startActivity(intent);
+
                     finish();
                 });
             }
