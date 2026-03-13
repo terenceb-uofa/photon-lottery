@@ -58,5 +58,7 @@ dependencies {
     implementation("com.journeyapps:zxing-android-embedded:4.3.0")
     implementation("com.github.bumptech.glide:glide:4.16.0")
     androidTestImplementation("org.mockito:mockito-android:5.3.1")
+    androidTestImplementation("androidx.fragment:fragment-testing:1.8.9")
+    debugImplementation("androidx.fragment:fragment-testing-manifest:1.8.9")
 
 }
