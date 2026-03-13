@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.getoutthere.R;
 import com.example.getoutthere.utils.LotteryUtils;
+import com.example.getoutthere.utils.NotificationUtils;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -189,7 +190,8 @@ public class WaitlistFragment extends Fragment {
     }
 
     /**
-     * Sends a notification to all entrants with status "waiting".
+     * Shows a dialog for the organizer to type a message,
+     * then sends a notification to all entrants with status "waiting".
      */
     private void notifyWaitlistEntrants() {
         if (waitlistEntrants.isEmpty()) {
@@ -197,7 +199,39 @@ public class WaitlistFragment extends Fragment {
             return;
         }
 
-        // TODO: Implement actual push notification logic
-        Toast.makeText(getContext(), "Notified " + waitlistEntrants.size() + " waitlist entrants!", Toast.LENGTH_SHORT).show();
+        // Show dialog for organizer to type message
+        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(getContext());
+        builder.setTitle("Send Notification to Waitlist");
+
+        // Input field
+        final android.widget.EditText input = new android.widget.EditText(getContext());
+        input.setHint("Type your message...");
+        builder.setView(input);
+
+        builder.setPositiveButton("Send", (dialog, which) -> {
+            String message = input.getText().toString().trim();
+            if (message.isEmpty()) {
+                Toast.makeText(getContext(), "Message cannot be empty", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // Send notification to each waiting entrant
+            for (Map<String, String> entrant : waitlistEntrants) {
+                String deviceId = entrant.get("deviceId");
+                Map<String, Object> notification = NotificationUtils.buildNotification(message, eventId);
+
+                db.collection("profiles")
+                        .document(deviceId)
+                        .collection("notifications")
+                        .add(notification)
+                        .addOnFailureListener(e ->
+                                Toast.makeText(getContext(), "Failed to send notification: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+            }
+
+            Toast.makeText(getContext(), "Notified " + waitlistEntrants.size() + " waitlist entrants!", Toast.LENGTH_SHORT).show();
+        });
+
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
+        builder.show();
     }
 }
