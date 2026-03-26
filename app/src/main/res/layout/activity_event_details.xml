@@ -37,7 +37,6 @@
                 android:textColor="@color/white"
                 android:textSize="24sp"
                 android:textStyle="bold"
-
                 android:paddingBottom="20dp"/>
 
             <TextView
@@ -83,7 +82,19 @@
                 android:textSize="16sp"
                 android:textColor="@color/white"
                 android:background="@color/grey"
-                android:paddingBottom="24dp"/>
+                android:paddingBottom="16dp"/>
+
+            <TextView
+                android:id="@+id/btnLotteryInfo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="ℹ️ How does the lottery work?"
+                android:textColor="#4DA6FF"
+                android:textSize="14sp"
+                android:paddingBottom="16dp"
+                android:layout_gravity="center_horizontal"
+                android:clickable="true"
+                android:focusable="true"/>
 
             <Button
                 android:id="@+id/btnToggleWaitingList"
