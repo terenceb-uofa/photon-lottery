@@ -152,11 +152,8 @@ public class WaitlistFragment extends Fragment {
                     for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
                         String deviceId = doc.getId();
 
-                        // status code not integrated correctly so,
-                        // If status exists and is not waiting, skip it.
-                        // If status does NOT exist, still include it so old data still works.
                         String status = doc.getString("status");
-                        if (status != null && !status.equals("waiting")) {
+                        if (status == null || !status.equals("Waitlist")) {
                             continue;
                         }
 
@@ -247,7 +244,7 @@ public class WaitlistFragment extends Fragment {
         db.collection("events") // See to see how many spots are taken
                 .document(eventId) //look for event id
                 .collection("waitingList") //get all entrants in waitlist
-                .whereIn("status", java.util.Arrays.asList("invited", "enrolled")) //see if person is invited/enrolled
+                .whereIn("status", java.util.Arrays.asList("Invited", "Enrolled")) //see if person is invited/enrolled
                 .get() //get all entrants
                 .addOnSuccessListener(queryDocumentSnapshots -> {
 
@@ -272,8 +269,7 @@ public class WaitlistFragment extends Fragment {
                                 .document(eventId)
                                 .collection("waitingList")
                                 .document(deviceId)
-                                .update("status", "invited")    // Update status to "invited" in database
-
+                                .update("status", "Invited")    // Update status to "invited" in database
                                 .addOnFailureListener(e ->
                                         Toast.makeText(getContext(), "Failed to update status: " + e.getMessage(), Toast.LENGTH_SHORT).show()); //update fails
                     }
@@ -290,7 +286,7 @@ public class WaitlistFragment extends Fragment {
 
     /**
      * Shows a dialog for the organizer to type a message,
-     * then sends a notification to all entrants with status "waiting".
+     * then sends a notification to all entrants with status "Waitlist".
      */
     private void notifyWaitlistEntrants() {
         if (waitlistEntrants.isEmpty()) {

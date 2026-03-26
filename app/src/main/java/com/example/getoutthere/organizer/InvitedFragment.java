@@ -101,13 +101,13 @@ public class InvitedFragment extends Fragment {
     }
 
     /**
-     * Loads all entrants with status "invited" from Firestore.
+     * Loads all entrants with status "Invited" from Firestore.
      */
     private void loadInvitedEntrants() {
         db.collection("events")
                 .document(eventId)
                 .collection("waitingList")
-                .whereEqualTo("status", "invited")
+                .whereEqualTo("status", "Invited")
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
                     invitedEntrants.clear();
@@ -127,7 +127,7 @@ public class InvitedFragment extends Fragment {
 
     /**
      * Shows a dialog for the organizer to type a message,
-     * then sends a notification to all entrants with status "invited".
+     * then sends a notification to all entrants with status "Invited".
      * US 02.07.02 — Organizer sends notifications to all selected entrants.
      */
     private void notifyInvitedEntrants() {

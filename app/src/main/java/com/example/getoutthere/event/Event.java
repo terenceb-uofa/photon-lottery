@@ -29,8 +29,8 @@ public class Event {
     private Timestamp registrationStart;
     private Timestamp registrationEnd;
 
-    private int capacity;
     private int currentWaitlistCount;
+    private int capacity;
     private Integer waitlistLimit;
 
     private double signupFee;

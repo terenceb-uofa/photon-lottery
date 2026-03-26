@@ -160,9 +160,9 @@ public class EventDetailsActivity extends AppCompatActivity {
                     return;
                 }
 
-                // If event is full, user cannot join
-                if (event.getCurrentWaitlistCount() >= event.getCapacity()) {
-                    Toast.makeText(EventDetailsActivity.this, "Event is full! Cannot join waiting list.", Toast.LENGTH_SHORT).show();
+                // If waitlist is full, user cannot join
+                if (event.getWaitlistLimit() != null && event.getCurrentWaitlistCount() >= event.getWaitlistLimit()) {
+                    Toast.makeText(EventDetailsActivity.this, "Waitlist is full! Cannot join waiting list.", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
@@ -175,6 +175,7 @@ public class EventDetailsActivity extends AppCompatActivity {
                             put("name", entrant.getName());
                             put("email", entrant.getEmail());
                             put("phone", entrant.getPhoneNumber());
+                            put("status", "Waitlist");
                         }})
                         .addOnSuccessListener(aVoid -> {
                             isOnWaitingList = true;
