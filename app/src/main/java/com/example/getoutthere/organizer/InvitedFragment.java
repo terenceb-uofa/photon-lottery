@@ -114,15 +114,64 @@ public class InvitedFragment extends Fragment {
                     for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
                         Map<String, String> entrant = new HashMap<>();
                         entrant.put("deviceId", doc.getId());
-                        entrant.put("name", doc.getString("name"));
-                        entrant.put("email", doc.getString("email"));
-                        entrant.put("phone", doc.getString("phone"));
+                        entrant.put("name", "Loading...");
+                        entrant.put("email", "");
+                        entrant.put("phone", "");
                         invitedEntrants.add(entrant);
+                        int index = invitedEntrants.size() - 1;
+                        loadProfileInfo(doc.getId(), index);
                     }
-                    adapter.updateData(invitedEntrants);
+                    adapter.updateData(new ArrayList<>(invitedEntrants));
                 })
                 .addOnFailureListener(e ->
                         Toast.makeText(getContext(), "Failed to load invited entrants: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+    }
+
+    /**
+     * Fetches the entrant's profile info from Firestore using their device ID.
+     * If a name is found, it replaces the temporary loading text in the RecyclerView.
+     *
+     * @param deviceId the device ID of the entrant whose profile is being loaded
+     * @param index the position in the list where the entrant's info should be updated
+     */
+    private void loadProfileInfo(String deviceId, int index) {
+        db.collection("profiles")
+                .document(deviceId)
+                .get()
+                .addOnSuccessListener(profileDoc -> {
+                    if (index < 0 || index >= invitedEntrants.size()) return;
+                    if (!invitedEntrants.get(index).get("deviceId").equals(deviceId)) return;
+
+                    Map<String, String> entrant = invitedEntrants.get(index);
+
+                    String name = "Unknown user";
+                    String email = "";
+                    String phone = "";
+
+                    if (profileDoc.exists()) {
+                        String fetchedName = profileDoc.getString("name");
+                        String fetchedEmail = profileDoc.getString("email");
+                        String fetchedPhone = profileDoc.getString("phone");
+
+                        if (fetchedName != null && !fetchedName.isEmpty()) name = fetchedName;
+                        if (fetchedEmail != null) email = fetchedEmail;
+                        if (fetchedPhone != null) phone = fetchedPhone;
+                    }
+
+                    entrant.put("name", name);
+                    entrant.put("email", email);
+                    entrant.put("phone", phone);
+
+                    adapter.updateData(new ArrayList<>(invitedEntrants));
+                })
+                .addOnFailureListener(e -> {
+                    if (index < 0 || index >= invitedEntrants.size()) return;
+                    if (!invitedEntrants.get(index).get("deviceId").equals(deviceId)) return;
+                    invitedEntrants.get(index).put("name", "Unknown user");
+                    invitedEntrants.get(index).put("email", "");
+                    invitedEntrants.get(index).put("phone", "");
+                    adapter.updateData(new ArrayList<>(invitedEntrants));
+                });
     }
 
     /**
