@@ -189,6 +189,7 @@ public class WaitlistFragment extends Fragment {
                 .get()
                 .addOnSuccessListener(profileDoc -> {
                     if (index < 0 || index >= waitlistEntrants.size()) return;
+                    if (!waitlistEntrants.get(index).get("deviceId").equals(deviceId)) return;
 
                     Map<String, String> entrant = waitlistEntrants.get(index);
 
@@ -220,6 +221,7 @@ public class WaitlistFragment extends Fragment {
                 })
                 .addOnFailureListener(e -> {
                     if (index < 0 || index >= waitlistEntrants.size()) return;
+                    if (!waitlistEntrants.get(index).get("deviceId").equals(deviceId)) return;
 
                     Map<String, String> entrant = waitlistEntrants.get(index);
                     entrant.put("name", "Unknown user");
