@@ -231,38 +231,61 @@ public class WaitlistFragment extends Fragment {
     }
 
     /**
-     * Randomly samples entrants from the waitlist and updates their status to "invited".
+     * Calculates remaining capacity by checking existing invites/enrollments - randomly looks for replacements from waitlist
      */
     private void drawLottery() {
-        if (waitlistEntrants.isEmpty()) {
+        if (waitlistEntrants.isEmpty()) {       // no entrants on waitlist
             Toast.makeText(getContext(), "No entrants on waitlist", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        if (eventCapacity == 0) {
-            Toast.makeText(getContext(), "Event capacity not loaded yet", Toast.LENGTH_SHORT).show();
+        if (eventCapacity == 0) {       // if cant load capacity
+            Toast.makeText(getContext(), "Event capacity not loaded", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Use LotteryUtils to randomly sample entrants based on event capacity
-        List<Map<String, String>> selected = LotteryUtils.drawLottery(waitlistEntrants, eventCapacity);
+        db.collection("events") // See to see how many spots are taken
+                .document(eventId) //look for event id
+                .collection("waitingList") //get all entrants in waitlist
+                .whereIn("status", java.util.Arrays.asList("invited", "enrolled")) //see if person is invited/enrolled
+                .get() //get all entrants
+                .addOnSuccessListener(queryDocumentSnapshots -> {
 
-        // Update status to "invited" in Firestore for each selected entrant
-        for (Map<String, String> entrant : selected) {
-            String deviceId = entrant.get("deviceId");
-            db.collection("events")
-                    .document(eventId)
-                    .collection("waitingList")
-                    .document(deviceId)
-                    .update("status", "invited")
-                    .addOnFailureListener(e ->
-                            Toast.makeText(getContext(), "Failed to update status: " + e.getMessage(), Toast.LENGTH_SHORT).show());
-        }
+                    int takenSpots = queryDocumentSnapshots.size();
+                    int availableSpots = eventCapacity - takenSpots; //see whos spots are taken
 
-        Toast.makeText(getContext(), selected.size() + " entrants selected!", Toast.LENGTH_SHORT).show();
+                    if (availableSpots <= 0) {
+                        Toast.makeText(getContext(), "All invites have been sent or event is full.", Toast.LENGTH_LONG).show(); // all spots are taken
+                        return;
+                    }
 
-        // Reload list to reflect changes
-        loadWaitlistEntrants();
+                    List<Map<String, String>> selected = LotteryUtils.drawLottery(waitlistEntrants, availableSpots); //  LotteryUtils sampled entrants based ONLY on available spots
+
+                    if (selected.isEmpty()) {
+                        Toast.makeText(getContext(), "No eligible entrants to draw.", Toast.LENGTH_SHORT).show(); // no eligible entrants
+                        return;
+                    }
+
+                    for (Map<String, String> entrant : selected) {
+                        String deviceId = entrant.get("deviceId");
+                        db.collection("events")
+                                .document(eventId)
+                                .collection("waitingList")
+                                .document(deviceId)
+                                .update("status", "invited")    // Update status to "invited" in database
+
+                                .addOnFailureListener(e ->
+                                        Toast.makeText(getContext(), "Failed to update status: " + e.getMessage(), Toast.LENGTH_SHORT).show()); //update fails
+                    }
+
+                    Toast.makeText(getContext(), selected.size() + " replacement entrant(s) selected!", Toast.LENGTH_SHORT).show(); // successfully updated status
+
+                    loadWaitlistEntrants(); //update list
+
+                })
+                .addOnFailureListener(e ->
+                        Toast.makeText(getContext(), "Failed to verify capacity: " + e.getMessage(), Toast.LENGTH_SHORT).show() //verify fails
+                );
     }
 
     /**
