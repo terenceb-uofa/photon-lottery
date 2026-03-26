@@ -270,7 +270,6 @@ public class WaitlistFragment extends Fragment {
                                 .collection("waitingList")
                                 .document(deviceId)
                                 .update("status", "Invited")    // Update status to "invited" in database
-
                                 .addOnFailureListener(e ->
                                         Toast.makeText(getContext(), "Failed to update status: " + e.getMessage(), Toast.LENGTH_SHORT).show()); //update fails
                     }
