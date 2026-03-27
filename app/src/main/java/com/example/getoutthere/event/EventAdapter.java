@@ -14,6 +14,10 @@ import com.example.getoutthere.R;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
+/**
+ * Provides a view for each event in EventListActivity.java, showing event name, draw date
+ * and any images.
+ */
 public class EventAdapter extends ArrayAdapter<Event> {
 
     private Context context;
@@ -25,6 +29,19 @@ public class EventAdapter extends ArrayAdapter<Event> {
         this.events = events;
     }
 
+    /**
+     *
+     * @param position The position of the item within the adapter's data set of the item whose view
+     *        we want.
+     * @param convertView The old view to reuse, if possible. Note: You should check that this view
+     *        is non-null and of an appropriate type before using. If it is not possible to convert
+     *        this view to display the correct data, this method can create a new view.
+     *        Heterogeneous lists can specify their number of view types, so that this View is
+     *        always of the right type (see {@link #getViewTypeCount()} and
+     *        {@link #getItemViewType(int)}).
+     * @param parent The parent that this view will eventually be attached to
+     * @return
+     */
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
@@ -40,10 +57,10 @@ public class EventAdapter extends ArrayAdapter<Event> {
         TextView noImageText = convertView.findViewById(R.id.noImageText);
         TextView eventDrawDate = convertView.findViewById(R.id.eventDrawDate);
 
-        // ✅ Event name (from Firebase)
+        // Event name
         eventName.setText(event.getName());
 
-        // ✅ Draw date (from Firebase)
+        // Draw date
         if (event.getDrawDate() != null) {
             String formattedDate = new SimpleDateFormat("MM/dd/yyyy")
                     .format(event.getDrawDate().toDate());
@@ -52,7 +69,7 @@ public class EventAdapter extends ArrayAdapter<Event> {
             eventDrawDate.setText("Draw Date: N/A");
         }
 
-        // ✅ Image handling (IMPORTANT FIX)
+        // Image handling
         if (event.getPosterUrl() != null && !event.getPosterUrl().isEmpty()) {
 
             Glide.with(context)
@@ -62,7 +79,7 @@ public class EventAdapter extends ArrayAdapter<Event> {
             noImageText.setVisibility(View.GONE);
 
         } else {
-            // Keep image space, but don't load anything
+            // If no image, keeps image space, but doesn't load anything
             eventImage.setImageDrawable(null);
             noImageText.setVisibility(View.VISIBLE);
         }
