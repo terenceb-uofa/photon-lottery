@@ -49,6 +49,9 @@
             android:name=".entrant.EntrantDashboardActivity"
             android:exported="false" />
         <activity
+            android:name=".entrant.EntrantNotificationActivity"
+            android:exported="false" />
+        <activity
             android:name=".event.EventListActivity"
             android:exported="false" />
         <activity

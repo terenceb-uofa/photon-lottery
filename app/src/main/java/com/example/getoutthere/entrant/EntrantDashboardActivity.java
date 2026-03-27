@@ -67,7 +67,7 @@ public class EntrantDashboardActivity extends AppCompatActivity {
         NavToProfileManager.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(EntrantDashboardActivity.this, ManageProfilesActivity.class);
+                Intent intent = new Intent(EntrantDashboardActivity.this, EntrantNotificationActivity.class);
                 startActivity(intent);
             }
         });
