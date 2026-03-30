@@ -12,6 +12,8 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.getoutthere.R;
+import com.example.getoutthere.navigation.NavBottomHelper;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -57,6 +59,9 @@ public class EventListActivity extends AppCompatActivity {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
+
+
+
         });
 
         listView = findViewById(R.id.listOfEvents);
@@ -83,5 +88,9 @@ public class EventListActivity extends AppCompatActivity {
             intent.putExtra("eventId", event.getId());
             startActivity(intent);
         });
+
+        BottomNavigationView bottomNav = findViewById(R.id.bottomNavigation);
+        NavBottomHelper.setupBottomNav(this, bottomNav, R.id.nav_home);
+
     }
 }
