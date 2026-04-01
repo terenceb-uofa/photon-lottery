@@ -13,8 +13,24 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.getoutthere.R;
 
+/**
+ * Allows administrators to view all notifications that have been
+ * sent out to users.
+ * Outstanding Issues:
+ * - This screen has not been implemented in project part 3.
+ */
+
 public class NotificationLogsActivity extends AppCompatActivity {
 
+    /**
+     * Initializes the activity and showcases the notifications that have
+     * been sent to app users. Also creates a button element that allows
+     * the user to return to the admin dashboard.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after being
+     * shut down then this Bundle contains the data it most recently
+     * supplied. Otherwise it is null.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

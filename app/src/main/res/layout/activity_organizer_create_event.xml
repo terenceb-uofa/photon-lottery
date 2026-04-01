@@ -3,41 +3,78 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#121212"
     android:fillViewport="true">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp">
+        android:padding="24dp"
+        android:paddingBottom="100dp">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/backButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="⬅️ Back"
+            android:textColor="#FFFFFF"
+            app:backgroundTint="#333333"
+            app:cornerRadius="8dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/screenTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Create Event"
+            android:textColor="#59A91E"
+            android:textSize="36sp"
+            android:textStyle="bold"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/backButton" />
 
         <ImageView
             android:id="@+id/posterPreview"
             android:layout_width="0dp"
             android:layout_height="180dp"
             android:layout_marginTop="16dp"
-            android:background="#D9D9D9"
+            android:background="#1E1E1E"
             android:contentDescription="Poster preview"
             android:scaleType="centerCrop"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@id/screenTitle" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/uploadPosterButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
+            android:minHeight="56dp"
             android:text="Upload Poster"
+            android:textColor="#FFFFFF"
+            app:backgroundTint="#333333"
+            app:cornerRadius="8dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/posterPreview" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/nameInputLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:hint="Event Name"
+            android:textColorHint="#B0B0B0"
+            app:boxBackgroundColor="#1E1E1E"
+            app:boxStrokeColor="#59A91E"
+            app:boxStrokeWidth="1dp"
+            app:hintTextColor="#59A91E"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/uploadPosterButton">
@@ -46,15 +83,22 @@
                 android:id="@+id/nameInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textColor="#FFFFFF"
                 android:inputType="textCapWords" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/descriptionInputLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             android:hint="Description"
+            android:textColorHint="#B0B0B0"
+            app:boxBackgroundColor="#1E1E1E"
+            app:boxStrokeColor="#59A91E"
+            app:boxStrokeWidth="1dp"
+            app:hintTextColor="#59A91E"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/nameInputLayout">
@@ -65,15 +109,22 @@
                 android:layout_height="wrap_content"
                 android:gravity="top|start"
                 android:inputType="textMultiLine"
+                android:textColor="#FFFFFF"
                 android:minLines="3" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/addressInputLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             android:hint="Address"
+            android:textColorHint="#B0B0B0"
+            app:boxBackgroundColor="#1E1E1E"
+            app:boxStrokeColor="#59A91E"
+            app:boxStrokeWidth="1dp"
+            app:hintTextColor="#59A91E"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/descriptionInputLayout">
@@ -82,6 +133,7 @@
                 android:id="@+id/addressInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textColor="#FFFFFF"
                 android:inputType="textPostalAddress" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -98,10 +150,16 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/startDateInputLayout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:layout_weight="1"
+                android:textColorHint="#B0B0B0"
+                app:boxBackgroundColor="#1E1E1E"
+                app:boxStrokeColor="#59A91E"
+                app:boxStrokeWidth="1dp"
+                app:hintTextColor="#59A91E"
                 android:hint="Start Date">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -109,15 +167,22 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:focusable="false"
+                    android:textColor="#FFFFFF"
                     android:inputType="none" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/endDateInputLayout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_weight="1"
+                android:textColorHint="#B0B0B0"
+                app:boxBackgroundColor="#1E1E1E"
+                app:boxStrokeColor="#59A91E"
+                app:boxStrokeWidth="1dp"
+                app:hintTextColor="#59A91E"
                 android:hint="End Date">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -125,16 +190,23 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:focusable="false"
+                    android:textColor="#FFFFFF"
                     android:inputType="none" />
             </com.google.android.material.textfield.TextInputLayout>
         </LinearLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/drawDateInputLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             android:hint="Draw Date"
+            android:textColorHint="#B0B0B0"
+            app:boxBackgroundColor="#1E1E1E"
+            app:boxStrokeColor="#59A91E"
+            app:boxStrokeWidth="1dp"
+            app:hintTextColor="#59A91E"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/eventDateRow">
@@ -144,9 +216,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:focusable="false"
+                android:textColor="#FFFFFF"
                 android:inputType="none" />
         </com.google.android.material.textfield.TextInputLayout>
-
 
         <LinearLayout
             android:id="@+id/registrationDateRow"
@@ -161,43 +233,63 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/registrationStartInputLayout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:layout_weight="1"
-                android:hint="Registration Start">
+                android:textColorHint="#B0B0B0"
+                app:boxBackgroundColor="#1E1E1E"
+                app:boxStrokeColor="#59A91E"
+                app:boxStrokeWidth="1dp"
+                app:hintTextColor="#59A91E"
+                android:hint="Reg. Start">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/registrationStartInput"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:focusable="false"
+                    android:textColor="#FFFFFF"
                     android:inputType="none" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/registrationEndInputLayout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_weight="1"
-                android:hint="Registration End">
+                android:textColorHint="#B0B0B0"
+                app:boxBackgroundColor="#1E1E1E"
+                app:boxStrokeColor="#59A91E"
+                app:boxStrokeWidth="1dp"
+                app:hintTextColor="#59A91E"
+                android:hint="Reg. End">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/registrationEndInput"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:focusable="false"
+                    android:textColor="#FFFFFF"
                     android:inputType="none" />
             </com.google.android.material.textfield.TextInputLayout>
         </LinearLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/capacityInputLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             android:hint="Capacity"
+            android:textColorHint="#B0B0B0"
+            app:boxBackgroundColor="#1E1E1E"
+            app:boxStrokeColor="#59A91E"
+            app:boxStrokeWidth="1dp"
+            app:hintTextColor="#59A91E"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/registrationDateRow">
@@ -206,15 +298,22 @@
                 android:id="@+id/capacityInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textColor="#FFFFFF"
                 android:inputType="number" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/feeInputLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:hint="Fee"
+            android:hint="Signup Fee"
+            android:textColorHint="#B0B0B0"
+            app:boxBackgroundColor="#1E1E1E"
+            app:boxStrokeColor="#59A91E"
+            app:boxStrokeWidth="1dp"
+            app:hintTextColor="#59A91E"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/capacityInputLayout">
@@ -223,15 +322,22 @@
                 android:id="@+id/feeInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textColor="#FFFFFF"
                 android:inputType="numberDecimal" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/waitlistLimitInputLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             android:hint="Waitlist Limit (Optional)"
+            android:textColorHint="#B0B0B0"
+            app:boxBackgroundColor="#1E1E1E"
+            app:boxStrokeColor="#59A91E"
+            app:boxStrokeWidth="1dp"
+            app:hintTextColor="#59A91E"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/feeInputLayout">
@@ -240,17 +346,20 @@
                 android:id="@+id/waitlistLimitInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textColor="#FFFFFF"
                 android:inputType="number" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/createEventButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:layout_marginBottom="24dp"
+            android:layout_marginTop="32dp"
+            android:minHeight="56dp"
             android:text="Create Event"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:textColor="#FFFFFF"
+            app:backgroundTint="#59A91E"
+            app:cornerRadius="8dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/waitlistLimitInputLayout" />

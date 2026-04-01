@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:padding="12dp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#1E1E1E">
+
+    <!-- Event Name -->
+    <TextView
+        android:id="@+id/eventName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Event Name"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="#FFFFFF"
+        android:paddingBottom="4dp"/>
+
+    <!-- Draw Date -->
+    <TextView
+        android:id="@+id/eventDrawDate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Draw Date"
+        android:textColor="#CCCCCC"
+        android:paddingBottom="8dp"/>
+
+    <!-- Image (ALWAYS TAKES SPACE) -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="180dp">
+
+        <!-- Event Image -->
+        <ImageView
+            android:id="@+id/eventImage"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop" />
+
+        <!-- No Image Text (centered overlay) -->
+        <TextView
+            android:id="@+id/noImageText"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="No pictures available"
+            android:textColor="#AAAAAA"
+            android:gravity="center"
+            android:visibility="gone"/>
+
+    </FrameLayout>
+
+</LinearLayout>

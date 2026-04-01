@@ -1,16 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="#121212"
     android:padding="24dp">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Edit Profile"
-        android:textSize="28sp"
+        android:textColor="#59A91E"
+        android:textSize="32sp"
         android:textStyle="bold"
         android:layout_marginBottom="32dp"/>
 
@@ -19,6 +22,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Full Name"
+        android:textColorHint="#888888"
+        android:textColor="#FFFFFF"
+        android:backgroundTint="#59A91E"
         android:inputType="textPersonName"
         android:minHeight="48dp"
         android:layout_marginBottom="16dp"/>
@@ -28,6 +34,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Email Address"
+        android:textColorHint="#888888"
+        android:textColor="#FFFFFF"
+        android:backgroundTint="#59A91E"
         android:inputType="textEmailAddress"
         android:minHeight="48dp"
         android:layout_marginBottom="16dp"/>
@@ -37,23 +46,34 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Phone Number (Optional)"
+        android:textColorHint="#888888"
+        android:textColor="#FFFFFF"
+        android:backgroundTint="#59A91E"
         android:inputType="phone"
         android:minHeight="48dp"
         android:layout_marginBottom="32dp"/>
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/buttonSaveProfile"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Save Profile"
+        android:textColor="#FFFFFF"
+        app:backgroundTint="#59A91E"
+        app:cornerRadius="8dp"
+        android:minHeight="56dp"
         android:layout_marginBottom="16dp"/>
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/buttonDeleteProfile"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Delete Profile"
-        android:textColor="@android:color/holo_red_dark"
-        android:backgroundTint="#FFCDD2"/>
+        android:textColor="#CF6679"
+        app:backgroundTint="#1E1E1E"
+        app:strokeColor="#CF6679"
+        app:strokeWidth="1dp"
+        app:cornerRadius="8dp"
+        android:minHeight="56dp"/>
 
 </LinearLayout>

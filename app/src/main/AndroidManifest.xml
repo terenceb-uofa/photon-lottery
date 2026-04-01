@@ -12,7 +12,20 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.GetOutThere">
         <activity
+            android:name=".organizer.OrganizerEventDetailsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".organizer.OrganizerWaitlistActivity"
+            android:exported="false" />
+        <activity
+            android:name=".organizer.OrganizerEventListActivity"
+            android:exported="false" />
+        <activity
             android:name=".admin.NotificationLogsActivity"
+            android:exported="false" />
+        <activity android:name=".entrant.EventHistory"
+            android:exported="false" />
+        <activity android:name=".entrant.SignUpActivity"
             android:exported="false" />
         <activity
             android:name=".admin.ManageOrganizersActivity"
@@ -36,9 +49,37 @@
             android:name=".entrant.EntrantDashboardActivity"
             android:exported="false" />
         <activity
+            android:name=".entrant.EntrantNotificationActivity"
+            android:exported="false" />
+        <activity
             android:name=".event.EventListActivity"
             android:exported="false" />
+        <activity
+            android:name=".event.EventDetailsActivity"
+            android:exported="false" />
         <activity android:name=".organizer.OrganizerCreateEventActivity"
+            android:exported="false" />
+        <activity
+            android:name=".organizer.EventQrCodeActivity"
+            android:exported="false" />
+        <activity
+            android:name=".utils.DeepLinkRouterActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:scheme="getoutthere"
+                    android:host="event" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".organizer.OrganizerEditEventActivity"
+            android:exported="false" />
+        <activity
+            android:name=".organizer.EntrantListActivity"
             android:exported="false" />
         <activity
             android:name=".MainActivity"

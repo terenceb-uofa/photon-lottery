@@ -3,6 +3,7 @@ package com.example.getoutthere.organizer;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.Intent;
 import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
@@ -10,6 +11,7 @@ import android.provider.Settings;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -27,8 +29,23 @@ import com.google.firebase.Timestamp;
 import java.util.Locale;
 import java.util.Calendar;
 
-
+/**
+ * Allows organizers to create a new event.
+ * <p>
+ * This activity collects event information from the organizer, including event
+ * details, registration dates, event dates, capacity, fee, and an optional poster image/waitlist limit.
+ * It then saves the event to Firebase and opens the event details screen after creation.
+ * <p>
+ * Outstanding Issues:
+ * - None
+ *
+ * @author Yousaf Cheema
+ * @version 1.0
+ */
 public class OrganizerCreateEventActivity extends AppCompatActivity {
+
+    //Text Views
+    private TextView screenTitle;
 
     // Image Views
     private ImageView posterPreview;
@@ -51,6 +68,8 @@ public class OrganizerCreateEventActivity extends AppCompatActivity {
     private Button uploadPosterButton;
     private Button createEventButton;
 
+    private Button backButton;
+
 
     @Nullable
     private Uri selectedImageUri = null;
@@ -65,6 +84,11 @@ public class OrganizerCreateEventActivity extends AppCompatActivity {
     private Timestamp registrationStartTimestamp;
     private Timestamp registrationEndTimestamp;
 
+    /**
+     * Launches the system image picker so the organizer can select a poster image.
+     * If an image is selected, it is stored and previewed on the screen.
+     * If no image is selected, a message is shown to the user.
+     */
     private final ActivityResultLauncher<PickVisualMediaRequest> pickMedia =
             registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri -> {
                 if (uri != null) {
@@ -76,7 +100,14 @@ public class OrganizerCreateEventActivity extends AppCompatActivity {
             });
 
 
-
+    /**
+     * Initializes the activity, connects the input fields and buttons to the layout,
+     * sets up the date and time pickers, and prepares the create event form.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after being
+     * shut down then this Bundle contains the data it most recently
+     * supplied. Otherwise it is null.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -137,9 +168,18 @@ public class OrganizerCreateEventActivity extends AppCompatActivity {
         );
 
         createEventButton.setOnClickListener(v -> saveEvent());
+
+        Button backButton = findViewById(R.id.backButton);
+        backButton.setOnClickListener(v -> finish());
+
+        TextView screenTitle = findViewById(R.id.screenTitle);
+        screenTitle.setText("Create Event");
     }
 
-
+    /**
+     * Reads all event information entered by the organizer, validates the input, creates an Event object, and saves it to Firebase.
+     * If the event is created successfully, it opens the event details screen.
+     */
     private void saveEvent() {
         String name = nameInput.getText().toString().trim();
         String description = descriptionInput.getText().toString().trim();
@@ -281,6 +321,10 @@ public class OrganizerCreateEventActivity extends AppCompatActivity {
                     Toast.makeText(OrganizerCreateEventActivity.this,
                             "Event created successfully",
                             Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(OrganizerCreateEventActivity.this, OrganizerEventDetailsActivity.class);
+                    intent.putExtra("eventId", eventId);
+                    startActivity(intent);
+
                     finish();
                 });
             }
@@ -289,26 +333,48 @@ public class OrganizerCreateEventActivity extends AppCompatActivity {
             public void onFailure(Exception e) {
                 runOnUiThread(() -> {
                     setSavingState(false);
+                    String errorMessage = e.getMessage();
+                    if (errorMessage.contains("PERMISSION_DENIED")){
+                        errorMessage = "Your Organizer privileges have been revoked. You can no longer create new events.";
+                    }
+
                     Toast.makeText(OrganizerCreateEventActivity.this,
-                            "Failed to create event: " + e.getMessage(),
+                            "Failed to create event: " + errorMessage,
                             Toast.LENGTH_LONG).show();
                 });
             }
         });
     }
 
+    /**
+     * Updates the screen while the event is being saved.
+     * This disables or enables buttons and changes the button text.
+     *
+     * @param isSaving true if the event is currently being saved, false otherwise
+     */
     private void setSavingState(boolean isSaving) {
         createEventButton.setEnabled(!isSaving);
         uploadPosterButton.setEnabled(!isSaving);
         createEventButton.setText(isSaving ? "Saving..." : "Create Event");
     }
 
-
+    /**
+     * Listener interface used to return the Timestamp chosen in the date and time picker.
+     */
     private interface TimestampSelectionListener {
         void onTimestampSelected(Timestamp timestamp);
     }
 
+    /**
+     * Opens a date picker followed by a time picker, then stores the selected
+     * date and time as a Firebase Timestamp and displays it in the chosen input field.
+     *
+     * @param targetInput the input field that will display the selected date and time
+     * @param listener listener used to return the selected Timestamp
+     */
 
+    // Used https://developer.android.com/develop/ui/views/components/pickers as a resource
+    // Used https://www.geeksforgeeks.org/android/datepicker-in-android/ as a resource
     private void showDateTimePicker(EditText targetInput, TimestampSelectionListener listener) {
         Calendar calendar = Calendar.getInstance();
 
@@ -358,6 +424,11 @@ public class OrganizerCreateEventActivity extends AppCompatActivity {
         datePickerDialog.show();
     }
 
+    /**
+     * Gets the current device ID to use as the organizer's user ID.
+     *
+     * @return the Android device ID for the current user
+     */
     private String getCurrentUserId() {
         return Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
     }
