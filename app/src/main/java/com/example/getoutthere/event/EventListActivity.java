@@ -3,6 +3,8 @@ package com.example.getoutthere.event;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 
 import androidx.activity.EdgeToEdge;
@@ -59,7 +61,26 @@ public class EventListActivity extends AppCompatActivity {
             return insets;
         });
 
+
+
         listView = findViewById(R.id.listOfEvents);
+
+        // The following code is from Anthropic, Claude, "Wire up search bar to filter EventListActivity ListView", 2026-04-01
+
+        EditText searchInput = findViewById(R.id.searchInput);
+        Button searchButton = findViewById(R.id.searchButton);
+
+        searchButton.setOnClickListener(v -> {
+            String query = searchInput.getText().toString().toLowerCase().trim();
+            List<Event> filtered = new ArrayList<>();
+            for (Event e : events) {
+                if (e.getName().toLowerCase().contains(query) || e.getDescription().toLowerCase().contains(query)) {
+                    filtered.add(e);
+                }
+            }
+            EventAdapter filteredAdapter = new EventAdapter(this, filtered);
+            listView.setAdapter(filteredAdapter);
+        });
 
         // Fetch events from Firestore
         db.collection("events").get().addOnSuccessListener(queryDocumentSnapshots -> {
