@@ -231,6 +231,7 @@ public class WaitlistFragment extends Fragment {
 
     /**
      * Calculates remaining capacity by checking existing invites/enrollments - randomly looks for replacements from waitlist
+     * Sends notifications to participants if selected/not selected
      */
     private void drawLottery() {
         if (waitlistEntrants.isEmpty()) {       // no entrants on waitlist
@@ -243,60 +244,83 @@ public class WaitlistFragment extends Fragment {
             return;
         }
 
-        db.collection("events") // See to see how many spots are taken
-                .document(eventId) //look for event id
-                .collection("waitingList") //get all entrants in waitlist
-                .whereIn("status", java.util.Arrays.asList("Invited", "Enrolled")) //see if person is invited/enrolled
-                .get() //get all entrants
-                .addOnSuccessListener(queryDocumentSnapshots -> {
+        db.collection("events").document(eventId).get().addOnSuccessListener(eventSnapshot -> {
+            String eventName = eventSnapshot.getString("name");
+            if (eventName == null) eventName = "the event";
+            final String finalEventName = eventName;
 
-                    int takenSpots = queryDocumentSnapshots.size();
-                    int availableSpots = eventCapacity - takenSpots; //see whos spots are taken
+            db.collection("events") // See to see how many spots are taken
+                    .document(eventId) // look for event id
+                    .collection("waitingList") // get all entrants in waitlist
+                    .whereIn("status", java.util.Arrays.asList("Invited", "Enrolled")) //see if person is invited/enrolled
+                    .get() // get all entrants
+                    .addOnSuccessListener(queryDocumentSnapshots -> {
 
-                    if (availableSpots <= 0) {
-                        Toast.makeText(getContext(), "All invites have been sent or event is full.", Toast.LENGTH_LONG).show(); // all spots are taken
-                        return;
-                    }
+                        int takenSpots = queryDocumentSnapshots.size();
+                        int availableSpots = eventCapacity - takenSpots; // see whose spots are taken
 
-                    List<Map<String, String>> selected = LotteryUtils.drawLottery(waitlistEntrants, availableSpots); //  LotteryUtils sampled entrants based ONLY on available spots
+                        if (availableSpots <= 0) {
+                            Toast.makeText(getContext(), "All invites have been sent or event is full.", Toast.LENGTH_LONG).show(); // all spots are taken
+                            return;
+                        }
 
-                    if (selected.isEmpty()) {
-                        Toast.makeText(getContext(), "No eligible entrants to draw.", Toast.LENGTH_SHORT).show(); // no eligible entrants
-                        return;
-                    }
+                        List<Map<String, String>> selected = LotteryUtils.drawLottery(waitlistEntrants, availableSpots); //  LotteryUtils sampled entrants based ONLY on available spots
 
-                    for (Map<String, String> entrant : selected) {
-                        String deviceId = entrant.get("deviceId");
+                        if (selected.isEmpty()) {
+                            Toast.makeText(getContext(), "No eligible entrants to draw.", Toast.LENGTH_SHORT).show(); // no eligible entrants
+                            return;
+                        }
 
-                        // Update status to "Invited"
-                        db.collection("events")
-                                .document(eventId)
-                                .collection("waitingList")
-                                .document(deviceId)
-                                .update("status", "Invited")
-                                .addOnFailureListener(e ->
-                                        Toast.makeText(getContext(), "Failed to update status: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                        // Create a set of winner IDs
+                        java.util.Set<String> winnerIds = new java.util.HashSet<>();
+                        for (Map<String, String> winner : selected) {
+                            winnerIds.add(winner.get("deviceId"));
+                        }
 
-                        // Send the specific "lottery_invite" notification to the winner
-                        HashMap<String, Object> notificationData = new HashMap<>();
-                        notificationData.put("eventId", eventId);
-                        notificationData.put("message", "Congratulations! You have been selected from the waitlist. Please accept or decline.");
-                        notificationData.put("type", "lottery_invite");
+                        // Go through all entrants on the waitlist
+                        for (Map<String, String> entrant : waitlistEntrants) {
+                            String deviceId = entrant.get("deviceId");
+                            boolean won = winnerIds.contains(deviceId);
 
-                        db.collection("profiles")
-                                .document(deviceId)
-                                .collection("notifications")
-                                .add(notificationData);
-                    }
+                            // Update status to "Invited" or "Not Selected"
+                            String newStatus = won ? "Invited" : "Not Selected";
+                            db.collection("events")
+                                    .document(eventId)
+                                    .collection("waitingList")
+                                    .document(deviceId)
+                                    .update("status", newStatus)
+                                    .addOnFailureListener(e ->
+                                            Toast.makeText(getContext(), "Failed to update status: " + e.getMessage(), Toast.LENGTH_SHORT).show());
 
-                    Toast.makeText(getContext(), selected.size() + " replacement entrant(s) selected!", Toast.LENGTH_SHORT).show(); // successfully updated status
 
-                    loadWaitlistEntrants(); //update list
+                            // Send the specific "lottery_invite" notification to the winner
+                            HashMap<String, Object> notificationData = new HashMap<>();
+                            notificationData.put("eventId", eventId);
 
-                })
-                .addOnFailureListener(e ->
-                        Toast.makeText(getContext(), "Failed to verify capacity: " + e.getMessage(), Toast.LENGTH_SHORT).show() //verify fails
-                );
+                            if (won) {
+                                notificationData.put("message", "Congratulations! You were selected for " + finalEventName + ". Please accept or decline.");
+                                notificationData.put("type", "lottery_invite");
+                            } else {
+                                notificationData.put("message", "Sorry, you were not selected for " + finalEventName + ".");
+                                notificationData.put("type", "lottery_loss");
+                            }
+
+                            // Send notification to entrant profiles
+                            db.collection("profiles")
+                                    .document(deviceId)
+                                    .collection("notifications")
+                                    .add(notificationData);
+                        }
+
+                        Toast.makeText(getContext(), selected.size() + " replacement entrant(s) selected!", Toast.LENGTH_SHORT).show(); // successfully updated status
+                        loadWaitlistEntrants(); //update list
+
+                    })
+                    .addOnFailureListener(e ->
+                            Toast.makeText(getContext(), "Failed to verify capacity: " + e.getMessage(), Toast.LENGTH_SHORT).show() //verify fails
+                    );
+        });
+
     }
 
     /**

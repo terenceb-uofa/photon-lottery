@@ -87,7 +87,8 @@ public class EventHistory extends AppCompatActivity {
                                 .addOnSuccessListener(waitlistDoc -> {
                                     if (waitlistDoc.exists()) {
                                         // User is on this waitlist! Add it to the list view
-                                        historyDisplayList.add(event.getName() + " - Status: Waiting List");
+                                        String status = waitlistDoc.getString("status");
+                                        historyDisplayList.add(event.getName() + " - Status: " + status);
                                         adapter.notifyDataSetChanged();
                                     }
                                 });
