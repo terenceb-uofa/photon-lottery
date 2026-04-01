@@ -190,7 +190,7 @@ public class ManageOrganizersActivity extends AppCompatActivity {
 
                 // Create delete button
                 Button deleteButton = new Button(this);
-                deleteButton.setText("DELETE");
+                deleteButton.setText("BAN");
                 deleteButton.setBackgroundColor(0xFFCC0000);
                 deleteButton.setTextColor(0xFFFFFFFF);
                 deleteButton.setPadding(12, 8, 12, 8);
@@ -198,17 +198,17 @@ public class ManageOrganizersActivity extends AppCompatActivity {
                 // Use the delete object directly for click event listening
                 deleteButton.setOnClickListener(v -> {
                     new AlertDialog.Builder(v.getContext())
-                            .setTitle("Delete Organizer Profile")
-                            .setMessage("Delete '" + currentProfile.getName() + "' and all their events?")
+                            .setTitle("Ban Organizer")
+                            .setMessage("Ban '" + currentProfile.getName() + "'? This will delete all their events but keep their entrant profile")
                             .setPositiveButton("Delete", (dialog, which) -> {
-                                DeletionUtils.deleteProfileAndCascadeEvents(
+                                DeletionUtils.banOrganizerAndCascadeEvents(
                                         currentProfile.getDeviceId(),
                                         () -> {
                                             organizersList.remove(currentProfile);
                                             render();
-                                            Toast.makeText(this, "Deleted successfully", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(this, "Organizer banned and events Removed", Toast.LENGTH_SHORT).show();
                                         },
-                                        () -> Toast.makeText(this, "Delete failed", Toast.LENGTH_SHORT).show()
+                                        () -> Toast.makeText(this, "Ban failed", Toast.LENGTH_SHORT).show()
                                 );
                             })
                             .setNegativeButton("Cancel", null)

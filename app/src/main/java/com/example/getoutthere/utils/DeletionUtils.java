@@ -38,4 +38,31 @@ public class DeletionUtils {
                 })
                 .addOnFailureListener(e -> onFailure.run());
     }
+
+
+    /**
+     * Revokes the Organizer status of a profile, and cascades the deletion of all events associated.
+     * * @param userId    The unique document ID of the organizer's profile to be revoked.
+     * @param onSuccess A Runnable callback to execute if the entire deletion process succeeds.
+     * @param onFailure A Runnable callback to execute if any part of the deletion process fails.
+     */
+    public static void banOrganizerAndCascadeEvents(String userId, Runnable onSuccess, Runnable onFailure) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        //  Disable their ability to organize in their profile
+        db.collection("profiles").document(userId)
+                .update("organizingEnabled", false) // This is the new "Ban" flag
+                .addOnSuccessListener(aVoid -> {
+
+                    // Find and delete all events they own (The Cascade)
+                    db.collection("events").whereEqualTo("organizerId", userId).get()
+                            .addOnSuccessListener(queryDocumentSnapshots -> {
+                                for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
+                                    db.collection("events").document(doc.getId()).delete();
+                                }
+                                onSuccess.run();
+                            })
+                            .addOnFailureListener(e -> onFailure.run());
+                })
+                .addOnFailureListener(e -> onFailure.run());
+    }
 }
