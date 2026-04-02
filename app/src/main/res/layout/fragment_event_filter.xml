@@ -1,101 +1,143 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- The following layout is from Anthropic, Claude, "Add a filter button fragment to EventListActivity", 2026-04-01 -->
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:background="#1E1E1E"
-    android:padding="24dp">
+    android:padding="24dp"
+    android:background="#1E1E1E">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Filter Events"
         android:textColor="#59A91E"
-        android:textSize="20sp"
+        android:textSize="22sp"
         android:textStyle="bold"
-        android:layout_marginBottom="16dp"/>
+        android:layout_marginBottom="20dp"/>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Category"
-        android:textColor="#FFFFFF"
-        android:textSize="14sp"
-        android:layout_marginBottom="8dp"/>
-
-    <Spinner
-        android:id="@+id/spinnerCategory"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/filterEventTypeLayout"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/search_input_background"
-        android:padding="8dp"
-        android:popupBackground="#1E1E1E"
-        android:layout_marginBottom="16dp"/>
+        android:layout_marginBottom="12dp"
+        android:hint="Event Type"
+        android:textColorHint="#B0B0B0"
+        app:boxBackgroundColor="#1E1E1E"
+        app:boxStrokeColor="#59A91E"
+        app:hintTextColor="#59A91E">
 
-    <TextView
-        android:layout_width="wrap_content"
+        <AutoCompleteTextView
+            android:id="@+id/filterEventTypeInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#FFFFFF"
+            android:inputType="none"
+            android:focusable="false"
+            android:cursorVisible="false"
+            android:saveEnabled="false"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/filterMinCapacityLayout"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Date Range"
-        android:textColor="#FFFFFF"
-        android:textSize="14sp"
-        android:layout_marginBottom="8dp"/>
+        android:layout_marginBottom="12dp"
+        android:hint="Minimum Capacity"
+        android:textColorHint="#B0B0B0"
+        app:boxBackgroundColor="#1E1E1E"
+        app:boxStrokeColor="#59A91E"
+        app:hintTextColor="#59A91E">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/filterMinCapacityInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#FFFFFF"
+            android:inputType="number"/>
+    </com.google.android.material.textfield.TextInputLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginBottom="16dp">
+        android:layout_marginBottom="24dp"
+        android:weightSum="2">
 
-        <Button
-            android:id="@+id/btnStartDate"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/filterMinStartDateLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Start Date"
-            android:textColor="#FFFFFF"
-            android:backgroundTint="#2A2A2A"
-            android:layout_marginEnd="8dp"/>
+            android:layout_marginEnd="8dp"
+            android:hint="Start Date From"
+            android:textColorHint="#B0B0B0"
+            app:boxBackgroundColor="#1E1E1E"
+            app:boxStrokeColor="#59A91E"
+            app:hintTextColor="#59A91E">
 
-        <Button
-            android:id="@+id/btnEndDate"
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/filterMinStartDateInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#FFFFFF"
+                android:focusable="false"
+                android:inputType="none"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/filterMaxStartDateLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="End Date"
-            android:textColor="#FFFFFF"
-            android:backgroundTint="#2A2A2A"/>
+            android:layout_marginStart="8dp"
+            android:hint="Start Date To"
+            android:textColorHint="#B0B0B0"
+            app:boxBackgroundColor="#1E1E1E"
+            app:boxStrokeColor="#59A91E"
+            app:hintTextColor="#59A91E">
 
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/filterMaxStartDateInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#FFFFFF"
+                android:focusable="false"
+                android:inputType="none"/>
+        </com.google.android.material.textfield.TextInputLayout>
     </LinearLayout>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Location"
-        android:textColor="#FFFFFF"
-        android:textSize="14sp"
-        android:layout_marginBottom="8dp"/>
-
-    <EditText
-        android:id="@+id/filterLocation"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Enter location..."
-        android:textColor="#FFFFFF"
-        android:textColorHint="#888888"
-        android:background="@drawable/search_input_background"
-        android:paddingHorizontal="16dp"
-        android:paddingVertical="12dp"
-        android:inputType="text"
-        android:layout_marginBottom="24dp"/>
+        android:orientation="horizontal"
+        android:weightSum="2">
 
-    <Button
-        android:id="@+id/btnApplyFilter"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Apply Filters"
-        android:textColor="#FFFFFF"
-        android:backgroundTint="#59A91E"/>
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/filterClearButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginEnd="8dp"
+            android:text="Clear"
+            android:textColor="#FFFFFF"
+            app:backgroundTint="#333333"
+            app:cornerRadius="8dp"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/filterApplyButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="8dp"
+            android:text="Apply"
+            android:textColor="#FFFFFF"
+            app:backgroundTint="#59A91E"
+            app:cornerRadius="8dp"/>
+    </LinearLayout>
 
 </LinearLayout>

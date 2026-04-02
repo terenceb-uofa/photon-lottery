@@ -2,7 +2,6 @@ package com.example.getoutthere.event;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -15,7 +14,6 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.getoutthere.R;
-import com.example.getoutthere.event.EventAdapter;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -43,14 +41,14 @@ public class EventListActivity extends AppCompatActivity {
     private List<Event> events = new ArrayList<>();
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-    /**
-     * Initializes the Activity, fetches the collection of events from Firestore,
-     * maps them to the local lists, and binds the data to the ListView via an ArrayAdapter.
-     *
-     * @param savedInstanceState If the activity is being re-initialized after previously being
-     * shut down then this Bundle contains the data it most recently
-     * supplied. Otherwise it is null.
-     */
+    // Active filters
+    private String activeEventType = null;
+    private int activeMinCapacity = 0;
+    private long activeMinStartDate = 0;
+    private long activeMaxStartDate = Long.MAX_VALUE;
+
+    final List<Event>[] displayedEvents = new List[]{new ArrayList<>()};
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,73 +60,96 @@ public class EventListActivity extends AppCompatActivity {
             return insets;
         });
 
-
-
         listView = findViewById(R.id.listOfEvents);
 
         // The following code is from Anthropic, Claude, "Wire up search bar to filter EventListActivity ListView", 2026-04-01
-
         EditText searchInput = findViewById(R.id.searchInput);
         Button searchButton = findViewById(R.id.searchButton);
 
-        // The following code is from Anthropic, Claude, "Fix event click after search returning wrong event in EventListActivity", 2026-04-02
-        final List<Event>[] displayedEvents = new List[]{events};
-
         searchButton.setOnClickListener(v -> {
             String query = searchInput.getText().toString().toLowerCase().trim();
-            List<Event> filtered = new ArrayList<>();
-            for (Event e : events) {
-                if (e.getName().toLowerCase().contains(query) || e.getDescription().toLowerCase().contains(query)) {
-                    filtered.add(e);
-                }
-            }
-            displayedEvents[0] = filtered;
-            EventAdapter filteredAdapter = new EventAdapter(this, filtered);
-            listView.setAdapter(filteredAdapter);
+            applyFiltersAndSearch(query);
         });
 
-
-//        // The following code is from Anthropic, Claude, "Add a filter button fragment to EventListActivity", 2026-04-01
-//        ImageButton filterButton = findViewById(R.id.filterButton);
-//        filterButton.setOnClickListener(v -> {
-//            EventFilterFragment filterFragment = new EventFilterFragment();
-//            filterFragment.setFilterListener((category, startDate, endDate, location) -> {
-//                // Filter your events list here
-//                List<Event> filtered = new ArrayList<>(events);
-//
-//                if (!category.equals("All")) {
-//                    filtered.removeIf(e -> !e.getCategory().equalsIgnoreCase(category));
-//                }
-//                if (!location.isEmpty()) {
-//                    filtered.removeIf(e -> !e.getAddress().toLowerCase().contains(location.toLowerCase()));
-//                }
-//
-//                EventAdapter filteredAdapter = new EventAdapter(this, filtered);
-//                listView.setAdapter(filteredAdapter);
-//            });
-//            filterFragment.show(getSupportFragmentManager(), "EventFilterFragment");
-//        });
+        // The following code is from Anthropic, Claude, "Add filter fragment with eventType, minCapacity, and date range to EventListActivity", 2026-04-02
+        ImageButton filterButton = findViewById(R.id.filterButton);
+        filterButton.setOnClickListener(v -> {
+            EventFilterFragment filterFragment = new EventFilterFragment();
+            filterFragment.setFilterListener((eventType, minCapacity, minStartDate, maxStartDate) -> {
+                activeEventType = eventType;
+                activeMinCapacity = minCapacity;
+                activeMinStartDate = minStartDate;
+                activeMaxStartDate = maxStartDate;
+                String query = searchInput.getText().toString().toLowerCase().trim();
+                applyFiltersAndSearch(query);
+            });
+            filterFragment.show(getSupportFragmentManager(), "EventFilterFragment");
+        });
 
         // Fetch events from Firestore
         db.collection("events").get().addOnSuccessListener(queryDocumentSnapshots -> {
             events.clear();
-
             for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
                 Event event = doc.toObject(Event.class);
                 event.setId(doc.getId());
                 events.add(event);
             }
-
-            EventAdapter adapter = new EventAdapter(this, events);
-            listView.setAdapter(adapter);
+            applyFiltersAndSearch("");
         });
 
-        // On click, go to EventDetailsActivity
+        // The following code is from Anthropic, Claude, "Fix event click after search returning wrong event in EventListActivity", 2026-04-02
         listView.setOnItemClickListener((parent, view, position, id) -> {
             Event event = displayedEvents[0].get(position);
             Intent intent = new Intent(EventListActivity.this, EventDetailsActivity.class);
             intent.putExtra("eventId", event.getId());
             startActivity(intent);
         });
+    }
+
+    /**
+     * Applies all active filters and the current search query together against
+     * the full events list, then updates the ListView adapter with the results.
+     *
+     * @param query the current search string entered by the user
+     */
+    // The following code is from Anthropic, Claude, "Add filter fragment with eventType, minCapacity, and date range to EventListActivity", 2026-04-02
+    private void applyFiltersAndSearch(String query) {
+        List<Event> result = new ArrayList<>();
+
+        for (Event e : events) {
+            // Search filter
+            if (!query.isEmpty()) {
+                if (!e.getName().toLowerCase().contains(query) &&
+                        !e.getDescription().toLowerCase().contains(query)) {
+                    continue;
+                }
+            }
+
+            // Event type filter
+            if (activeEventType != null && !activeEventType.equals("All")) {
+                if (e.getEventType() == null || !e.getEventType().equalsIgnoreCase(activeEventType)) {
+                    continue;
+                }
+            }
+
+            // Minimum capacity filter
+            if (e.getCapacity() < activeMinCapacity) {
+                continue;
+            }
+
+            // Start date range filter
+            if (e.getStartDate() != null) {
+                long startMillis = e.getStartDate().toDate().getTime();
+                if (startMillis < activeMinStartDate || startMillis > activeMaxStartDate) {
+                    continue;
+                }
+            }
+
+            result.add(e);
+        }
+
+        displayedEvents[0] = result;
+        EventAdapter adapter = new EventAdapter(this, result);
+        listView.setAdapter(adapter);
     }
 }
