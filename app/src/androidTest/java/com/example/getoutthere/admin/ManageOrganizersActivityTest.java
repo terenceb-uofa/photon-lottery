@@ -31,10 +31,10 @@ public class ManageOrganizersActivityTest {
         try { Thread.sleep(2000); } catch (InterruptedException e) { }
 
         // Click first "DELETE" button
-        onView(withIndex(withText("DELETE"), 0)).perform(click());
+        onView(withIndex(withText("BAN"), 0)).perform(click());
 
         // Verify correct UI display for Organizers specifically
-        onView(withText("Delete Organizer Profile")).check(matches(isDisplayed()));
+        onView(withText("Ban Organizer")).check(matches(isDisplayed()));
 
         // Verify the UI state remains preserved for the activity
         onView(withText("Cancel")).perform(click());

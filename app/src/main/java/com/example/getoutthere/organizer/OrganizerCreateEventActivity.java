@@ -353,8 +353,13 @@ public class OrganizerCreateEventActivity extends AppCompatActivity {
             public void onFailure(Exception e) {
                 runOnUiThread(() -> {
                     setSavingState(false);
+                    String errorMessage = e.getMessage();
+                    if (errorMessage.contains("PERMISSION_DENIED")){
+                        errorMessage = "Your Organizer privileges have been revoked. You can no longer create new events.";
+                    }
+
                     Toast.makeText(OrganizerCreateEventActivity.this,
-                            "Failed to create event: " + e.getMessage(),
+                            "Failed to create event: " + errorMessage,
                             Toast.LENGTH_LONG).show();
                 });
             }
