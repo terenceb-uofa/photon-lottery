@@ -68,6 +68,10 @@ public class WaitlistFragment extends Fragment {
         return fragment;
     }
 
+    /**
+     * Initializes the fragment, retrieves the event ID argument, and sets up Firestore.
+     * @param savedInstanceState the saved instance state bundle
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,6 +81,13 @@ public class WaitlistFragment extends Fragment {
         db = FirebaseFirestore.getInstance();
     }
 
+    /**
+     * Inflates the fragment layout, initializes UI elements, and sets up the RecyclerView.
+     * @param inflater the layout inflater
+     * @param container the parent view group
+     * @param savedInstanceState the saved instance state bundle
+     * @return the inflated view
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -102,6 +113,9 @@ public class WaitlistFragment extends Fragment {
         return view;
     }
 
+    /**
+     * Reloads event capacity and waitlist entrants each time the tab becomes visible.
+     */
     @Override
     public void onResume() {
         super.onResume();
@@ -282,16 +296,16 @@ public class WaitlistFragment extends Fragment {
                             String deviceId = entrant.get("deviceId");
                             boolean won = winnerIds.contains(deviceId);
 
-                            // Update status to "Invited" or "Not Selected"
-                            String newStatus = won ? "Invited" : "Not Selected";
-                            db.collection("events")
-                                    .document(eventId)
-                                    .collection("waitingList")
-                                    .document(deviceId)
-                                    .update("status", newStatus)
-                                    .addOnFailureListener(e ->
-                                            Toast.makeText(getContext(), "Failed to update status: " + e.getMessage(), Toast.LENGTH_SHORT).show());
-
+                            // Update status to "Invited"
+                            if (won) {
+                                db.collection("events")
+                                        .document(eventId)
+                                        .collection("waitingList")
+                                        .document(deviceId)
+                                        .update("status", "Invited")
+                                        .addOnFailureListener(e ->
+                                                Toast.makeText(getContext(), "Failed to update status: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                            }
 
                             // Send the specific "lottery_invite" notification to the winner
                             HashMap<String, Object> notificationData = new HashMap<>();
@@ -312,15 +326,13 @@ public class WaitlistFragment extends Fragment {
                                     .add(notificationData);
                         }
 
-                        Toast.makeText(getContext(), selected.size() + " replacement entrant(s) selected!", Toast.LENGTH_SHORT).show(); // successfully updated status
+                        Toast.makeText(getContext(), selected.size() + " entrant(s) invited.", Toast.LENGTH_SHORT).show(); // successfully updated status
                         loadWaitlistEntrants(); //update list
 
                     })
                     .addOnFailureListener(e ->
-                            Toast.makeText(getContext(), "Failed to verify capacity: " + e.getMessage(), Toast.LENGTH_SHORT).show() //verify fails
-                    );
+                            Toast.makeText(getContext(), "Failed to verify capacity: " + e.getMessage(), Toast.LENGTH_SHORT).show());
         });
-
     }
 
     /**

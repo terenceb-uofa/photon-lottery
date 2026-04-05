@@ -63,6 +63,10 @@ public class InvitedFragment extends Fragment {
         return fragment;
     }
 
+    /**
+     * Initializes the fragment, retrieves the event ID argument, and sets up Firestore.
+     * @param savedInstanceState the saved instance state bundle
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,6 +76,13 @@ public class InvitedFragment extends Fragment {
         db = FirebaseFirestore.getInstance();
     }
 
+    /**
+     * Inflates the fragment layout, initializes UI elements, and sets up the RecyclerView.
+     * @param inflater the layout inflater
+     * @param container the parent view group
+     * @param savedInstanceState the saved instance state bundle
+     * @return the inflated view
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -93,6 +104,9 @@ public class InvitedFragment extends Fragment {
         return view;
     }
 
+    /**
+     * Reloads invited entrants each time the tab becomes visible.
+     */
     @Override
     public void onResume() {
         super.onResume();

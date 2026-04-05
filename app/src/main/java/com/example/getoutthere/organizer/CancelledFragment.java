@@ -22,6 +22,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Fragment displaying the list of entrants who have cancelled or declined an event invitation.
+ *
+ * <p>Shows all entrants with status "Cancelled". Uses a real-time snapshot
+ * listener so the list updates automatically when an entrant declines an invite.
+ * Implements US 02.06.02.
+ *
+ * <p>Profile data (name, email, phone) is always fetched from the
+ * {@code profiles/{deviceId}} collection, because the waitingList
+ * sub-collection stores null for these fields.
+ */
 public class CancelledFragment extends Fragment {
 
     private static final String ARG_EVENT_ID = "eventId";
@@ -32,8 +43,15 @@ public class CancelledFragment extends Fragment {
     private List<Map<String, String>> cancelledEntrants = new ArrayList<>();
     private RecyclerView rvCancelled;
 
+
+
     public CancelledFragment() {}
 
+    /**
+     * Creates a new instance of CancelledFragment with the given event ID.
+     * @param eventId the Firestore document ID of the event
+     * @return a new CancelledFragment instance
+     */
     public static CancelledFragment newInstance(String eventId) {
         CancelledFragment fragment = new CancelledFragment();
         Bundle args = new Bundle();
@@ -42,6 +60,10 @@ public class CancelledFragment extends Fragment {
         return fragment;
     }
 
+    /**
+     * Initializes the fragment, retrieves the event ID argument, and sets up Firestore.
+     * @param savedInstanceState the saved instance state bundle
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,6 +73,13 @@ public class CancelledFragment extends Fragment {
         db = FirebaseFirestore.getInstance();
     }
 
+    /**
+     * Inflates the fragment layout, initializes UI elements, and begins fetching cancelled entrants.
+     * @param inflater the layout inflater
+     * @param container the parent view group
+     * @param savedInstanceState the saved instance state bundle
+     * @return the inflated view
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -67,6 +96,11 @@ public class CancelledFragment extends Fragment {
         return view;
     }
 
+    /**
+     * Fetches all entrants with status "Cancelled" from Firestore using a real-time snapshot listener.
+     * Profile data is loaded via loadProfileInfo() rather than directly from the waitingList document.
+     * Implements US 02.06.02.
+     */
     private void fetchCancelledEntrants() {
         if (eventId == null) return;
 
@@ -83,17 +117,66 @@ public class CancelledFragment extends Fragment {
 
                     cancelledEntrants.clear();
                     if (value != null) {
+                        int index = 0;
                         for (QueryDocumentSnapshot doc : value) {
+                            String deviceId = doc.getId();
                             Map<String, String> entrant = new HashMap<>();
-                            entrant.put("deviceId", doc.getId());
-                            entrant.put("name", doc.getString("name"));
-                            entrant.put("email", doc.getString("email"));
-                            entrant.put("phone", doc.getString("phone"));
-                            entrant.put("status", doc.getString("status"));
+                            entrant.put("deviceId", deviceId);
+                            entrant.put("name", "Loading...");
+                            entrant.put("email", "");
+                            entrant.put("phone", "");
                             cancelledEntrants.add(entrant);
+                            loadProfileInfo(deviceId, index);
+                            index++;
                         }
+                        adapter.updateData(new ArrayList<>(cancelledEntrants));
                     }
-                    adapter.notifyDataSetChanged();
+                });
+    }
+
+
+    /**
+     * Fetches profile data for a single cancelled entrant from the profiles collection.
+     * Applies two stale-callback safety checks in both success and failure listeners.
+     * @param deviceId the device ID of the entrant
+     * @param index the index in cancelledEntrants for this entrant
+     */
+    private void loadProfileInfo(String deviceId, int index) {
+        db.collection("profiles")
+                .document(deviceId)
+                .get()
+                .addOnSuccessListener(doc -> {
+                    // Safety check 1: bounds
+                    if (index < 0 || index >= cancelledEntrants.size()) return;
+                    // Safety check 2: identity
+                    if (!cancelledEntrants.get(index).get("deviceId").equals(deviceId)) return;
+
+                    Map<String, String> entrant = cancelledEntrants.get(index);
+                    if (doc.exists()) {
+                        String name = doc.getString("name");
+                        String email = doc.getString("email");
+                        String phone = doc.getString("phone");
+                        entrant.put("name", name != null && !name.isEmpty() ? name : "Unknown user");
+                        entrant.put("email", email != null ? email : "");
+                        entrant.put("phone", phone != null ? phone : "");
+                    } else {
+                        entrant.put("name", "Unknown user");
+                        entrant.put("email", "");
+                        entrant.put("phone", "");
+                    }
+                    adapter.updateData(new ArrayList<>(cancelledEntrants));
+                })
+                .addOnFailureListener(e -> {
+                    // Safety check 1: bounds
+                    if (index < 0 || index >= cancelledEntrants.size()) return;
+                    // Safety check 2: identity
+                    if (!cancelledEntrants.get(index).get("deviceId").equals(deviceId)) return;
+
+                    Map<String, String> entrant = cancelledEntrants.get(index);
+                    entrant.put("name", "Unknown user");
+                    entrant.put("email", "");
+                    entrant.put("phone", "");
+                    adapter.updateData(new ArrayList<>(cancelledEntrants));
                 });
     }
 }

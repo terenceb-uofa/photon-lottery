@@ -30,7 +30,15 @@ import java.io.File;
 import java.io.FileWriter;
 
 /**
- * Fragment displaying the enrolled entrants for an event.
+ * Fragment displaying the list of entrants who have enrolled for an event.
+ *
+ * <p>Shows all entrants with status "Enrolled". Uses a real-time snapshot
+ * listener so the list updates automatically when an entrant accepts an invite.
+ * Provides CSV export functionality (US 02.06.03, US 02.06.05).
+ *
+ * <p>Profile data (name, email, phone) is always fetched from the
+ * {@code profiles/{deviceId}} collection, because the waitingList
+ * sub-collection stores null for these fields.
  */
 public class EnrolledFragment extends Fragment {
 
@@ -51,6 +59,11 @@ public class EnrolledFragment extends Fragment {
         // Required empty public constructor
     }
 
+    /**
+     * Creates a new instance of EnrolledFragment with the given event ID.
+     * @param eventId the Firestore document ID of the event
+     * @return a new EnrolledFragment instance
+     */
     public static EnrolledFragment newInstance(String eventId) {
         EnrolledFragment fragment = new EnrolledFragment();
         Bundle args = new Bundle();
@@ -59,6 +72,10 @@ public class EnrolledFragment extends Fragment {
         return fragment;
     }
 
+    /**
+     * Initializes the fragment, retrieves the event ID argument, and sets up Firestore.
+     * @param savedInstanceState the saved instance state bundle
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,6 +85,13 @@ public class EnrolledFragment extends Fragment {
         db = FirebaseFirestore.getInstance();
     }
 
+    /**
+     * Inflates the fragment layout, initializes UI elements, and begins fetching enrolled entrants.
+     * @param inflater the layout inflater
+     * @param container the parent view group
+     * @param savedInstanceState the saved instance state bundle
+     * @return the inflated view
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -91,6 +115,11 @@ public class EnrolledFragment extends Fragment {
         return view;
     }
 
+    /**
+     * Fetches all entrants with status "Enrolled" from Firestore using a real-time snapshot listener.
+     * Profile data is loaded via loadProfileInfo() rather than directly from the waitingList document.
+     * Implements US 02.06.03.
+     */
     private void fetchEnrolledEntrants() {
         if (eventId == null) return;
 
@@ -110,21 +139,85 @@ public class EnrolledFragment extends Fragment {
 
                     enrolledEntrants.clear();
                     if (value != null) {
+                        int index = 0;
                         for (QueryDocumentSnapshot doc : value) {
+                            String deviceId = doc.getId();
                             Map<String, String> entrant = new HashMap<>();
-                            entrant.put("deviceId", doc.getId());
-                            entrant.put("name", doc.getString("name"));
-                            entrant.put("email", doc.getString("email"));
-                            entrant.put("phone", doc.getString("phone"));
-                            entrant.put("status", doc.getString("status"));
+                            entrant.put("deviceId", deviceId);
+                            entrant.put("name", "Loading...");
+                            entrant.put("email", "");
+                            entrant.put("phone", "");
                             enrolledEntrants.add(entrant);
+                            loadProfileInfo(deviceId, index);
+                            index++;
                         }
+                        adapter.updateData(new ArrayList<>(enrolledEntrants));
                     }
-                    adapter.notifyDataSetChanged();
                 });
     }
 
-    // Generate the CSV and show the preview
+    /**
+     * Fetches profile data for a single enrolled entrant from the profiles collection.
+     *
+     * <p>Profile fields (name, email, phone) are read from
+     * {@code profiles/{deviceId}} rather than from the waitingList document,
+     * because the teammate's join code writes null for these fields.
+     *
+     * <p>Two stale-callback safety checks are applied in both success and
+     * failure listeners:
+     * <ol>
+     *   <li>Bounds check: {@code index < 0 || index >= enrolledEntrants.size()}</li>
+     *   <li>Identity check: the deviceId at the index must still match</li>
+     * </ol>
+     *
+     * @param deviceId the device ID of the entrant
+     * @param index    the index in {@link #enrolledEntrants} for this entrant
+     */
+    private void loadProfileInfo(String deviceId, int index) {
+        db.collection("profiles")
+                .document(deviceId)
+                .get()
+                .addOnSuccessListener(doc -> {
+                    // Safety check 1: bounds
+                    if (index < 0 || index >= enrolledEntrants.size()) return;
+                    // Safety check 2: identity
+                    if (!enrolledEntrants.get(index).get("deviceId").equals(deviceId)) return;
+
+                    Map<String, String> entrant = enrolledEntrants.get(index);
+                    if (doc.exists()) {
+                        String name = doc.getString("name");
+                        String email = doc.getString("email");
+                        String phone = doc.getString("phone");
+                        entrant.put("name", name != null && !name.isEmpty() ? name : "Unknown user");
+                        entrant.put("email", email != null ? email : "");
+                        entrant.put("phone", phone != null ? phone : "");
+                    } else {
+                        entrant.put("name", "Unknown user");
+                        entrant.put("email", "");
+                        entrant.put("phone", "");
+                    }
+                    adapter.updateData(new ArrayList<>(enrolledEntrants));
+                })
+                .addOnFailureListener(e -> {
+                    // Safety check 1: bounds
+                    if (index < 0 || index >= enrolledEntrants.size()) return;
+                    // Safety check 2: identity
+                    if (!enrolledEntrants.get(index).get("deviceId").equals(deviceId)) return;
+
+                    Map<String, String> entrant = enrolledEntrants.get(index);
+                    entrant.put("name", "Unknown user");
+                    entrant.put("email", "");
+                    entrant.put("phone", "");
+                    adapter.updateData(new ArrayList<>(enrolledEntrants));
+                });
+    }
+
+
+
+    /**
+     * Builds a CSV string of enrolled entrants and shows a preview dialog before sharing.
+     * Implements US 02.06.05.
+     */
     private void previewAndExportCSV() {
         if (enrolledEntrants == null || enrolledEntrants.isEmpty()) {
             Toast.makeText(getContext(), "No enrolled entrants to export", Toast.LENGTH_SHORT).show();
@@ -169,6 +262,10 @@ public class EnrolledFragment extends Fragment {
         builder.show();
     }
 
+    /**
+     * Writes CSV content to a temporary file and triggers the Android share sheet.
+     * @param csvContent the CSV string to write and share
+     */
     private void shareCSVFile(String csvContent) {
         try {
             // Save to a temporary file in the app's cache
