@@ -5,16 +5,18 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="24dp"
-    android:background="#1E1E1E">
+    android:background="@drawable/bg_nav_glass">
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Filter Events"
-        android:textColor="#59A91E"
+        android:gravity="center"
+        android:textColor="@color/white"
         android:textSize="22sp"
         android:textStyle="bold"
         android:layout_marginBottom="20dp"/>
+
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/filterEventTypeLayout"
@@ -23,16 +25,22 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="12dp"
         android:hint="Event Type"
-        android:textColorHint="#B0B0B0"
-        app:boxBackgroundColor="#1E1E1E"
-        app:boxStrokeColor="#59A91E"
-        app:hintTextColor="#59A91E">
+        android:textColorHint="@color/textHint"
+        app:boxBackgroundColor="@color/sepBackground"
+        app:boxStrokeColor="@color/accent"
+        app:boxStrokeWidth="1dp"
+        app:boxStrokeWidthFocused="2dp"
+        app:hintTextColor="@color/textHint"
+        app:boxCornerRadiusTopStart="999dp"
+        app:boxCornerRadiusTopEnd="999dp"
+        app:boxCornerRadiusBottomStart="999dp"
+        app:boxCornerRadiusBottomEnd="999dp">
 
         <AutoCompleteTextView
             android:id="@+id/filterEventTypeInput"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="#FFFFFF"
+            android:textColor="@color/white"
             android:inputType="none"
             android:focusable="false"
             android:cursorVisible="false"
@@ -46,16 +54,22 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="12dp"
         android:hint="Minimum Capacity"
-        android:textColorHint="#B0B0B0"
-        app:boxBackgroundColor="#1E1E1E"
-        app:boxStrokeColor="#59A91E"
-        app:hintTextColor="#59A91E">
+        android:textColorHint="@color/textHint"
+        app:boxBackgroundColor="@color/sepBackground"
+        app:boxStrokeColor="@color/accent"
+        app:boxStrokeWidth="1dp"
+        app:boxStrokeWidthFocused="2dp"
+        app:hintTextColor="@color/textHint"
+        app:boxCornerRadiusTopStart="999dp"
+        app:boxCornerRadiusTopEnd="999dp"
+        app:boxCornerRadiusBottomStart="999dp"
+        app:boxCornerRadiusBottomEnd="999dp">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/filterMinCapacityInput"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="#FFFFFF"
+            android:textColor="@color/white"
             android:inputType="number"/>
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -74,16 +88,22 @@
             android:layout_weight="1"
             android:layout_marginEnd="8dp"
             android:hint="Start Date From"
-            android:textColorHint="#B0B0B0"
-            app:boxBackgroundColor="#1E1E1E"
-            app:boxStrokeColor="#59A91E"
-            app:hintTextColor="#59A91E">
+            android:textColorHint="@color/textHint"
+            app:boxBackgroundColor="@color/sepBackground"
+            app:boxStrokeColor="@color/accent"
+            app:boxStrokeWidth="1dp"
+            app:boxStrokeWidthFocused="2dp"
+            app:hintTextColor="@color/textHint"
+            app:boxCornerRadiusTopStart="999dp"
+            app:boxCornerRadiusTopEnd="999dp"
+            app:boxCornerRadiusBottomStart="999dp"
+            app:boxCornerRadiusBottomEnd="999dp">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/filterMinStartDateInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="#FFFFFF"
+                android:textColor="@color/white"
                 android:focusable="false"
                 android:inputType="none"/>
         </com.google.android.material.textfield.TextInputLayout>
@@ -96,16 +116,22 @@
             android:layout_weight="1"
             android:layout_marginStart="8dp"
             android:hint="Start Date To"
-            android:textColorHint="#B0B0B0"
-            app:boxBackgroundColor="#1E1E1E"
-            app:boxStrokeColor="#59A91E"
-            app:hintTextColor="#59A91E">
+            android:textColorHint="@color/textHint"
+            app:boxBackgroundColor="@color/sepBackground"
+            app:boxStrokeColor="@color/accent"
+            app:boxStrokeWidth="1dp"
+            app:boxStrokeWidthFocused="2dp"
+            app:hintTextColor="@color/textHint"
+            app:boxCornerRadiusTopStart="999dp"
+            app:boxCornerRadiusTopEnd="999dp"
+            app:boxCornerRadiusBottomStart="999dp"
+            app:boxCornerRadiusBottomEnd="999dp">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/filterMaxStartDateInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="#FFFFFF"
+                android:textColor="@color/white"
                 android:focusable="false"
                 android:inputType="none"/>
         </com.google.android.material.textfield.TextInputLayout>
@@ -122,22 +148,27 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:layout_marginEnd="8dp"
+            android:minHeight="48dp"
             android:text="Clear"
-            android:textColor="#FFFFFF"
-            app:backgroundTint="#333333"
-            app:cornerRadius="8dp"/>
+            android:textColor="@color/white"
+            app:backgroundTint="@color/navBackground"
+            app:cornerRadius="999dp"
+            app:strokeColor="@color/ghostBorder"
+            app:strokeWidth="1dp"
+            android:layout_marginEnd="8dp"
+            />
+
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/filterApplyButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:layout_marginStart="8dp"
+            android:minHeight="48dp"
             android:text="Apply"
-            android:textColor="#FFFFFF"
-            app:backgroundTint="#59A91E"
-            app:cornerRadius="8dp"/>
+            android:textColor="@color/white"
+            app:backgroundTint="@color/accent"
+            app:cornerRadius="999dp" />
     </LinearLayout>
 
 </LinearLayout>
