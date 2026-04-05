@@ -66,7 +66,7 @@ public class OrganizerEventListActivity extends AppCompatActivity {
         String currentUserId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 
         // Fetch only events created by specific organizer
-        eventRepository.getEventsByOrganizerId(currentUserId,
+        eventRepository.getEventsByOrganizerOrCoOrganizer(currentUserId,
                 new EventRepository.RepositoryCallback<List<Event>>() {
                     @Override
                     public void onSuccess(List<Event> result) {

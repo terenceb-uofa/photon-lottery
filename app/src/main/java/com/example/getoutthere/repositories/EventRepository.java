@@ -182,6 +182,38 @@ public class EventRepository {
                 }).addOnFailureListener(callback::onFailure);
     }
 
+    /**
+     * Fetches all events where the user is either the primary organizer OR a co-organizer.
+     *
+     * @param userId the device ID of the user
+     * @param callback callback used to return the list of events
+     */
+    public void getEventsByOrganizerOrCoOrganizer(@NonNull String userId,
+                                                  @NonNull RepositoryCallback<java.util.List<Event>> callback) {
+
+        // Using Filter.or to combine the two conditions
+        db.collection("events")
+                .where(com.google.firebase.firestore.Filter.or(
+                        com.google.firebase.firestore.Filter.equalTo("organizerId", userId),
+                        com.google.firebase.firestore.Filter.arrayContains("coOrganizerIds", userId)
+                ))
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    java.util.List<Event> events = new java.util.ArrayList<>();
+
+                    for (com.google.firebase.firestore.QueryDocumentSnapshot doc : queryDocumentSnapshots) {
+                        Event event = doc.toObject(Event.class);
+                        if (event != null) {
+                            event.setId(doc.getId());
+                            events.add(event);
+                        }
+                    }
+
+                    callback.onSuccess(events);
+                })
+                .addOnFailureListener(callback::onFailure);
+    }
+
 
     /**
      * Updates an existing event in Firestore.

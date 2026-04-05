@@ -131,6 +131,12 @@ public class EntrantNotificationActivity extends AppCompatActivity {
                 holder.btnAccept.setOnClickListener(v -> acceptLotteryInvite(eventId, notifId));
                 holder.btnDecline.setOnClickListener(v -> declineLotteryInvite(eventId, notifId));
             }
+            else if ("co_organizer_invite".equals(type)) {
+                holder.layoutInviteButtons.setVisibility(View.VISIBLE);
+
+                holder.btnAccept.setOnClickListener(v -> acceptCoOrganizerInvite(eventId, notifId));
+                holder.btnDecline.setOnClickListener(v -> declineCoOrganizerInvite(notifId));
+            }
             else {
                 holder.layoutInviteButtons.setVisibility(View.GONE);
             }
@@ -214,6 +220,30 @@ public class EntrantNotificationActivity extends AppCompatActivity {
                             db.collection("profiles").document(winnerId).collection("notifications").document().set(notificationData);
                         }
                     });
+        }
+
+        private void acceptCoOrganizerInvite(String eventId, String notifId) {
+            if (eventId == null) return;
+
+            // add user to the coOrganizerIds array in the Event document
+            db.collection("events").document(eventId)
+                    .update("coOrganizerIds", com.google.firebase.firestore.FieldValue.arrayUnion(deviceId))
+                    .addOnSuccessListener(aVoid -> {
+
+                        // remove them from the waiting list so they can't be an entrant anymore
+                        db.collection("events").document(eventId).collection("waitingList").document(deviceId).delete();
+
+                        // fix the waitlist count
+                        db.collection("events").document(eventId).update("currentWaitlistCount", com.google.firebase.firestore.FieldValue.increment(-1));
+
+                        Toast.makeText(EntrantNotificationActivity.this, "Accepted Co-Organizer Invite!", Toast.LENGTH_SHORT).show();
+                        deleteNotification(notifId);
+                    });
+        }
+
+        private void declineCoOrganizerInvite(String notifId) {
+            deleteNotification(notifId);
+            Toast.makeText(EntrantNotificationActivity.this, "Declined Co-Organizer Invite", Toast.LENGTH_SHORT).show();
         }
 
         // Helper to format profile map

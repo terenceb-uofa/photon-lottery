@@ -12,6 +12,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.getoutthere.R;
+import com.example.getoutthere.entrant.EntrantNotificationActivity;
 
 
 /**
@@ -96,7 +97,7 @@ public class AdminDashboardActivity extends AppCompatActivity {
         NavToNotificationLogs.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            Intent intent = new Intent(AdminDashboardActivity.this, NotificationLogsActivity.class);
+            Intent intent = new Intent(AdminDashboardActivity.this, EntrantNotificationActivity.class);
             startActivity(intent);
         }
     });

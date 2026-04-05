@@ -62,6 +62,7 @@ public class EntrantListActivity extends AppCompatActivity {
         );
         listView.setAdapter(adapter);
 
+
         eventId = getIntent().getStringExtra("eventId");
 
         if (eventId == null || eventId.isEmpty()) {

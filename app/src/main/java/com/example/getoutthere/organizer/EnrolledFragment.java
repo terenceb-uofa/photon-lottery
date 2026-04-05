@@ -103,7 +103,7 @@ public class EnrolledFragment extends Fragment {
         rvEnrolled.setLayoutManager(new LinearLayoutManager(getContext()));
 
         // Initialize Adapter
-        adapter = new EntrantAdapter(enrolledEntrants);
+        adapter = new EntrantAdapter(enrolledEntrants, eventId);
         rvEnrolled.setAdapter(adapter);
 
         // Fetch the enrolled entrants from Firebase

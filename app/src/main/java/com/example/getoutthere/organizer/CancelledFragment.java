@@ -88,7 +88,7 @@ public class CancelledFragment extends Fragment {
         rvCancelled = view.findViewById(R.id.rvCancelled);
         rvCancelled.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        adapter = new EntrantAdapter(cancelledEntrants);
+        adapter = new EntrantAdapter(cancelledEntrants, eventId);
         rvCancelled.setAdapter(adapter);
 
         fetchCancelledEntrants();

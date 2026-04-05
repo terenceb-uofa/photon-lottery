@@ -100,7 +100,7 @@ public class WaitlistFragment extends Fragment {
         btnDrawLottery = view.findViewById(R.id.btnDrawLottery);
 
         // Set up RecyclerView
-        adapter = new EntrantAdapter(waitlistEntrants);
+        adapter = new EntrantAdapter(waitlistEntrants, eventId);
         rvWaitlist.setLayoutManager(new LinearLayoutManager(getContext()));
         rvWaitlist.setAdapter(adapter);
 
