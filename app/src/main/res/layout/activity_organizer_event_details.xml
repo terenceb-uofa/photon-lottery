@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#121212"
+    android:background="@color/background"
     android:fillViewport="true">
 
     <LinearLayout
@@ -14,158 +14,79 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="48dp"
+            android:gravity="center_vertical"
             android:orientation="horizontal">
 
-            <com.google.android.material.button.MaterialButton
+            <FrameLayout
                 android:id="@+id/backButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="⬅️ Back"
-                android:textColor="#FFFFFF"
-                app:backgroundTint="#333333"
-                app:cornerRadius="8dp" />
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackgroundBorderless">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_arrow_back"
+                    app:tint="@color/white" />
+            </FrameLayout>
 
             <View
                 android:layout_width="0dp"
-                android:layout_height="0dp"
+                android:layout_height="1dp"
                 android:layout_weight="1" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/editButton"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="40dp"
+                android:minHeight="0dp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
                 android:text="Edit"
-                android:textColor="#FFFFFF"
-                app:backgroundTint="#59A91E"
-                app:cornerRadius="8dp" />
+                android:textColor="@color/white"
+                app:backgroundTint="@color/ghostButton"
+                app:cornerRadius="20dp"
+                app:strokeColor="@color/ghostBorder"
+                app:strokeWidth="1dp" />
         </LinearLayout>
 
         <TextView
             android:id="@+id/nameInput"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
             android:gravity="center"
             android:text="Event Name"
-            android:textColor="#59A91E"
+            android:textColor="@color/white"
             android:textSize="32sp"
-            android:textStyle="bold"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="16dp" />
+            android:textStyle="bold" />
 
-        <ImageView
-            android:id="@+id/posterPreview"
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="220dp"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="24dp"
-            android:background="#1E1E1E"
-            android:contentDescription="Event Poster"
-            android:scaleType="centerCrop"
-            android:src="@android:drawable/ic_menu_gallery" />
+            app:cardCornerRadius="24dp"
+            app:cardUseCompatPadding="false"
+            app:strokeWidth="0dp">
+
+            <ImageView
+                android:id="@+id/posterPreview"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#1E1E1E"
+                android:scaleType="centerCrop"
+                android:src="@drawable/sample_event_poster" />
+        </com.google.android.material.card.MaterialCardView>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#1E1E1E"
-            android:padding="16dp"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/startDateInput"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="#FFFFFF"
-                android:textSize="16sp"
-                android:text="Start Date:"
-                android:paddingBottom="12dp" />
-
-            <TextView
-                android:id="@+id/endDateInput"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="#FFFFFF"
-                android:textSize="16sp"
-                android:text="End Date:"
-                android:paddingBottom="12dp" />
-
-            <TextView
-                android:id="@+id/addressInput"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="#FFFFFF"
-                android:textSize="16sp"
-                android:text="Address:"
-                android:paddingBottom="12dp" />
-
-            <TextView
-                android:id="@+id/feeInput"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="#FFFFFF"
-                android:textSize="16sp"
-                android:text="Signup Fee:"
-                android:paddingBottom="12dp" />
-
-            <TextView
-                android:id="@+id/capacityInput"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="#FFFFFF"
-                android:textSize="16sp"
-                android:text="Capacity:"
-                android:paddingBottom="12dp" />
-
-            <TextView
-                android:id="@+id/waitlistLimitInput"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="#FFFFFF"
-                android:textSize="16sp"
-                android:text="Waitlist Limit:"
-                android:paddingBottom="12dp" />
-
-            <TextView
-                android:id="@+id/drawDateInput"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="#FFFFFF"
-                android:textSize="16sp"
-                android:text="Draw Date:"
-                android:paddingBottom="12dp" />
-
-            <TextView
-                android:id="@+id/registrationStartInput"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="#FFFFFF"
-                android:textSize="16sp"
-                android:text="Registration Start:"
-                android:paddingBottom="12dp" />
-
-            <TextView
-                android:id="@+id/registrationEndInput"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="#FFFFFF"
-                android:textSize="16sp"
-                android:text="Registration End:"
-                android:paddingBottom="12dp" />
-
-            <TextView
-                android:id="@+id/descriptionInput"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="#B0B0B0"
-                android:textSize="16sp"
-                android:text="Description:"
-                android:paddingBottom="8dp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
             android:layout_marginBottom="24dp"
             android:orientation="horizontal">
 
@@ -174,27 +95,308 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:minHeight="56dp"
-                android:textColor="#FFFFFF"
-                app:backgroundTint="#333333"
-                app:cornerRadius="8dp"
-                android:text="QR Code" />
+                android:minHeight="48dp"
+                android:text="QR Code"
+                android:textColor="@color/white"
+                app:backgroundTint="@color/ghostButton"
+                app:cornerRadius="999dp"
+                app:strokeColor="@color/ghostBorder"
+                app:strokeWidth="1dp" />
 
             <View
                 android:layout_width="12dp"
                 android:layout_height="wrap_content" />
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/buttonViewWaitlist"
+                android:id="@+id/buttonManageWaitlist"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:minHeight="56dp"
-                android:textColor="#FFFFFF"
-                app:backgroundTint="#59A91E"
-                app:cornerRadius="8dp"
-                android:text="View Waitlist" />
+                android:minHeight="48dp"
+                android:text="Manage Waitlist"
+                android:textColor="@color/white"
+                app:backgroundTint="@color/accent"
+                app:cornerRadius="999dp" />
         </LinearLayout>
+
+        <!-- Timing -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:cardBackgroundColor="#1E1E1E"
+            app:cardCornerRadius="20dp"
+            app:strokeWidth="0dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:text="Timing"
+                    android:textColor="@color/white"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Start Date"
+                    android:textColor="#B0B0B0"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/startDateInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="14dp"
+                    android:text="Jan 12, 2026 · 7:00 PM"
+                    android:textColor="@color/white"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="End Date"
+                    android:textColor="#B0B0B0"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/endDateInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="14dp"
+                    android:text="Jan 12, 2026 · 10:00 PM"
+                    android:textColor="@color/white"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Draw Date"
+                    android:textColor="#B0B0B0"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/drawDateInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Jan 10, 2026"
+                    android:textColor="@color/white"
+                    android:textSize="16sp" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Registration -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:cardBackgroundColor="#1E1E1E"
+            app:cardCornerRadius="20dp"
+            app:strokeWidth="0dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:text="Registration"
+                    android:textColor="@color/white"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Registration Start"
+                    android:textColor="#B0B0B0"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/registrationStartInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="14dp"
+                    android:text="Jan 1, 2026"
+                    android:textColor="@color/white"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Registration End"
+                    android:textColor="#B0B0B0"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/registrationEndInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Jan 9, 2026"
+                    android:textColor="@color/white"
+                    android:textSize="16sp" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Capacity -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:cardBackgroundColor="#1E1E1E"
+            app:cardCornerRadius="20dp"
+            app:strokeWidth="0dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:text="Capacity"
+                    android:textColor="@color/white"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Capacity"
+                    android:textColor="#B0B0B0"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/capacityInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="14dp"
+                    android:text="150"
+                    android:textColor="@color/white"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Waitlist Limit"
+                    android:textColor="#B0B0B0"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/waitlistLimitInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="50"
+                    android:textColor="@color/white"
+                    android:textSize="16sp" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Details -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:cardBackgroundColor="#1E1E1E"
+            app:cardCornerRadius="20dp"
+            app:strokeWidth="0dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:text="Details"
+                    android:textColor="@color/white"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Address"
+                    android:textColor="#B0B0B0"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/addressInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="14dp"
+                    android:text="123 Main Street"
+                    android:textColor="@color/white"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Signup Fee"
+                    android:textColor="#B0B0B0"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/feeInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="$20.00"
+                    android:textColor="@color/white"
+                    android:textSize="16sp" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Description -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:cardBackgroundColor="#1E1E1E"
+            app:cardCornerRadius="20dp"
+            app:strokeWidth="0dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:text="Description"
+                    android:textColor="@color/white"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/descriptionInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:lineSpacingExtra="4dp"
+                    android:text="Event description here"
+                    android:textColor="#D0D0D0"
+                    android:textSize="15sp" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
     </LinearLayout>
 </ScrollView>

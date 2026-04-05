@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -16,6 +17,7 @@ import com.example.getoutthere.event.Event;
 import com.example.getoutthere.repositories.EventRepository;
 import com.google.firebase.Timestamp;
 
+import java.text.NumberFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
@@ -40,10 +42,10 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
     private TextView waitlistLimitInput;
 
     // Buttons for navigation
-    private Button backButton;
+    private FrameLayout backButton;
     private Button editButton;
     private Button buttonQRCode;
-    private Button buttonViewWaitlist;
+    private Button buttonManageWaitlist;
 
     // Event poster image
     private ImageView posterPreview;
@@ -74,7 +76,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         backButton = findViewById(R.id.backButton);
         editButton = findViewById(R.id.editButton);
         buttonQRCode = findViewById(R.id.buttonQRCode);
-        buttonViewWaitlist = findViewById(R.id.buttonViewWaitlist);
+        buttonManageWaitlist = findViewById(R.id.buttonManageWaitlist);
 
         nameInput = findViewById(R.id.nameInput);
         descriptionInput = findViewById(R.id.descriptionInput);
@@ -110,7 +112,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        buttonViewWaitlist.setOnClickListener(v -> {
+        buttonManageWaitlist.setOnClickListener(v -> {
             Intent intent = new Intent(OrganizerEventDetailsActivity.this, OrganizerWaitlistActivity.class);
             intent.putExtra("eventId", eventId);
             startActivity(intent);
@@ -154,19 +156,21 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
      */
     private void populateEventDetails(Event event) {
         nameInput.setText(event.getName() == null ? "" : event.getName());
-        descriptionInput.setText("Description: " + (event.getDescription() == null ? "" : event.getDescription()));
-        addressInput.setText("Address: " + (event.getAddress() == null ? "" : event.getAddress()));
-        startDateInput.setText("Start Date: " + formatTimestamp(event.getStartDate()));
-        endDateInput.setText("End Date: " + formatTimestamp(event.getEndDate()));
-        drawDateInput.setText("Draw Date: " + formatTimestamp(event.getDrawDate()));
-        registrationStartInput.setText("Registration Start: " + formatTimestamp(event.getRegistrationStart()));
-        registrationEndInput.setText("Registration End: " + formatTimestamp(event.getRegistrationEnd()));
-        capacityInput.setText("Capacity: " + event.getCapacity());
-        feeInput.setText("Signup Fee: " + event.getSignupFee());
-        waitlistLimitInput.setText(
-                "Waitlist Limit: " + (event.getWaitlistLimit() == null ? "None" : event.getWaitlistLimit())
-        );
-
+        descriptionInput.setText((event.getDescription() == null ? "" : event.getDescription()));
+        addressInput.setText((event.getAddress() == null ? "" : event.getAddress()));
+        startDateInput.setText(formatTimestamp(event.getStartDate()));
+        endDateInput.setText(formatTimestamp(event.getEndDate()));
+        drawDateInput.setText(formatTimestamp(event.getDrawDate()));
+        registrationStartInput.setText(formatTimestamp(event.getRegistrationStart()));
+        registrationEndInput.setText(formatTimestamp(event.getRegistrationEnd()));
+        capacityInput.setText(String.valueOf(event.getCapacity()));
+        if (event.getSignupFee() <= 0) {
+            feeInput.setText("Free");
+        } else {
+            NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(Locale.getDefault());
+            feeInput.setText(currencyFormat.format(event.getSignupFee()));
+        }
+        waitlistLimitInput.setText(event.getWaitlistLimit() == null ? "None" : String.valueOf(event.getWaitlistLimit()));
         String posterUrl = event.getPosterUrl();
         if (!TextUtils.isEmpty(posterUrl)) {
             Glide.with(this)

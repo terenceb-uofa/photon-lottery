@@ -10,6 +10,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.getoutthere.R;
+import com.example.getoutthere.event.EventListActivity;
 import com.example.getoutthere.models.EntrantProfile;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -76,7 +77,7 @@ public class SignUpActivity extends AppCompatActivity {
                 .addOnSuccessListener(aVoid -> {
                     Toast.makeText(this, "Account Created Successfully!", Toast.LENGTH_SHORT).show();
 
-                    Intent intent = new Intent(SignUpActivity.this, EntrantDashboardActivity.class);
+                    Intent intent = new Intent(SignUpActivity.this, EventListActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);
                     finish();

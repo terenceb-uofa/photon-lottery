@@ -26,7 +26,7 @@ import org.junit.runner.RunWith;
 import java.lang.reflect.Field;
 import java.util.Date;
 
-// This test is AI generated
+// This test is AI generated with Anthropics Claude Code, Prompt: "Generate an android test for the following code", Date: Mar 13, 2026
 
 
 /**

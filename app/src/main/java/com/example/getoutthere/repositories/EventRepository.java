@@ -156,6 +156,32 @@ public class EventRepository {
                 }).addOnFailureListener(callback::onFailure);
 
     }
+    /**
+     * Fetches all events for param organizerId from the Firestore.
+     * If the organizer exists, all events created by the organizer are added to the event list adn returned.
+     *
+     * @param organizerId the ID of the event to retrieve
+     * @param callback callback used to return the event or an error
+     */
+    public void getEventsByOrganizerId(@NonNull String organizerId,
+                                       @NonNull RepositoryCallback<java.util.List<Event>> callback) {
+        db.collection("events")
+                .whereEqualTo("organizerId", organizerId)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    java.util.List<Event> events = new java.util.ArrayList<>();
+
+                    for (com.google.firebase.firestore.QueryDocumentSnapshot doc : queryDocumentSnapshots) {
+                        Event event = doc.toObject(Event.class);
+                        event.setId(doc.getId());
+                        events.add(event);
+                    }
+
+                    callback.onSuccess(events);
+
+                }).addOnFailureListener(callback::onFailure);
+    }
+
 
     /**
      * Updates an existing event in Firestore.

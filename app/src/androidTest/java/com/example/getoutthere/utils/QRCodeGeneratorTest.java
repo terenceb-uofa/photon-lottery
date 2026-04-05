@@ -12,6 +12,10 @@ import org.junit.runner.RunWith;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+
+// This test is AI generated with Anthropics Claude Code, Prompt: "Generate an android test for the following code", Date: Mar 13, 2026
+
+
 @RunWith(AndroidJUnit4.class)
 public class QRCodeGeneratorTest {
 

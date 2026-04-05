@@ -7,10 +7,16 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 import com.example.getoutthere.R;
 import com.example.getoutthere.event.Event;
+import com.example.getoutthere.navigation.NavBottomHelper;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -29,7 +35,7 @@ import java.util.List;
  */
 public class EventHistory extends AppCompatActivity {
     private ListView listView;
-    private Button backButton;
+    //private Button backButton;
     private FirebaseFirestore db;
     private String deviceId;
 
@@ -47,17 +53,24 @@ public class EventHistory extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_event_history);
 
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
+
         listView = findViewById(R.id.historyListView);
-        backButton = findViewById(R.id.HistoryBackButton);
+        //backButton = findViewById(R.id.HistoryBackButton);
         db = FirebaseFirestore.getInstance();
         deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 
         adapter = new ArrayAdapter<>(this, R.layout.item_history_row, historyDisplayList);
         listView.setAdapter(adapter);
         listView.setEmptyView(findViewById(R.id.emptyHistoryText));
-        backButton.setOnClickListener(v -> finish()); // Closes the activity and goes back
+        //backButton.setOnClickListener(v -> finish()); // Closes the activity and goes back
 
         loadEventHistory();
     }
@@ -95,5 +108,9 @@ public class EventHistory extends AppCompatActivity {
                     }
                 })
                 .addOnFailureListener(e -> Toast.makeText(this, "Failed to load history", Toast.LENGTH_SHORT).show());
+
+
+        BottomNavigationView bottomNav = findViewById(R.id.bottomNavigation);
+        NavBottomHelper.setupBottomNav(this, bottomNav, R.id.nav_history);
     }
 }

@@ -14,6 +14,8 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.getoutthere.R;
 import com.example.getoutthere.models.EntrantProfile;
+import com.example.getoutthere.navigation.NavBottomHelper;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 /**
@@ -66,6 +68,10 @@ public class ProfileActivity extends AppCompatActivity {
         loadProfile();
         saveButton.setOnClickListener(v -> saveProfile());
         deleteButton.setOnClickListener(v -> deleteProfile());
+
+
+        BottomNavigationView bottomNav = findViewById(R.id.bottomNavigation);
+        NavBottomHelper.setupBottomNav(this, bottomNav, R.id.nav_profile);
     }
 
     /**
@@ -126,5 +132,9 @@ public class ProfileActivity extends AppCompatActivity {
                     phoneInput.setText("");
                 })
                 .addOnFailureListener(e -> Toast.makeText(this, "Error deleting profile", Toast.LENGTH_SHORT).show());
+
     }
+
+
+
 }

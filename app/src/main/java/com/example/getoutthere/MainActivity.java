@@ -16,6 +16,7 @@ import androidx.core.view.WindowInsetsCompat;
 import com.example.getoutthere.admin.AdminDashboardActivity;
 import com.example.getoutthere.entrant.EntrantDashboardActivity;
 import com.example.getoutthere.entrant.SignUpActivity;
+import com.example.getoutthere.event.EventListActivity;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 /**
@@ -84,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
                         // Profile found, go to Dashboard
-                        startActivity(new Intent(MainActivity.this, EntrantDashboardActivity.class));
+                        startActivity(new Intent(MainActivity.this, EventListActivity.class));
                     } else {
                         // No profile found, force user to Sign Up
                         startActivity(new Intent(MainActivity.this, SignUpActivity.class));
