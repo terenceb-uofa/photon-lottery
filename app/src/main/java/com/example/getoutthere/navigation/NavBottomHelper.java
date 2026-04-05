@@ -4,12 +4,12 @@ import android.app.Activity;
 import android.content.Intent;
 
 import com.example.getoutthere.R;
+import com.example.getoutthere.entrant.EntrantNotificationActivity;
 import com.example.getoutthere.entrant.EventHistory;
 import com.example.getoutthere.entrant.ProfileActivity;
 import com.example.getoutthere.event.EventListActivity;
 import com.example.getoutthere.organizer.OrganizerEventListActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.example.getoutthere.admin.NotificationLogsActivity;
 
 public class NavBottomHelper {
 
@@ -32,7 +32,7 @@ public class NavBottomHelper {
             } else if (itemId == R.id.nav_history) {
                 intent = new Intent(activity, EventHistory.class);
             } else if (itemId == R.id.nav_notifications) {
-                intent = new Intent(activity, NotificationLogsActivity.class);
+                intent = new Intent(activity, EntrantNotificationActivity.class);
             } else if (itemId == R.id.nav_profile) {
                 intent = new Intent(activity, ProfileActivity.class);
             }
