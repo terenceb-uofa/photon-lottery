@@ -26,7 +26,7 @@ import org.mockito.MockedStatic;
 
 import java.lang.Exception;
 
-// This test is AI generated
+// This test is AI generated with Anthropics Claude Code, Prompt: "Generate a unit test for the following code", Date: Mar 13, 2026
 
 /**
  * Unit tests for EventRepository.

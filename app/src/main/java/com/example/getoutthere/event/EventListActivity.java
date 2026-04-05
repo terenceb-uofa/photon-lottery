@@ -2,7 +2,14 @@ package com.example.getoutthere.event;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -18,6 +25,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Displays a list of all currently available events the user can enroll in.
@@ -37,12 +45,16 @@ import java.util.List;
 public class EventListActivity extends AppCompatActivity {
 
     private ListView listView;
-    private final List<Event> events = new ArrayList<>();
+    private final List<Event> allEvents = new ArrayList<>();
+    private final List<Event> filteredEvents = new ArrayList<>();
 
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     private EventDiscoverAdapter adapter;
 
+
+    private EditText searchInput;
+    private Button filterButton;
 
     /**
      * Initializes the Activity, fetches the collection of events from Firestore,
@@ -67,25 +79,51 @@ public class EventListActivity extends AppCompatActivity {
         });
 
         listView = findViewById(R.id.listOfEvents);
-        adapter = new EventDiscoverAdapter(this, events);
+        searchInput = findViewById(R.id.searchInput);
+        filterButton = findViewById(R.id.filterButton);
+        adapter = new EventDiscoverAdapter(this, filteredEvents);
         listView.setAdapter(adapter);
 
         // fetch event from db
         db.collection("events").get().addOnSuccessListener(queryDocumentSnapshots -> {
-            events.clear();
+            allEvents.clear();
 
             for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
                 Event event = doc.toObject(Event.class);
                 event.setId(doc.getId());
-                events.add(event);
+                allEvents.add(event);
             }
 
+            filteredEvents.clear();
+            filteredEvents.addAll(allEvents);
             adapter.notifyDataSetChanged();
+        });
+
+
+        // Original search/filter logic generated with AI.
+        // Refactored to align with the current project structure and UI redesign. Yousaf - April 4 2026
+        searchInput.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                applySearch();
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+
+        filterButton.setOnClickListener(v -> {
+            Toast.makeText(this, "Filter options coming soon", Toast.LENGTH_SHORT).show();
         });
 
         // click on event to open event details
         listView.setOnItemClickListener((parent, view, position, id) -> {
-            Event event = events.get(position);
+            Event event = filteredEvents.get(position);
             Intent intent = new Intent(EventListActivity.this, EventDetailsActivity.class);
             intent.putExtra("eventId", event.getId());
             startActivity(intent);
@@ -94,5 +132,39 @@ public class EventListActivity extends AppCompatActivity {
         BottomNavigationView bottomNav = findViewById(R.id.bottomNavigation);
         NavBottomHelper.setupBottomNav(this, bottomNav, R.id.nav_home);
 
+    }
+
+    /**
+     * Applies all active filters and the current search query together against
+     * the full events list, then updates the ListView adapter with the results.
+     *
+     * @param query the current search string entered by the user
+     */
+    // The following code is from Anthropic, Claude, "Add filter fragment with eventType, minCapacity, and date range to EventListActivity", 2026-04-02
+    // Refactored to align with the current project structure and UI redesign. Yousaf - April 4 2026
+    private void applySearch() {
+        String query = searchInput.getText().toString().trim().toLowerCase(Locale.getDefault());
+
+        filteredEvents.clear();
+
+        if (TextUtils.isEmpty(query)) {
+            filteredEvents.addAll(allEvents);
+        } else {
+            for (Event event : allEvents) {
+                String name = event.getName() != null
+                        ? event.getName().toLowerCase(Locale.getDefault())
+                        : "";
+
+                String address = event.getAddress() != null
+                        ? event.getAddress().toLowerCase(Locale.getDefault())
+                        : "";
+
+                if (name.contains(query) || address.contains(query)) {
+                    filteredEvents.add(event);
+                }
+            }
+        }
+
+        adapter.notifyDataSetChanged();
     }
 }

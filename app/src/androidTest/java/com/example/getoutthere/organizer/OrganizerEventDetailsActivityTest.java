@@ -36,7 +36,7 @@ import org.junit.runner.RunWith;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 
-// This test is AI generated
+// This test is AI generated with Anthropics Claude Code, Prompt: "Generate an android test for the following code", Date: Mar 13, 2026
 
 /**
  * Instrumented tests for OrganizerEventDetailsActivity.
