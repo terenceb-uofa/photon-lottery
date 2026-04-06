@@ -9,6 +9,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ImageView;
 import com.bumptech.glide.Glide;
+import android.widget.FrameLayout;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -44,7 +45,9 @@ import java.util.Objects;
  */
 public class EventDetailsActivity extends AppCompatActivity {
     private TextView eventName, eventAddress, eventDateRange, eventCapacity, eventFee, eventDrawDate, eventDescription, eventType;
-    private Button btnToggleWaitingList, btnBack, btnViewComments;
+    private Button btnToggleWaitingList, btnViewComments;
+
+    private FrameLayout backButton;
 
     private String eventId;
     Event event;
@@ -87,7 +90,6 @@ public class EventDetailsActivity extends AppCompatActivity {
         eventDescription = findViewById(R.id.EventDescription);
         eventType = findViewById(R.id.EventType);
         btnToggleWaitingList = findViewById(R.id.btnToggleWaitingList);
-        btnBack = findViewById(R.id.EventDetailsBackButton);
 
         // Entrant info
         String deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
@@ -97,11 +99,11 @@ public class EventDetailsActivity extends AppCompatActivity {
         // Event ID from intent
         eventId = getIntent().getStringExtra("eventId");
 
-        // Back button
-        btnBack.setOnClickListener(v -> finish());
+        backButton = findViewById(R.id.backButton);
+        backButton.setOnClickListener(v -> finish());
 
         //  Lottery Info link
-        TextView btnLotteryInfo = findViewById(R.id.btnLotteryInfo);
+        Button btnLotteryInfo = findViewById(R.id.btnLotteryInfo);
         btnLotteryInfo.setOnClickListener(v -> showLotteryCriteriaDialog());
 
         // Fetch event from Firestore
@@ -170,8 +172,11 @@ public class EventDetailsActivity extends AppCompatActivity {
                 }
 
                 // If user is an organizer, user cannot join waiting list
-                if (Objects.equals(event.getOrganizerId(), deviceId) || event.getCoOrganizerIds().contains(deviceId)) {
-                    Toast.makeText(EventDetailsActivity.this, "Organizers/Co-organizers cannot join waiting lists for their own events", Toast.LENGTH_SHORT).show();
+                if (Objects.equals(event.getOrganizerId(), deviceId) ||
+                        (event.getCoOrganizerIds() != null && event.getCoOrganizerIds().contains(deviceId))) {
+                    Toast.makeText(EventDetailsActivity.this,
+                            "Organizers/Co-organizers cannot join waiting lists for their own events",
+                            Toast.LENGTH_SHORT).show();
                     return;
                 }
 
@@ -197,14 +202,20 @@ public class EventDetailsActivity extends AppCompatActivity {
 
                             db.collection("events")
                                     .document(event.getId())
-                                    .update("currentWaitlistCount", FieldValue.increment(1));
-
-                            event.setCurrentWaitlistCount(event.getCurrentWaitlistCount() + 1);
-                            updateSpotsUI();
-                            updateToggleButton();
-                            Toast.makeText(EventDetailsActivity.this, "Joined waiting list!", Toast.LENGTH_SHORT).show();
+                                    .update("currentWaitlistCount", FieldValue.increment(1))
+                                    .addOnSuccessListener(unused -> {
+                                        event.setCurrentWaitlistCount(event.getCurrentWaitlistCount() + 1);
+                                        updateSpotsUI();
+                                        updateToggleButton();
+                                        Toast.makeText(EventDetailsActivity.this, "Joined waiting list!", Toast.LENGTH_SHORT).show();
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        isOnWaitingList = false;
+                                        Toast.makeText(EventDetailsActivity.this, "Failed to update waitlist count", Toast.LENGTH_SHORT).show();
+                                    });
                         })
-                        .addOnFailureListener(e -> Toast.makeText(EventDetailsActivity.this, "Failed to join waiting list", Toast.LENGTH_SHORT).show());
+                        .addOnFailureListener(e ->
+                                Toast.makeText(EventDetailsActivity.this, "Failed to join waiting list", Toast.LENGTH_SHORT).show());
             } else {
                 // Leave waiting list
                 db.collection("events")
@@ -217,14 +228,21 @@ public class EventDetailsActivity extends AppCompatActivity {
 
                             db.collection("events")
                                     .document(event.getId())
-                                    .update("currentWaitlistCount", FieldValue.increment(-1));
-
-                            event.setCurrentWaitlistCount(event.getCurrentWaitlistCount() - 1);
-                            updateSpotsUI();
-                            updateToggleButton();
-                            Toast.makeText(EventDetailsActivity.this, "Left waiting list!", Toast.LENGTH_SHORT).show();
+                                    .update("currentWaitlistCount", FieldValue.increment(-1))
+                                    .addOnSuccessListener(unused -> {
+                                        int newCount = Math.max(0, event.getCurrentWaitlistCount() - 1);
+                                        event.setCurrentWaitlistCount(newCount);
+                                        updateSpotsUI();
+                                        updateToggleButton();
+                                        Toast.makeText(EventDetailsActivity.this, "Left waiting list!", Toast.LENGTH_SHORT).show();
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        isOnWaitingList = true;
+                                        Toast.makeText(EventDetailsActivity.this, "Failed to update waitlist count", Toast.LENGTH_SHORT).show();
+                                    });
                         })
-                        .addOnFailureListener(e -> Toast.makeText(EventDetailsActivity.this, "Failed to leave waiting list", Toast.LENGTH_SHORT).show());
+                        .addOnFailureListener(e ->
+                                Toast.makeText(EventDetailsActivity.this, "Failed to leave waiting list", Toast.LENGTH_SHORT).show());
             }
         });
 
@@ -240,10 +258,14 @@ public class EventDetailsActivity extends AppCompatActivity {
      * count from the total capacity, and updates the UI TextView accordingly.
      */
     void updateSpotsUI() {
-        int spotsAvailable = event.getCapacity() - event.getCurrentWaitlistCount();
-        eventCapacity.setText(spotsAvailable + "/" + event.getCapacity() + " spots available");
-    }
+        if (event == null) return;
 
+        int capacity = event.getCapacity();
+        int waitlistCount = Math.max(0, event.getCurrentWaitlistCount());
+        int spotsAvailable = Math.max(0, capacity - waitlistCount);
+
+        eventCapacity.setText(spotsAvailable + "/" + capacity + " spots available");
+    }
     /**
      * Checks whether the current time falls within the event's registration period.
      *
@@ -288,11 +310,11 @@ public class EventDetailsActivity extends AppCompatActivity {
      */
     private void updateToggleButton() {
         if (isOnWaitingList) {
-            btnToggleWaitingList.setText("Leave Waiting List");
-            btnToggleWaitingList.setBackgroundTintList(getResources().getColorStateList(R.color.red, null));
+            btnToggleWaitingList.setText("Leave Waitlist");
+            btnToggleWaitingList.setBackgroundTintList(getResources().getColorStateList(R.color.error, null));
         } else {
-            btnToggleWaitingList.setText("Join Waiting List");
-            btnToggleWaitingList.setBackgroundTintList(getResources().getColorStateList(R.color.lightGreen, null));
+            btnToggleWaitingList.setText("Join Waitlist");
+            btnToggleWaitingList.setBackgroundTintList(getResources().getColorStateList(R.color.accent, null));
         }
     }
 
