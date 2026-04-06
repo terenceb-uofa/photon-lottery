@@ -22,12 +22,47 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * Acts as the adapter for displaying events in the organizer's event management feed.
+ * <p>
+ * Binds {@link Event} data to a custom card layout tailored for organizers. Handles formatting and
+ * displaying comprehensive event details such as the title, address, sign-up fee, event date,
+ * dynamic status (e.g., OPEN, CLOSED, DRAWN, ENDED), current waitlist count, registration timelines,
+ * and loading the event poster using the Glide library.
+ * </p>
+ *
+ * Outstanding Issues:
+ * - None
+ */
+
+/**
+ * Represents the adapter that maps Event objects to their corresponding UI components for organizers.
+ * This class handles the rendering of individual event cards with extended management details.
+ * @version 1.0
+ */
 public class OrganizerEventAdapter extends ArrayAdapter<Event> {
 
+    /**
+     * Initializes the OrganizerEventAdapter.
+     *
+     * @param context The current context, used to inflate the layout and access resources.
+     * @param events The list of {@link Event} objects to be represented in the UI.
+     */
     public OrganizerEventAdapter(@NonNull Context context, @NonNull List<Event> events) {
         super(context, 0, events);
     }
 
+    /**
+     * Gets a View that displays the data at the specified position in the data set.
+     * Populates the custom layout fields with the specific event's data, handling null checks,
+     * formatting dates and currency, evaluating current event status based on system time,
+     * and executing image loading via Glide.
+     *
+     * @param position The position of the item within the adapter's data set of the item whose view we want.
+     * @param convertView The old view to reuse, if possible.
+     * @param parent The parent that this view will eventually be attached to.
+     * @return A View corresponding to the event data at the specified position.
+     */
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
@@ -50,8 +85,6 @@ public class OrganizerEventAdapter extends ArrayAdapter<Event> {
         TextView textRegistrationStart = view.findViewById(R.id.textRegistrationStart);
         TextView textRegistrationEnd = view.findViewById(R.id.textRegistrationEnd);
         TextView textDrawDate = view.findViewById(R.id.textDrawDate);
-
-
 
         if (event != null) {
             // Name

@@ -24,6 +24,23 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * Acts as the notification center for Entrants.
+ * <p>
+ * Retrieves the user's notifications from Firebase Firestore and displays them in a RecyclerView.
+ * Allows users to accept or decline various types of invitations, such as private invites,
+ * lottery invites, and co-organizer requests, and handles the respective database updates.
+ * </p>
+ *
+ * Outstanding Issues:
+ * - None at the moment.
+ */
+
+/**
+ * Represents the screen where entrants can view and interact with their notifications.
+ * This class handles the structuring, fetching, and processing of user invitations and alerts.
+ * @version 1.0
+ */
 public class EntrantNotificationActivity extends AppCompatActivity {
 
     private RecyclerView rvNotifications;
@@ -37,6 +54,14 @@ public class EntrantNotificationActivity extends AppCompatActivity {
     private NotificationAdapter adapter;
     private List<DocumentSnapshot> notificationList = new ArrayList<>();
 
+    /**
+     * Initializes the activity, sets up the RecyclerView for notifications,
+     * and initiates data loading for the user's profile and notifications.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after being
+     * shut down then this Bundle contains the data it most recently
+     * supplied. Otherwise it is null.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,6 +85,10 @@ public class EntrantNotificationActivity extends AppCompatActivity {
         loadNotifications();
     }
 
+    /**
+     * Retrieves the current user's profile information from Firestore using their device ID
+     * and stores it in the currentProfile variable.
+     */
     private void loadUserProfile() {
         db.collection("profiles").document(deviceId).get().addOnSuccessListener(documentSnapshot -> {
             if (documentSnapshot.exists()) {
@@ -68,6 +97,10 @@ public class EntrantNotificationActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Attaches a real-time snapshot listener to the user's notifications collection in Firestore.
+     * Updates the RecyclerView dynamically based on the presence or absence of notifications.
+     */
     private void loadNotifications() {
         db.collection("profiles").document(deviceId).collection("notifications")
                 .addSnapshotListener((value, error) -> {
@@ -87,8 +120,16 @@ public class EntrantNotificationActivity extends AppCompatActivity {
     }
 
     // --- INNER CLASS ADAPTER ---
+
+    /**
+     * Inner class adapter responsible for binding notification data to the RecyclerView.
+     * Handles displaying message text and wiring up interactive buttons for invitations.
+     */
     private class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapter.ViewHolder> {
 
+        /**
+         * ViewHolder for notification items.
+         */
         class ViewHolder extends RecyclerView.ViewHolder {
             TextView tvMessage;
             LinearLayout layoutInviteButtons;
@@ -103,6 +144,13 @@ public class EntrantNotificationActivity extends AppCompatActivity {
             }
         }
 
+        /**
+         * Called when the RecyclerView needs a new {@link ViewHolder} of the given type to represent an item.
+         *
+         * @param parent The ViewGroup into which the new View will be added after it is bound to an adapter position.
+         * @param viewType The view type of the new View.
+         * @return A new ViewHolder that holds a View of the given view type.
+         */
         @NonNull
         @Override
         public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -110,6 +158,13 @@ public class EntrantNotificationActivity extends AppCompatActivity {
             return new ViewHolder(view);
         }
 
+        /**
+         * Called by RecyclerView to display the data at the specified position.
+         * Adjusts button visibility and attaches appropriate click listeners based on notification type.
+         *
+         * @param holder The ViewHolder which should be updated to represent the contents of the item at the given position.
+         * @param position The position of the item within the adapter's data set.
+         */
         @Override
         public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
             DocumentSnapshot notification = notificationList.get(position);
@@ -142,12 +197,23 @@ public class EntrantNotificationActivity extends AppCompatActivity {
             }
         }
 
+        /**
+         * Returns the total number of items in the data set held by the adapter.
+         *
+         * @return The total number of notifications.
+         */
         @Override
         public int getItemCount() {
             return notificationList.size();
         }
 
-        //  Private invite logic
+        /**
+         * Accepts a private invitation to an event, adding the user's profile to the event's
+         * waiting list in Firestore, and removes the notification.
+         *
+         * @param eventId The ID of the event the user is invited to.
+         * @param notifId The ID of the notification to be deleted.
+         */
         private void acceptPrivateInvite(String eventId, String notifId) {
             if (currentProfile == null || eventId == null) return;
             db.collection("events").document(eventId).collection("waitingList").document(deviceId)
@@ -158,12 +224,23 @@ public class EntrantNotificationActivity extends AppCompatActivity {
                     });
         }
 
+        /**
+         * Declines a private invitation by simply deleting the notification from Firestore.
+         *
+         * @param notifId The ID of the notification to be deleted.
+         */
         private void declinePrivateInvite(String notifId) {
             deleteNotification(notifId);
             Toast.makeText(EntrantNotificationActivity.this, "Private Invite Declined", Toast.LENGTH_SHORT).show();
         }
 
-        //  Lottery invite logic
+        /**
+         * Accepts a lottery invitation by updating the user's status in the event's waiting list
+         * to "Enrolled", and deletes the notification.
+         *
+         * @param eventId The ID of the event the user won the lottery for.
+         * @param notifId The ID of the notification to be deleted.
+         */
         private void acceptLotteryInvite(String eventId, String notifId) {
             if (currentProfile == null || eventId == null) return;
 
@@ -178,6 +255,13 @@ public class EntrantNotificationActivity extends AppCompatActivity {
                     });
         }
 
+        /**
+         * Declines a lottery invitation by updating the user's status to "Cancelled",
+         * deleting the notification, and triggering a replacement draw.
+         *
+         * @param eventId The ID of the event the user is declining.
+         * @param notifId The ID of the notification to be deleted.
+         */
         private void declineLotteryInvite(String eventId, String notifId) {
             if (currentProfile == null || eventId == null) return;
 
@@ -193,6 +277,13 @@ public class EntrantNotificationActivity extends AppCompatActivity {
                     });
         }
 
+        /**
+         * Automatically selects a replacement from the remaining waitlist if a selected user
+         * declines their lottery invitation, updating the new winner's status to "Invited"
+         * and dispatching a new notification to them.
+         *
+         * @param eventId The ID of the event for which a replacement is being drawn.
+         */
         private void drawReplacement(String eventId) {
             // Find people who have the status "Waitlist"
             db.collection("events").document(eventId).collection("waitingList")
@@ -222,6 +313,14 @@ public class EntrantNotificationActivity extends AppCompatActivity {
                     });
         }
 
+        /**
+         * Accepts an invitation to become a co-organizer for an event. Adds the user's ID
+         * to the event's coOrganizerIds array, removes them from the event's waiting list,
+         * decrements the waitlist count, and deletes the notification.
+         *
+         * @param eventId The ID of the event the user will co-organize.
+         * @param notifId The ID of the notification to be deleted.
+         */
         private void acceptCoOrganizerInvite(String eventId, String notifId) {
             if (eventId == null) return;
 
@@ -241,12 +340,21 @@ public class EntrantNotificationActivity extends AppCompatActivity {
                     });
         }
 
+        /**
+         * Declines a co-organizer invitation by deleting the notification from Firestore.
+         *
+         * @param notifId The ID of the notification to be deleted.
+         */
         private void declineCoOrganizerInvite(String notifId) {
             deleteNotification(notifId);
             Toast.makeText(EntrantNotificationActivity.this, "Declined Co-Organizer Invite", Toast.LENGTH_SHORT).show();
         }
 
-        // Helper to format profile map
+        /**
+         * Helper method to map the current profile's attributes to a HashMap for Firestore storage.
+         *
+         * @return A HashMap containing the entrant's name, email, and phone number.
+         */
         private HashMap<String, Object> getProfileMap() {
             return new HashMap<String, Object>() {{
                 put("name", currentProfile.getName());
@@ -255,6 +363,11 @@ public class EntrantNotificationActivity extends AppCompatActivity {
             }};
         }
 
+        /**
+         * Deletes a specified notification document from the user's notifications collection in Firestore.
+         *
+         * @param notifId The document ID of the notification to delete.
+         */
         private void deleteNotification(String notifId) {
             db.collection("profiles").document(deviceId).collection("notifications").document(notifId).delete();
         }
