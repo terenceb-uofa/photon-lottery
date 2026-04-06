@@ -309,6 +309,16 @@ public class EventDetailsActivity extends AppCompatActivity {
             dialog.getWindow().setBackgroundDrawableResource(R.drawable.bg_nav_glass);
         }
 
+        TextView titleView = dialog.findViewById(androidx.appcompat.R.id.alertTitle);
+        if (titleView != null) {
+            titleView.setTextColor(getResources().getColor(R.color.white));
+        }
+
+        TextView messageView = dialog.findViewById(android.R.id.message);
+        if (messageView != null) {
+            messageView.setTextColor(getResources().getColor(R.color.white));
+        }
+
         dialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE)
                 .setTextColor(getResources().getColor(R.color.white));
     }
