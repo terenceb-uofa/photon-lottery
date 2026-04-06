@@ -1,6 +1,7 @@
 package com.example.getoutthere.organizer;
 
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,6 +49,7 @@ public class WaitlistFragment extends Fragment {
     private RecyclerView rvWaitlist;
     private Button btnNotifyWaitlist;
     private Button btnDrawLottery;
+    private Button btnInviteToWaitlist; // NEW: Button for private invites
 
     public WaitlistFragment() {
         // Required empty public constructor
@@ -98,11 +100,31 @@ public class WaitlistFragment extends Fragment {
         rvWaitlist = view.findViewById(R.id.rvWaitlist);
         btnNotifyWaitlist = view.findViewById(R.id.btnNotifyWaitlist);
         btnDrawLottery = view.findViewById(R.id.btnDrawLottery);
+        btnInviteToWaitlist = view.findViewById(R.id.btnInviteToWaitlist);
 
         // Set up RecyclerView
         adapter = new EntrantAdapter(waitlistEntrants, eventId);
         rvWaitlist.setLayoutManager(new LinearLayoutManager(getContext()));
         rvWaitlist.setAdapter(adapter);
+
+        // Check if Event is Private to show Invite Button
+        if (eventId != null) {
+            db.collection("events").document(eventId).get()
+                    .addOnSuccessListener(documentSnapshot -> {
+                        if (documentSnapshot.exists()) {
+                            String visibility = documentSnapshot.getString("eventVisibility");
+                            String eventName = documentSnapshot.getString("name");
+
+                            if ("Private".equalsIgnoreCase(visibility)) {
+                                btnInviteToWaitlist.setVisibility(View.VISIBLE);
+                                btnInviteToWaitlist.setOnClickListener(v -> showInviteDialog(eventId, eventName));
+                            } else {
+                                btnInviteToWaitlist.setVisibility(View.GONE);
+                            }
+                        }
+                    });
+        }
+        // ------------------------------------------------------------
 
         // Draw Lottery button
         btnDrawLottery.setOnClickListener(v -> drawLottery());
@@ -379,5 +401,77 @@ public class WaitlistFragment extends Fragment {
 
         builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
         builder.show();
+    }
+
+    /**
+     * Shows a dialog allowing the organizer to search for an entrant by email to invite them.
+     */
+    private void showInviteDialog(String eventId, String eventName) {
+        androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(requireContext());
+        builder.setTitle("Invite Entrant");
+
+        final android.widget.EditText input = new android.widget.EditText(requireContext());
+        input.setHint("Enter entrant's exact email address...");
+        builder.setView(input);
+
+        builder.setPositiveButton("Search & Invite", (dialog, which) -> {
+            String searchEmail = input.getText().toString().trim();
+            if (TextUtils.isEmpty(searchEmail)) {
+                Toast.makeText(getContext(), "Email cannot be empty", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // Search Firebase Profiles for this email
+            db.collection("profiles")
+                    .whereEqualTo("email", searchEmail)
+                    .get()
+                    .addOnSuccessListener(queryDocumentSnapshots -> {
+                        if (!queryDocumentSnapshots.isEmpty()) {
+                            // Found a matching user!
+                            DocumentSnapshot userDoc = queryDocumentSnapshots.getDocuments().get(0);
+                            String targetDeviceId = userDoc.getId();
+
+                            // PASS THE ENTIRE USER DOC SO WE CAN SAVE THEIR INFO TO THE EVENT
+                            sendPrivateInvite(targetDeviceId, eventId, eventName, userDoc);
+                        } else {
+                            Toast.makeText(getContext(), "No user found with that email.", Toast.LENGTH_LONG).show();
+                        }
+                    })
+                    .addOnFailureListener(e -> Toast.makeText(getContext(), "Error searching for user.", Toast.LENGTH_SHORT).show());
+        });
+
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
+        builder.show();
+    }
+
+    /**
+     * Pushes the notification and adds the user to the event's waiting list as Pending.
+     */
+    private void sendPrivateInvite(String targetDeviceId, String eventId, String eventName, DocumentSnapshot userDoc) {
+        // Send the Notification to the user
+        HashMap<String, Object> notificationData = new HashMap<>();
+        notificationData.put("eventId", eventId);
+        notificationData.put("message", "You have been invited to join the waitlist for a private event: " + eventName + "! Please accept or decline.");
+        notificationData.put("type", "private_invite");
+
+        db.collection("profiles")
+                .document(targetDeviceId)
+                .collection("notifications")
+                .add(notificationData);
+
+        // Add the user to the event's Waitlist collection with a "Pending" status
+        HashMap<String, Object> waitlistData = new HashMap<>();
+        waitlistData.put("status", "Pending");
+        waitlistData.put("name", userDoc.getString("name"));
+        waitlistData.put("email", userDoc.getString("email"));
+        waitlistData.put("phone", userDoc.getString("phone"));
+
+        db.collection("events")
+                .document(eventId)
+                .collection("waitingList")
+                .document(targetDeviceId)
+                .set(waitlistData)
+                .addOnSuccessListener(aVoid -> Toast.makeText(getContext(), "Invite sent to user!", Toast.LENGTH_SHORT).show())
+                .addOnFailureListener(e -> Toast.makeText(getContext(), "Failed to add user to event.", Toast.LENGTH_SHORT).show());
     }
 }

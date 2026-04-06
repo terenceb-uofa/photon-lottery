@@ -179,7 +179,7 @@ public class EntrantNotificationActivity extends AppCompatActivity {
             if ("private_invite".equals(type)) {
                 holder.layoutInviteButtons.setVisibility(View.VISIBLE);
                 holder.btnAccept.setOnClickListener(v -> acceptPrivateInvite(eventId, notifId));
-                holder.btnDecline.setOnClickListener(v -> declinePrivateInvite(notifId));
+                holder.btnDecline.setOnClickListener(v -> declinePrivateInvite(eventId, notifId));
             }
             else if ("lottery_invite".equals(type)) {
                 holder.layoutInviteButtons.setVisibility(View.VISIBLE);
@@ -208,30 +208,36 @@ public class EntrantNotificationActivity extends AppCompatActivity {
         }
 
         /**
-         * Accepts a private invitation to an event, adding the user's profile to the event's
-         * waiting list in Firestore, and removes the notification.
-         *
-         * @param eventId The ID of the event the user is invited to.
-         * @param notifId The ID of the notification to be deleted.
+         * Accepts a private invitation to an event, updating the user's status from Pending
+         * to Waitlist in Firestore, and removes the notification.
          */
         private void acceptPrivateInvite(String eventId, String notifId) {
-            if (currentProfile == null || eventId == null) return;
+            if (eventId == null) return;
+
+            // Update the status to "Waitlist"
             db.collection("events").document(eventId).collection("waitingList").document(deviceId)
-                    .set(getProfileMap())
+                    .update("status", "Waitlist")
                     .addOnSuccessListener(aVoid -> {
-                        Toast.makeText(EntrantNotificationActivity.this, "Private Invite Accepted!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(EntrantNotificationActivity.this, "Added to Waitlist!", Toast.LENGTH_SHORT).show();
                         deleteNotification(notifId);
+                    }).addOnFailureListener(e -> {
+                        Toast.makeText(EntrantNotificationActivity.this, "Failed to join waitlist.", Toast.LENGTH_SHORT).show();
                     });
         }
 
         /**
-         * Declines a private invitation by simply deleting the notification from Firestore.
-         *
-         * @param notifId The ID of the notification to be deleted.
+         * Declines a private invitation by updating the status to Cancelled and deleting the notification.
          */
-        private void declinePrivateInvite(String notifId) {
-            deleteNotification(notifId);
-            Toast.makeText(EntrantNotificationActivity.this, "Private Invite Declined", Toast.LENGTH_SHORT).show();
+        private void declinePrivateInvite(String eventId, String notifId) {
+            if (eventId == null) return;
+
+            // Update the status to "Cancelled"
+            db.collection("events").document(eventId).collection("waitingList").document(deviceId)
+                    .update("status", "Cancelled")
+                    .addOnSuccessListener(aVoid -> {
+                        Toast.makeText(EntrantNotificationActivity.this, "Private Invite Declined", Toast.LENGTH_SHORT).show();
+                        deleteNotification(notifId);
+                    });
         }
 
         /**
