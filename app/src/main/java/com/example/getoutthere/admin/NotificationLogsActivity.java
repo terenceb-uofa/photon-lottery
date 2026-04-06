@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -77,7 +78,7 @@ public class NotificationLogsActivity extends AppCompatActivity {
         // Fetch logs from Firestore
         loadNotificationLogs();
 
-        Button NotificationLogBackButton = findViewById(R.id.NotificationLogBackButton);
+        FrameLayout NotificationLogBackButton = findViewById(R.id.NotificationLogBackButton);
 
         NotificationLogBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -98,7 +99,7 @@ public class NotificationLogsActivity extends AppCompatActivity {
                 .addSnapshotListener((value, error) -> {
                     if (error != null) {
                         Log.e("NotificationLogs", "Error fetching logs", error);
-                        Toast.makeText(this, "Failed to load logs. Check Logcat for the Firestore Index link.", Toast.LENGTH_LONG).show();
+                        Toast.makeText(this, "Failed to load logs: missing Firestore permissions.", Toast.LENGTH_LONG).show();
                         return;
                     }
 

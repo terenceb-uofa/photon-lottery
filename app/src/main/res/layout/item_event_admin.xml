@@ -5,10 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="12dp"
-    app:cardBackgroundColor="#1E1E1E"
+    app:cardBackgroundColor="@color/glass"
     app:cardCornerRadius="12dp"
     app:cardElevation="2dp"
-    app:strokeColor="#333333"
+    app:strokeColor="@color/glassBorder"
     app:strokeWidth="1dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -21,7 +21,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="Event Name"
-            android:textColor="#FFFFFF"
+            android:textColor="@color/white"
             android:textSize="18sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toStartOf="@+id/btnComments"
@@ -33,7 +33,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Organizer: Loading..."
-            android:textColor="#999999"
+            android:textColor="@color/white"
             android:textSize="14sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvEventName" />
@@ -44,50 +44,78 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:text="April 01, 2026"
-            android:textColor="#59A91E"
+            android:textColor="@color/white"
             android:textSize="13sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvOrganizerName" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnComments"
-            style="@style/Widget.MaterialComponents.Button.TextButton"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:id="@+id/actionRow"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="40dp"
-            android:text="Comments"
-            android:textColor="#59A91E"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/btnDelete" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnViewEvent"
-            style="@style/Widget.MaterialComponents.Button.TextButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="20dp"
-            android:layout_marginBottom="16dp"
-            android:text="View"
-            android:textColor="#FFFFFF"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/btnDelete"
-            app:layout_constraintTop_toBottomOf="@+id/btnComments"
-            app:layout_constraintVertical_bias="0.0" />
-
-        <com.google.android.material.button.MaterialButton
-            android:contentDescription="Delete Action"
-            android:id="@+id/btnDelete"
-            style="@style/Widget.MaterialComponents.Button.Icon"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            app:backgroundTint="@android:color/transparent"
-            app:icon="@android:drawable/ic_menu_delete"
-            app:iconSize="25dp"
-            app:iconTint="#FF5252"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginTop="16dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toBottomOf="@id/tvEventDate"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnComments"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="1"
+                android:layout_marginEnd="8dp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:minHeight="48dp"
+                android:text="Comments"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                app:backgroundTint="@color/glass"
+                app:cornerRadius="999dp"
+                app:strokeColor="@color/glassBorder"
+                app:strokeWidth="1dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnViewEvent"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="12dp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:minHeight="48dp"
+                android:text="View"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                app:backgroundTint="@color/glass"
+                app:cornerRadius="999dp"
+                app:strokeColor="@color/glassBorder"
+                app:strokeWidth="1dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnDelete"
+                style="@style/Widget.MaterialComponents.Button.Icon"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:contentDescription="Delete Action"
+                android:stateListAnimator="@null"
+                app:backgroundTint="@color/glass"
+                app:cornerRadius="999dp"
+                app:elevation="0dp"
+                app:icon="@drawable/ic_delete"
+                app:iconSize="24dp"
+                app:iconTint="@color/error"
+                app:pressedTranslationZ="0dp"
+                app:strokeColor="@color/glassBorder"
+                app:strokeWidth="1dp" />
+
+        </LinearLayout>
+
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>

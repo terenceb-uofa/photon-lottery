@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -71,7 +72,7 @@ public class ManageOrganizersActivity extends AppCompatActivity {
             return insets;
         });
 
-        Button OrganizerManagerBackButton = findViewById(R.id.OrganizerManagerBackButton);
+        FrameLayout OrganizerManagerBackButton = findViewById(R.id.OrganizerManagerBackButton);
 
         OrganizerManagerBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -144,59 +145,27 @@ public class ManageOrganizersActivity extends AppCompatActivity {
             try {
                 EntrantProfile currentProfile = organizersList.get(index);
 
-                // Create the outer container
-                LinearLayout row = new LinearLayout(this);
-                row.setOrientation(LinearLayout.HORIZONTAL);
-                row.setBackgroundColor(0xFF59A91E);
-                row.setGravity(Gravity.CENTER_VERTICAL);
-                row.setPadding(24, 16, 24, 16);
-                LinearLayout.LayoutParams rowParams = new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                rowParams.setMargins(0, 0, 0, 12);
-                row.setLayoutParams(rowParams);
+                View row = getLayoutInflater().inflate(R.layout.item_organizer_admin, organizersContainer, false);
 
+                TextView nameView = row.findViewById(R.id.tvOrganizerName);
+                TextView eventsView = row.findViewById(R.id.tvOrganizerEvents);
+                View banButton = row.findViewById(R.id.btnBan);
 
-                // Create a neat vertical column
-                LinearLayout textColumn = new LinearLayout(this);
-                textColumn.setOrientation(LinearLayout.VERTICAL);
-                LinearLayout.LayoutParams colParams = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
-                textColumn.setLayoutParams(colParams);
+                nameView.setText(currentProfile.getName());
 
-                // Name + Role Row
-                TextView nameView = new TextView(this);
-                nameView.setText(currentProfile.getName() + " (" + currentProfile.getRole() + ")");
-                nameView.setTextColor(0xFFFFFFFF);
-                nameView.setTextSize(16f);
-                nameView.setTypeface(null, android.graphics.Typeface.BOLD);
-                textColumn.addView(nameView);
-                textColumn.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
-
-                // Events List to be displayed on a separate row
                 List<Event> myEvents = organizerEventsMap.get(currentProfile.getDeviceId());
                 if (myEvents != null && !myEvents.isEmpty()) {
                     StringBuilder eventNames = new StringBuilder("Events: ");
                     for (Event e : myEvents) {
                         eventNames.append(e.getName()).append(", ");
                     }
-                    TextView eventsView = new TextView(this);
-                    // Trim trailing comma
                     String displayStr = eventNames.toString().replaceAll(", $", "");
                     eventsView.setText(displayStr);
-                    eventsView.setTextColor(0xFFEEEEEE);
-                    eventsView.setTextSize(12f);
-                    eventsView.setPadding(0, 4, 0, 0);
-                    textColumn.addView(eventsView);
+                } else {
+                    eventsView.setText("Events: None");
                 }
 
-                // Create delete button
-                Button deleteButton = new Button(this);
-                deleteButton.setText("BAN");
-                deleteButton.setBackgroundColor(0xFFCC0000);
-                deleteButton.setTextColor(0xFFFFFFFF);
-                deleteButton.setPadding(12, 8, 12, 8);
-
-                // Use the delete object directly for click event listening
-                deleteButton.setOnClickListener(v -> {
+                banButton.setOnClickListener(v -> {
                     new AlertDialog.Builder(v.getContext())
                             .setTitle("Ban Organizer")
                             .setMessage("Ban '" + currentProfile.getName() + "'? This will delete all their events but keep their entrant profile")
@@ -206,7 +175,7 @@ public class ManageOrganizersActivity extends AppCompatActivity {
                                         () -> {
                                             organizersList.remove(currentProfile);
                                             render();
-                                            Toast.makeText(this, "Organizer banned and events Removed", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(this, "Organizer banned and events removed", Toast.LENGTH_SHORT).show();
                                         },
                                         () -> Toast.makeText(this, "Ban failed", Toast.LENGTH_SHORT).show()
                                 );
@@ -214,10 +183,6 @@ public class ManageOrganizersActivity extends AppCompatActivity {
                             .setNegativeButton("Cancel", null)
                             .show();
                 });
-
-                // Assemble views together into an item
-                row.addView(textColumn);
-                row.addView(deleteButton);
 
                 organizersContainer.addView(row);
 
