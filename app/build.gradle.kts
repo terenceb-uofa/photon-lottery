@@ -61,5 +61,6 @@ dependencies {
     androidTestImplementation("org.mockito:mockito-android:5.3.1")
     androidTestImplementation("androidx.fragment:fragment-testing:1.8.9")
     debugImplementation("androidx.fragment:fragment-testing-manifest:1.8.9")
-
+    implementation("com.google.android.gms:play-services-location:21.0.1")
+    implementation("org.osmdroid:osmdroid-android:6.1.18")
 }

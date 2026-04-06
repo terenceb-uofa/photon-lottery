@@ -19,7 +19,21 @@
         android:clipToPadding="false"
         android:paddingBottom="8dp" />
 
-    <!-- Public event row: Notify + Draw -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnViewMap"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginTop="12dp"
+        android:minHeight="0dp"
+        android:insetTop="0dp"
+        android:insetBottom="0dp"
+        android:text="View Entrant Map"
+        android:textColor="@color/white"
+        app:backgroundTint="@color/ghostButton"
+        app:strokeColor="@color/ghostBorder"
+        app:strokeWidth="1dp"
+        app:cornerRadius="999dp" />
+
     <LinearLayout
         android:id="@+id/publicButtonRow"
         android:layout_width="match_parent"
@@ -60,7 +74,6 @@
             app:cornerRadius="24dp" />
     </LinearLayout>
 
-    <!-- Private event row: Notify + Invite -->
     <LinearLayout
         android:id="@+id/privateTopButtonRow"
         android:layout_width="match_parent"
@@ -103,7 +116,6 @@
             app:cornerRadius="999dp" />
     </LinearLayout>
 
-    <!-- Private event bottom button -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnDrawLotteryPrivate"
         android:layout_width="match_parent"

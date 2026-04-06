@@ -338,6 +338,9 @@ public class ManageEventsActivity extends AppCompatActivity {
 
     }
 
+    /**
+        Fetches and displays the organizer name into a text view given an organizerId
+     */
     private void populateOrganizerName(String organizerId, TextView targetView) {
         // 1. Initial State (The "Skeleton" phase)
         targetView.setText("ORGANIZER: Loading...");

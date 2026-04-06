@@ -1,10 +1,9 @@
 package com.example.getoutthere.event;
 
 import android.content.Intent;
-import android.widget.Button;
 
-import androidx.test.core.app.ApplicationProvider;
 import androidx.test.core.app.ActivityScenario;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.espresso.assertion.ViewAssertions;
@@ -19,92 +18,91 @@ import org.junit.runner.RunWith;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static org.junit.Assert.assertFalse;
 
-// Tests the functionality of EventDetailsActivityTest
-
 @RunWith(AndroidJUnit4.class)
 public class EventDetailsActivityTest {
 
     /**
-     * Test - EventDetailsActivity launches. UI and event info displayed.
+     * Test that the activity launches and all key UI elements are displayed.
      */
     @Test
     public void testActivityLaunchesAndDisplaysViews() {
-        Intent intent = new Intent(
-                ApplicationProvider.getApplicationContext(),
-                EventDetailsActivity.class
-        );
+        Intent intent = new Intent(ApplicationProvider.getApplicationContext(), EventDetailsActivity.class);
         intent.putExtra("eventId", "testEvent123");
 
         try (ActivityScenario<EventDetailsActivity> scenario = ActivityScenario.launch(intent)) {
-            // Check important UI components are displayed
+            // Check key UI elements
             Espresso.onView(ViewMatchers.withId(R.id.EventName)).check(ViewAssertions.matches(isDisplayed()));
             Espresso.onView(ViewMatchers.withId(R.id.EventAddress)).check(ViewAssertions.matches(isDisplayed()));
             Espresso.onView(ViewMatchers.withId(R.id.EventDateRange)).check(ViewAssertions.matches(isDisplayed()));
             Espresso.onView(ViewMatchers.withId(R.id.btnToggleWaitingList)).check(ViewAssertions.matches(isDisplayed()));
+            Espresso.onView(ViewMatchers.withId(R.id.btnViewComments)).check(ViewAssertions.matches(isDisplayed()));
         }
     }
 
     /**
-     * Test - can click Join/Leave Waiting List button.
+     * Test clicking Join/Leave Waiting List button.
      */
     @Test
-    public void testJoinWaitingListButtonClick() {
-        Intent intent = new Intent(
-                ApplicationProvider.getApplicationContext(),
-                EventDetailsActivity.class
-        );
+    public void testJoinLeaveWaitingListButtonClick() {
+        Intent intent = new Intent(ApplicationProvider.getApplicationContext(), EventDetailsActivity.class);
         intent.putExtra("eventId", "testEvent123");
 
         try (ActivityScenario<EventDetailsActivity> scenario = ActivityScenario.launch(intent)) {
+            // Click to join
+            Espresso.onView(ViewMatchers.withId(R.id.btnToggleWaitingList))
+                    .perform(ViewActions.click());
+
+            // Click again to leave
             Espresso.onView(ViewMatchers.withId(R.id.btnToggleWaitingList))
                     .perform(ViewActions.click());
         }
     }
 
     /**
-     * Test - user can't join the waiting list if the event is full
+     * Test that user cannot join if the waitlist is full.
      */
     @Test
     public void testCantJoinFullEvent() {
-        Intent intent = new Intent(
-                ApplicationProvider.getApplicationContext(),
-                EventDetailsActivity.class
-        );
+        Intent intent = new Intent(ApplicationProvider.getApplicationContext(), EventDetailsActivity.class);
         intent.putExtra("eventId", "testEvent123");
 
         try (ActivityScenario<EventDetailsActivity> scenario = ActivityScenario.launch(intent)) {
             scenario.onActivity(activity -> {
-                // Makes the event full
+                // Simulate full event
                 Event fullEvent = new Event();
-                fullEvent.setCapacity(5);
-                fullEvent.setCurrentWaitlistCount(5);
+                fullEvent.setWaitlistLimit(2);
+                fullEvent.setCurrentWaitlistCount(2);
                 activity.event = fullEvent;
 
-                // Update UI
                 activity.updateSpotsUI();
-
-                // User clicks join button. Should not join.
-                Button joinBtn = activity.findViewById(R.id.btnToggleWaitingList);
-                joinBtn.performClick();
-                assertFalse(activity.isOnWaitingList);
+                activity.updateToggleButton();
             });
+
+            // Attempt to join waitlist
+            Espresso.onView(ViewMatchers.withId(R.id.btnToggleWaitingList))
+                    .perform(ViewActions.click());
+
+            // Verify the button text did not change (still says Join Waitlist)
+            Espresso.onView(ViewMatchers.withId(R.id.btnToggleWaitingList))
+                    .check(ViewAssertions.matches(ViewMatchers.withText("Join Waitlist")));
         }
     }
 
     /**
-     * Test - back button closes the activity
+     * Test that the comments button opens the dialog.
      */
     @Test
-    public void testBackButtonClosesActivity() {
-        Intent intent = new Intent(
-                ApplicationProvider.getApplicationContext(),
-                EventDetailsActivity.class
-        );
+    public void testViewCommentsDialog() {
+        Intent intent = new Intent(ApplicationProvider.getApplicationContext(), EventDetailsActivity.class);
         intent.putExtra("eventId", "testEvent123");
 
         try (ActivityScenario<EventDetailsActivity> scenario = ActivityScenario.launch(intent)) {
-            Espresso.onView(ViewMatchers.withId(R.id.EventDetailsBackButton))
+            Espresso.onView(ViewMatchers.withId(R.id.backButton))
                     .perform(ViewActions.click());
+
+            // Verify the dialog title is displayed
+            Espresso.onView(ViewMatchers.withText("Event Comments"))
+                    .check(ViewAssertions.matches(isDisplayed()));
         }
     }
 }

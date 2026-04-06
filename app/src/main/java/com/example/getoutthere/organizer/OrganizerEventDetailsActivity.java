@@ -18,6 +18,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.bumptech.glide.Glide;
 import com.example.getoutthere.R;
 import com.example.getoutthere.event.Event;
+import com.example.getoutthere.event.EventDetailsActivity;
 import com.example.getoutthere.models.EntrantProfile;
 import com.example.getoutthere.repositories.EventRepository;
 import com.google.firebase.Timestamp;
@@ -54,6 +55,11 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
     private Button buttonQRCode;
     private Button buttonManageWaitlist;
     private Button buttonManageComments;
+
+
+    private TextView tvPrimaryOrganizer;
+    private LinearLayout layoutCoOrganizers;
+    private TextView labelCoOrganizers;
 
     private EntrantProfile entrant;
 
@@ -104,6 +110,11 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
 
         posterPreview = findViewById(R.id.posterPreview);
 
+        // Team displays
+        tvPrimaryOrganizer = findViewById(R.id.tvPrimaryOrganizer);
+        layoutCoOrganizers = findViewById(R.id.layoutCoOrganizers);
+        labelCoOrganizers = findViewById(R.id.labelCoOrganizers);
+
         // Entrant info
         String deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
         entrant = new EntrantProfile();
@@ -111,6 +122,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
 
         eventRepository = new EventRepository();
         eventId = getIntent().getStringExtra("eventId");
+
 
         // Back button
         backButton.setOnClickListener(v -> finish());
@@ -173,6 +185,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
                     dialogView.findViewById(R.id.sendButton);
 
             androidx.appcompat.app.AlertDialog dialog = builder.create();
+
 
             com.google.firebase.firestore.ListenerRegistration listener = FirebaseFirestore.getInstance()
                     .collection("events")
@@ -395,6 +408,13 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         registrationStartInput.setText(formatTimestamp(event.getRegistrationStart()));
         registrationEndInput.setText(formatTimestamp(event.getRegistrationEnd()));
         capacityInput.setText(String.valueOf(event.getCapacity()));
+
+        //Display primary organizer name and co-organizers
+        if (eventId != null) {
+            EventDetailsActivity.displayTeamData(this,event,tvPrimaryOrganizer, labelCoOrganizers,layoutCoOrganizers);
+        }
+
+
         if (event.getSignupFee() <= 0) {
             feeInput.setText("Free");
         } else {
@@ -411,6 +431,8 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
             posterPreview.setImageResource(android.R.drawable.ic_menu_gallery);
         }
     }
+
+
 
     /**
      * Formats a Firestore Timestamp into a readable date string.

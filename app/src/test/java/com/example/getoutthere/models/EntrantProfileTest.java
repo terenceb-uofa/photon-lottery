@@ -25,7 +25,7 @@ public class EntrantProfileTest {
     @Test
     public void testParameterizedConstructorAndGetters() {
         // Create a profile with specific data
-        EntrantProfile profile = new EntrantProfile("device123", "Jane Doe", "jane@email.com", "1234567890", "user");
+        EntrantProfile profile = new EntrantProfile("device123", "Jane Doe", "jane@email.com", "1234567890", "user", false);
 
         // Verify all getters return the exact data passed into the constructor
         assertEquals("device123", profile.getDeviceId());

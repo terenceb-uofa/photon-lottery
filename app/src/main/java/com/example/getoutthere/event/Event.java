@@ -44,6 +44,7 @@ public class Event {
     private List<String> coOrganizerIds;
     private String eventType;
     private String eventVisibility;
+    private boolean requiresGeolocation;
 
     /**
      * Default constructor required for Firebase Firestore serialization.
@@ -299,5 +300,13 @@ public class Event {
      */
     public void setEventVisibility(String eventVisibility) {
         this.eventVisibility = eventVisibility;
+    }
+
+    public boolean isRequiresGeolocation() {
+        return requiresGeolocation;
+    }
+
+    public void setRequiresGeolocation(boolean requiresGeolocation) {
+        this.requiresGeolocation = requiresGeolocation;
     }
 }
