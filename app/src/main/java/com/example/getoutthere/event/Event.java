@@ -280,10 +280,18 @@ public class Event {
      */
     public void setCoOrganizerIds(List<String> coOrganizerIds) { this.coOrganizerIds = coOrganizerIds; }
 
+    /**
+     * Gets the visibility of the event.
+     * @return The event visibility (e.g., Public, Private).
+     */
     public String getEventVisibility() {
         return eventVisibility;
     }
 
+    /**
+     * Sets the visibility of the event.
+     * @param eventVisibility The string representing the event visibility.
+     */
     public void setEventVisibility(String eventVisibility) {
         this.eventVisibility = eventVisibility;
     }
