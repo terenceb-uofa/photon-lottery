@@ -151,6 +151,7 @@ public class EnrolledFragment extends Fragment {
                             entrant.put("name", "Loading...");
                             entrant.put("email", "");
                             entrant.put("phone", "");
+                            entrant.put("notificationsEnabled", "true");
                             enrolledEntrants.add(entrant);
                             loadProfileInfo(deviceId, index);
                             index++;
@@ -184,18 +185,27 @@ public class EnrolledFragment extends Fragment {
                 Toast.makeText(getContext(), "Message cannot be empty", Toast.LENGTH_SHORT).show();
                 return;
             }
+            int notifiedCount = 0;
             for (Map<String, String> entrant : enrolledEntrants) {
                 String deviceId = entrant.get("deviceId");
                 if (deviceId == null) continue;
-                Map<String, Object> notification = NotificationUtils.buildNotification(message, eventId);
-                db.collection("profiles")
-                        .document(deviceId)
-                        .collection("notifications")
-                        .add(notification)
-                        .addOnFailureListener(e ->
-                                Toast.makeText(getContext(), "Failed to notify " + deviceId, Toast.LENGTH_SHORT).show());
+
+                // Respect notification preference
+                String enabledStr = entrant.get("notificationsEnabled");
+                boolean notifsEnabled = enabledStr == null || Boolean.parseBoolean(enabledStr);
+
+                if (notifsEnabled) {
+                    Map<String, Object> notification = NotificationUtils.buildNotification(message, eventId);
+                    db.collection("profiles")
+                            .document(deviceId)
+                            .collection("notifications")
+                            .add(notification)
+                            .addOnFailureListener(e ->
+                                    Toast.makeText(getContext(), "Failed to notify " + deviceId, Toast.LENGTH_SHORT).show());
+                    notifiedCount++;
+                }
             }
-            Toast.makeText(getContext(), "Notified " + enrolledEntrants.size() + " enrolled entrants!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Notified " + notifiedCount + " enrolled entrants!", Toast.LENGTH_SHORT).show();
         });
 
         builder.setNegativeButton("Cancel", null);
@@ -234,13 +244,17 @@ public class EnrolledFragment extends Fragment {
                         String name = doc.getString("name");
                         String email = doc.getString("email");
                         String phone = doc.getString("phone");
+                        Boolean notificationsEnabled = doc.getBoolean("notificationsEnabled");
+
                         entrant.put("name", name != null && !name.isEmpty() ? name : "Unknown user");
                         entrant.put("email", email != null ? email : "");
                         entrant.put("phone", phone != null ? phone : "");
+                        entrant.put("notificationsEnabled", String.valueOf(notificationsEnabled != null ? notificationsEnabled : true));
                     } else {
                         entrant.put("name", "Unknown user");
                         entrant.put("email", "");
                         entrant.put("phone", "");
+                        entrant.put("notificationsEnabled", "true");
                     }
                     adapter.updateData(new ArrayList<>(enrolledEntrants));
                 })
@@ -254,6 +268,7 @@ public class EnrolledFragment extends Fragment {
                     entrant.put("name", "Unknown user");
                     entrant.put("email", "");
                     entrant.put("phone", "");
+                    entrant.put("notificationsEnabled", "true");
                     adapter.updateData(new ArrayList<>(enrolledEntrants));
                 });
     }

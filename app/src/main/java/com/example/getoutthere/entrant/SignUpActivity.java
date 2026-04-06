@@ -71,7 +71,8 @@ public class SignUpActivity extends AppCompatActivity {
             return;
         }
 
-        EntrantProfile profile = new EntrantProfile(deviceId, name, email, phone, "user");
+        // Updated constructor call to include default notification preference (true)
+        EntrantProfile profile = new EntrantProfile(deviceId, name, email, phone, "user", true);
 
         db.collection("profiles").document(deviceId).set(profile)
                 .addOnSuccessListener(aVoid -> {

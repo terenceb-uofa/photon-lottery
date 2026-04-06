@@ -198,6 +198,7 @@ public class WaitlistFragment extends Fragment {
                         entrant.put("name", "Loading...");
                         entrant.put("email", "");
                         entrant.put("phone", "");
+                        entrant.put("notificationsEnabled", "true"); // Default
 
                         waitlistEntrants.add(entrant);
                         int index = waitlistEntrants.size() - 1;
@@ -232,11 +233,13 @@ public class WaitlistFragment extends Fragment {
                     String name = "Unknown user";
                     String email = "";
                     String phone = "";
+                    boolean notificationsEnabled = true;
 
                     if (profileDoc.exists()) {
                         String fetchedName = profileDoc.getString("name");
                         String fetchedEmail = profileDoc.getString("email");
                         String fetchedPhone = profileDoc.getString("phone");
+                        Boolean fetchedNotif = profileDoc.getBoolean("notificationsEnabled");
 
                         if (fetchedName != null && !fetchedName.isEmpty()) {
                             name = fetchedName;
@@ -247,11 +250,15 @@ public class WaitlistFragment extends Fragment {
                         if (fetchedPhone != null) {
                             phone = fetchedPhone;
                         }
+                        if (fetchedNotif != null) {
+                            notificationsEnabled = fetchedNotif;
+                        }
                     }
 
                     entrant.put("name", name);
                     entrant.put("email", email);
                     entrant.put("phone", phone);
+                    entrant.put("notificationsEnabled", String.valueOf(notificationsEnabled));
 
                     adapter.updateData(new ArrayList<>(waitlistEntrants));
                 })
@@ -329,23 +336,29 @@ public class WaitlistFragment extends Fragment {
                                                 Toast.makeText(getContext(), "Failed to update status: " + e.getMessage(), Toast.LENGTH_SHORT).show());
                             }
 
-                            // Send the specific "lottery_invite" notification to the winner
-                            HashMap<String, Object> notificationData = new HashMap<>();
-                            notificationData.put("eventId", eventId);
+                            // Check if notifications are enabled for this entrant
+                            String enabledStr = entrant.get("notificationsEnabled");
+                            boolean notifsEnabled = enabledStr == null || Boolean.parseBoolean(enabledStr);
 
-                            if (won) {
-                                notificationData.put("message", "Congratulations! You were selected for " + finalEventName + ". Please accept or decline.");
-                                notificationData.put("type", "lottery_invite");
-                            } else {
-                                notificationData.put("message", "Sorry, you were not selected for " + finalEventName + ".");
-                                notificationData.put("type", "lottery_loss");
+                            if (notifsEnabled) {
+                                // Send the specific "lottery_invite" notification to the winner
+                                HashMap<String, Object> notificationData = new HashMap<>();
+                                notificationData.put("eventId", eventId);
+
+                                if (won) {
+                                    notificationData.put("message", "Congratulations! You were selected for " + finalEventName + ". Please accept or decline.");
+                                    notificationData.put("type", "lottery_invite");
+                                } else {
+                                    notificationData.put("message", "Sorry, you were not selected for " + finalEventName + ".");
+                                    notificationData.put("type", "lottery_loss");
+                                }
+
+                                // Send notification to entrant profiles
+                                db.collection("profiles")
+                                        .document(deviceId)
+                                        .collection("notifications")
+                                        .add(notificationData);
                             }
-
-                            // Send notification to entrant profiles
-                            db.collection("profiles")
-                                    .document(deviceId)
-                                    .collection("notifications")
-                                    .add(notificationData);
                         }
 
                         Toast.makeText(getContext(), selected.size() + " entrant(s) invited.", Toast.LENGTH_SHORT).show(); // successfully updated status
@@ -383,20 +396,28 @@ public class WaitlistFragment extends Fragment {
                 return;
             }
 
+            int notifiedCount = 0;
             // Send notification to each waiting entrant
             for (Map<String, String> entrant : waitlistEntrants) {
                 String deviceId = entrant.get("deviceId");
-                Map<String, Object> notification = NotificationUtils.buildNotification(message, eventId);
+                
+                // Respect notification preference
+                String enabledStr = entrant.get("notificationsEnabled");
+                boolean notifsEnabled = enabledStr == null || Boolean.parseBoolean(enabledStr);
 
-                db.collection("profiles")
-                        .document(deviceId)
-                        .collection("notifications")
-                        .add(notification)
-                        .addOnFailureListener(e ->
-                                Toast.makeText(getContext(), "Failed to send notification: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                if (notifsEnabled) {
+                    Map<String, Object> notification = NotificationUtils.buildNotification(message, eventId);
+                    db.collection("profiles")
+                            .document(deviceId)
+                            .collection("notifications")
+                            .add(notification)
+                            .addOnFailureListener(e ->
+                                    Toast.makeText(getContext(), "Failed to send notification: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                    notifiedCount++;
+                }
             }
 
-            Toast.makeText(getContext(), "Notified " + waitlistEntrants.size() + " waitlist entrants!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Notified " + notifiedCount + " waitlist entrants!", Toast.LENGTH_SHORT).show();
         });
 
         builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
@@ -448,16 +469,21 @@ public class WaitlistFragment extends Fragment {
      * Pushes the notification and adds the user to the event's waiting list as Pending.
      */
     private void sendPrivateInvite(String targetDeviceId, String eventId, String eventName, DocumentSnapshot userDoc) {
-        // Send the Notification to the user
-        HashMap<String, Object> notificationData = new HashMap<>();
-        notificationData.put("eventId", eventId);
-        notificationData.put("message", "You have been invited to join the waitlist for a private event: " + eventName + "! Please accept or decline.");
-        notificationData.put("type", "private_invite");
+        
+        // Respect notification preference
+        Boolean notifsEnabled = userDoc.getBoolean("notificationsEnabled");
+        if (notifsEnabled == null || notifsEnabled) {
+            // Send the Notification to the user
+            HashMap<String, Object> notificationData = new HashMap<>();
+            notificationData.put("eventId", eventId);
+            notificationData.put("message", "You have been invited to join the waitlist for a private event: " + eventName + "! Please accept or decline.");
+            notificationData.put("type", "private_invite");
 
-        db.collection("profiles")
-                .document(targetDeviceId)
-                .collection("notifications")
-                .add(notificationData);
+            db.collection("profiles")
+                    .document(targetDeviceId)
+                    .collection("notifications")
+                    .add(notificationData);
+        }
 
         // Add the user to the event's Waitlist collection with a "Pending" status
         HashMap<String, Object> waitlistData = new HashMap<>();
