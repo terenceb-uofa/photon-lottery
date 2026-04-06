@@ -95,6 +95,7 @@ public class InvitedFragment extends Fragment {
 
         // Set up RecyclerView
         adapter = new EntrantAdapter(invitedEntrants, eventId);
+        adapter.setCancelClickListener(entrant -> cancelEntrant(entrant));
         rvInvited.setLayoutManager(new LinearLayoutManager(getContext()));
         rvInvited.setAdapter(adapter);
 
@@ -186,6 +187,29 @@ public class InvitedFragment extends Fragment {
                     invitedEntrants.get(index).put("phone", "");
                     adapter.updateData(new ArrayList<>(invitedEntrants));
                 });
+    }
+
+    /**
+     * Cancels an invited entrant by updating their status to "Cancelled" in Firestore.
+     * Implements US 02.06.04.
+     *
+     * @param entrant the entrant data map containing the deviceId to cancel
+     */
+    private void cancelEntrant(Map<String, String> entrant) {
+        String deviceId = entrant.get("deviceId");
+        if (deviceId == null) return;
+
+        db.collection("events")
+                .document(eventId)
+                .collection("waitingList")
+                .document(deviceId)
+                .update("status", "Cancelled")
+                .addOnSuccessListener(unused -> {
+                    Toast.makeText(getContext(), "Entrant cancelled.", Toast.LENGTH_SHORT).show();
+                    loadInvitedEntrants();
+                })
+                .addOnFailureListener(e ->
+                        Toast.makeText(getContext(), "Failed to cancel entrant: " + e.getMessage(), Toast.LENGTH_SHORT).show());
     }
 
     /**

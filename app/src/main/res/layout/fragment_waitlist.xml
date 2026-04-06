@@ -16,7 +16,7 @@
         android:id="@+id/btnNotifyWaitlist"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Notify All Applicants"
+        android:text="Notify Waiting Applicants"
         android:backgroundTint="@color/red"
         android:textColor="@color/white"
         android:layout_marginStart="16dp"

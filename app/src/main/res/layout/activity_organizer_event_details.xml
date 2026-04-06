@@ -88,6 +88,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="24dp"
+            android:gravity="center_vertical"
             android:orientation="horizontal">
 
             <com.google.android.material.button.MaterialButton
@@ -117,6 +118,25 @@
                 android:textColor="@color/white"
                 app:backgroundTint="@color/accent"
                 app:cornerRadius="999dp" />
+
+            <View
+                android:layout_width="12dp"
+                android:layout_height="wrap_content" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonManageComments"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:paddingHorizontal="1dp"
+                android:minHeight="48dp"
+                android:text="Comments"
+                android:textColor="@color/white"
+                app:backgroundTint="@color/ghostButton"
+                app:cornerRadius="999dp"
+                app:strokeColor="@color/ghostBorder"
+                app:strokeWidth="1dp" />
+
         </LinearLayout>
 
         <!-- Timing -->

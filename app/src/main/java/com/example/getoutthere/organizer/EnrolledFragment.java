@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.getoutthere.R;
+import com.example.getoutthere.utils.NotificationUtils;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -112,6 +113,9 @@ public class EnrolledFragment extends Fragment {
         Button btnExportCsv = view.findViewById(R.id.btnExportCsv);
         btnExportCsv.setOnClickListener(v -> previewAndExportCSV());
 
+        Button btnNotifyEnrolled = view.findViewById(R.id.btnNotifyEnrolled);
+        btnNotifyEnrolled.setOnClickListener(v -> notifyEnrolledEntrants());
+
         return view;
     }
 
@@ -154,6 +158,48 @@ public class EnrolledFragment extends Fragment {
                         adapter.updateData(new ArrayList<>(enrolledEntrants));
                     }
                 });
+    }
+
+    /**
+     * Shows a dialog for the organizer to type a message,
+     * then sends a notification to all entrants with status "Enrolled".
+     * US 02.07.02 — Organizer sends notifications to all selected entrants.
+     */
+    private void notifyEnrolledEntrants() {
+        if (enrolledEntrants.isEmpty()) {
+            Toast.makeText(getContext(), "No enrolled entrants to notify", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(getContext());
+        builder.setTitle("Send Notification to Enrolled Entrants");
+
+        final android.widget.EditText input = new android.widget.EditText(getContext());
+        input.setHint("Type your message...");
+        builder.setView(input);
+
+        builder.setPositiveButton("Send", (dialog, which) -> {
+            String message = input.getText().toString().trim();
+            if (message.isEmpty()) {
+                Toast.makeText(getContext(), "Message cannot be empty", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            for (Map<String, String> entrant : enrolledEntrants) {
+                String deviceId = entrant.get("deviceId");
+                if (deviceId == null) continue;
+                Map<String, Object> notification = NotificationUtils.buildNotification(message, eventId);
+                db.collection("profiles")
+                        .document(deviceId)
+                        .collection("notifications")
+                        .add(notification)
+                        .addOnFailureListener(e ->
+                                Toast.makeText(getContext(), "Failed to notify " + deviceId, Toast.LENGTH_SHORT).show());
+            }
+            Toast.makeText(getContext(), "Notified " + enrolledEntrants.size() + " enrolled entrants!", Toast.LENGTH_SHORT).show();
+        });
+
+        builder.setNegativeButton("Cancel", null);
+        builder.show();
     }
 
     /**

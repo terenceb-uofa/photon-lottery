@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -18,6 +19,7 @@ import com.example.getoutthere.event.Event;
 import com.example.getoutthere.navigation.NavBottomHelper;
 import com.example.getoutthere.repositories.EventRepository;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.button.MaterialButton;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.util.ArrayList;
@@ -40,6 +42,8 @@ public class OrganizerEventListActivity extends AppCompatActivity {
     private OrganizerEventAdapter adapter;
     private final EventRepository eventRepository = new EventRepository();
 
+    private MaterialButton buttonCreateEvent;
+
     /**
      * Initializes the Activity, sets up the list view, and fetches the organizer's events.
      * Sets an onItemClickListener to fire an Intent to OrganizerEventDetailsActivity.
@@ -61,9 +65,20 @@ public class OrganizerEventListActivity extends AppCompatActivity {
         });
 
         listView = findViewById(R.id.organizerEventListView);
+        Button buttonCreateEvent = findViewById(R.id.buttonCreateEvent);
         adapter =  new OrganizerEventAdapter(this, myEvents);
         listView.setAdapter(adapter);
+
+
+        buttonCreateEvent.setOnClickListener(v -> {
+            Intent intent = new Intent(OrganizerEventListActivity.this, OrganizerCreateEventActivity.class);
+            startActivity(intent);
+        });
+
         String currentUserId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+
+
+
 
         // Fetch only events created by specific organizer
         eventRepository.getEventsByOrganizerOrCoOrganizer(currentUserId,

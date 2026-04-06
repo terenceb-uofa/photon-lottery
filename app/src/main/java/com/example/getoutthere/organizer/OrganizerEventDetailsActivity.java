@@ -2,10 +2,13 @@ package com.example.getoutthere.organizer;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.text.TextUtils;
+import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -14,8 +17,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.bumptech.glide.Glide;
 import com.example.getoutthere.R;
 import com.example.getoutthere.event.Event;
+import com.example.getoutthere.models.EntrantProfile;
 import com.example.getoutthere.repositories.EventRepository;
 import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.NumberFormat;
 import java.util.Calendar;
@@ -46,6 +52,9 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
     private Button editButton;
     private Button buttonQRCode;
     private Button buttonManageWaitlist;
+    private Button buttonManageComments;
+
+    private EntrantProfile entrant;
 
     // Event poster image
     private ImageView posterPreview;
@@ -55,6 +64,8 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
 
     // Event ID passed from OrganizerEventListActivity
     private String eventId;
+
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
 
     /**
@@ -92,6 +103,11 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
 
         posterPreview = findViewById(R.id.posterPreview);
 
+        // Entrant info
+        String deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+        entrant = new EntrantProfile();
+        entrant.setDeviceId(deviceId);
+
         eventRepository = new EventRepository();
         eventId = getIntent().getStringExtra("eventId");
 
@@ -125,6 +141,179 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         }
 
         loadEvent();
+
+        // View comments fragment button
+
+        buttonManageComments = findViewById(R.id.buttonManageComments);
+        buttonManageComments.setOnClickListener(v -> {
+            // The following code is from Anthropic, Claude, "How do I display comments from every event's collection in a popup dialog", 2026-04-03
+
+            androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(this);
+            builder.setTitle("Event Comments");
+
+            LinearLayout mainLayout = new LinearLayout(this);
+            mainLayout.setOrientation(LinearLayout.VERTICAL);
+            mainLayout.setPadding(40, 24, 40, 24);
+
+            android.widget.ScrollView scrollView = new android.widget.ScrollView(this);
+            LinearLayout commentsListLayout = new LinearLayout(this);
+            commentsListLayout.setOrientation(LinearLayout.VERTICAL);
+            scrollView.addView(commentsListLayout);
+
+            LinearLayout.LayoutParams scrollParams = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f);
+            scrollParams.setMargins(0, 0, 0, 24);
+            scrollView.setLayoutParams(scrollParams);
+
+            // input container (EditText + Send Button)
+            LinearLayout inputLayout = new LinearLayout(this);
+            inputLayout.setOrientation(LinearLayout.HORIZONTAL);
+            inputLayout.setGravity(android.view.Gravity.CENTER_VERTICAL);
+
+            android.widget.EditText commentInput = new android.widget.EditText(this);
+            commentInput.setHint("Write a comment...");
+            commentInput.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
+
+            Button sendButton = new Button(this);
+            sendButton.setText("Post");
+            sendButton.setBackgroundColor(0xFF59A91E);
+            sendButton.setTextColor(0xFFFFFFFF);
+
+            inputLayout.addView(commentInput);
+            inputLayout.addView(sendButton);
+
+            // assemble the UI
+            mainLayout.addView(scrollView);
+            mainLayout.addView(inputLayout);
+            builder.setView(mainLayout);
+            builder.setPositiveButton("Close", null);
+
+            androidx.appcompat.app.AlertDialog dialog = builder.create();
+
+            // REAL-TIME FIRESTORE LISTENER — fetches all comments for this event
+            com.google.firebase.firestore.ListenerRegistration listener = FirebaseFirestore.getInstance()
+                    .collection("events")
+                    .document(eventId)
+                    .collection("comments")
+                    .orderBy("timestamp", com.google.firebase.firestore.Query.Direction.ASCENDING)
+                    .addSnapshotListener((snapshots, e) -> {
+                        if (e != null || snapshots == null) return;
+
+                        commentsListLayout.removeAllViews();
+
+                        if (snapshots.isEmpty()) {
+                            TextView tv = new TextView(this);
+                            tv.setText("No comments yet.");
+                            tv.setTextColor(0xFF888888);
+                            commentsListLayout.addView(tv);
+                        }
+
+                        for (DocumentSnapshot doc : snapshots.getDocuments()) {
+                            com.example.getoutthere.models.Comment comment = doc.toObject(com.example.getoutthere.models.Comment.class);
+                            if (comment != null) {
+                                // Row: [comment text] [delete button]
+                                LinearLayout commentRow = new LinearLayout(this);
+                                commentRow.setOrientation(LinearLayout.HORIZONTAL);
+                                commentRow.setGravity(android.view.Gravity.CENTER_VERTICAL);
+                                LinearLayout.LayoutParams commentRowParams = new LinearLayout.LayoutParams(
+                                        LinearLayout.LayoutParams.MATCH_PARENT,
+                                        LinearLayout.LayoutParams.WRAP_CONTENT
+                                );
+                                commentRow.setLayoutParams(commentRowParams);
+
+                                TextView tv = new TextView(this);
+                                android.text.SpannableString formattedText = new android.text.SpannableString(
+                                        comment.getEntrantName() + ": " + comment.getContent());
+                                formattedText.setSpan(
+                                        new android.text.style.StyleSpan(android.graphics.Typeface.BOLD),
+                                        0, comment.getEntrantName().length() + 1,
+                                        android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                                tv.setText(formattedText);
+                                tv.setTextSize(16f);
+                                tv.setPadding(0, 8, 0, 16);
+                                // weight 1f so the comment text takes up all space, pushing delete button to the right
+                                tv.setLayoutParams(new LinearLayout.LayoutParams(
+                                        0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
+
+                                Button commentDeleteButton = new Button(this);
+                                commentDeleteButton.setText("DELETE");
+                                commentDeleteButton.setBackgroundColor(0xFFCC0000);
+                                commentDeleteButton.setTextColor(0xFFFFFFFF);
+                                commentDeleteButton.setPadding(16, 4, 16, 4);
+                                commentDeleteButton.setLayoutParams(new LinearLayout.LayoutParams(
+                                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                                        LinearLayout.LayoutParams.WRAP_CONTENT
+                                ));
+
+                                // The following code is from Anthropic, Claude, "Add a delete button with an onclick listener that deletes the comment from the database upon being clicked", 2026-04-03
+                                // Delete this comment from Firestore when the admin presses DELETE
+                                String commentId = doc.getId();
+                                commentDeleteButton.setOnClickListener(del -> {
+                                    new androidx.appcompat.app.AlertDialog.Builder(this)
+                                            .setTitle("Delete Comment")
+                                            .setMessage("Are you sure you want to delete this comment by " + comment.getEntrantName() + "?")
+                                            .setPositiveButton("Delete", (confirmDialog, which) -> {
+                                                FirebaseFirestore.getInstance()
+                                                        .collection("events")
+                                                        .document(eventId)
+                                                        .collection("comments")
+                                                        .document(commentId)
+                                                        .delete()
+                                                        .addOnFailureListener(err -> {
+                                                            Toast.makeText(this, "Failed to delete comment", Toast.LENGTH_SHORT).show();
+                                                        });
+                                                // No need to manually update the UI —
+                                                // the snapshot listener above will fire automatically on delete
+                                            })
+                                            .setNegativeButton("Cancel", null)
+                                            .show();
+                                });
+
+                                commentRow.addView(tv);
+                                commentRow.addView(commentDeleteButton);
+                                commentsListLayout.addView(commentRow);
+                            }
+                        }
+                        scrollView.post(() -> scrollView.fullScroll(View.FOCUS_DOWN));
+                    });
+
+            sendButton.setOnClickListener(view -> {
+                String text = commentInput.getText().toString().trim();
+                if (text.isEmpty()) return;
+
+                // debounce to prevent spam clicks
+                sendButton.setEnabled(false);
+
+
+                // fetch the user's name from their profile to attach it to the comment
+                db.collection("profiles").document(entrant.getDeviceId()).get().addOnSuccessListener(doc -> {
+                    String userName = doc.exists() ? "[ORGANIZER] " + doc.getString("name") : "Anonymous User";
+
+                    com.example.getoutthere.models.Comment newComment = new com.example.getoutthere.models.Comment(
+                            entrant.getDeviceId(),
+                            userName,
+                            text,
+                            Timestamp.now()
+                    );
+
+                    db.collection("events").document(eventId).collection("comments").add(newComment)
+                            .addOnSuccessListener(docRef -> {
+                                commentInput.setText(""); // Clear input on success
+                                sendButton.setEnabled(true);
+                            })
+                            .addOnFailureListener(e -> {
+                                Toast.makeText(this, "Failed to post comment", Toast.LENGTH_SHORT).show();
+                                sendButton.setEnabled(true);
+                            });
+                });
+
+            });
+
+            // Remove the Firestore listener when the dialog closes to prevent memory leaks
+            dialog.setOnDismissListener(d -> listener.remove());
+
+            dialog.show();
+        });
     }
 
     /**
