@@ -103,7 +103,7 @@ public class EventDetailsActivityTest {
         intent.putExtra("eventId", "testEvent123");
 
         try (ActivityScenario<EventDetailsActivity> scenario = ActivityScenario.launch(intent)) {
-            Espresso.onView(ViewMatchers.withId(R.id.EventDetailsBackButton))
+            Espresso.onView(ViewMatchers.withId(R.id.backButton))
                     .perform(ViewActions.click());
         }
     }
