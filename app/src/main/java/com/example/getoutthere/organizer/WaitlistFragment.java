@@ -427,11 +427,12 @@ public class WaitlistFragment extends Fragment {
                     .get()
                     .addOnSuccessListener(queryDocumentSnapshots -> {
                         if (!queryDocumentSnapshots.isEmpty()) {
-                            // If it found a matching user
+                            // Found a matching user!
                             DocumentSnapshot userDoc = queryDocumentSnapshots.getDocuments().get(0);
                             String targetDeviceId = userDoc.getId();
 
-                            sendPrivateInvite(targetDeviceId, eventId, eventName);
+                            // PASS THE ENTIRE USER DOC SO WE CAN SAVE THEIR INFO TO THE EVENT
+                            sendPrivateInvite(targetDeviceId, eventId, eventName, userDoc);
                         } else {
                             Toast.makeText(getContext(), "No user found with that email.", Toast.LENGTH_LONG).show();
                         }
@@ -444,19 +445,34 @@ public class WaitlistFragment extends Fragment {
     }
 
     /**
-     * Pushes the private invite notification to the found user's profile.
+     * Pushes the private invite notification and adds the user to the event's waiting list.
      */
-    private void sendPrivateInvite(String targetDeviceId, String eventId, String eventName) {
+    private void sendPrivateInvite(String targetDeviceId, String eventId, String eventName, DocumentSnapshot userDoc) {
+        // 1. Send the Notification to the user's profile
         HashMap<String, Object> notificationData = new HashMap<>();
         notificationData.put("eventId", eventId);
-        notificationData.put("message", "You have been invited to a private event: " + eventName + "! Please accept or decline.");
-        notificationData.put("type", "private_invite");
+        notificationData.put("message", "You have been added to the waitlist for a private event: " + eventName + "! Keep an eye out for the lottery draw.");
+        notificationData.put("type", "private_waitlist_addition"); // Changed so it doesn't trigger an accept/decline button
 
         db.collection("profiles")
                 .document(targetDeviceId)
                 .collection("notifications")
-                .add(notificationData)
-                .addOnSuccessListener(aVoid -> Toast.makeText(getContext(), "Invite sent successfully!", Toast.LENGTH_SHORT).show())
-                .addOnFailureListener(e -> Toast.makeText(getContext(), "Failed to send invite.", Toast.LENGTH_SHORT).show());
+                .add(notificationData);
+
+        // 2. Add the user to the event's Waitlist collection with the "Waitlist" status
+        HashMap<String, Object> waitlistData = new HashMap<>();
+        waitlistData.put("status", "Waitlist"); // <-- CHANGED FROM "Invited" TO "Waitlist"
+        waitlistData.put("name", userDoc.getString("name"));
+        waitlistData.put("email", userDoc.getString("email"));
+        waitlistData.put("phone", userDoc.getString("phone"));
+
+        // We use .set() here instead of .update() because the user isn't currently in the waitlist database!
+        db.collection("events")
+                .document(eventId)
+                .collection("waitingList")
+                .document(targetDeviceId)
+                .set(waitlistData)
+                .addOnSuccessListener(aVoid -> Toast.makeText(getContext(), "Added to Waitlist successfully!", Toast.LENGTH_SHORT).show())
+                .addOnFailureListener(e -> Toast.makeText(getContext(), "Failed to add user to event.", Toast.LENGTH_SHORT).show());
     }
 }
