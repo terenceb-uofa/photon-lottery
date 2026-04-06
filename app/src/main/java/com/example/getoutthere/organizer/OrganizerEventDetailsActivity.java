@@ -121,11 +121,20 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        // Navigate to QR code screen
+        // The following code is from Anthropic, Claude, "Check Firestore eventVisibility before navigating to QR code screen", 2026-04-05
+        // Navigate to QR code screen only if event is Public
         buttonQRCode.setOnClickListener(v -> {
-            Intent intent = new Intent(OrganizerEventDetailsActivity.this, EventQrCodeActivity.class);
-            intent.putExtra("eventId", eventId);
-            startActivity(intent);
+            db.collection("events").document(eventId).get()
+                    .addOnSuccessListener(doc -> {
+                        String visibility = doc.getString("eventVisibility");
+                        if ("Public".equalsIgnoreCase(visibility)) {
+                            Intent intent = new Intent(OrganizerEventDetailsActivity.this, EventQrCodeActivity.class);
+                            intent.putExtra("eventId", eventId);
+                            startActivity(intent);
+                        } else {
+                            Toast.makeText(this, "Event is Private. No promotional QR code exists.", Toast.LENGTH_SHORT).show();
+                        }
+                    });
         });
 
         buttonManageWaitlist.setOnClickListener(v -> {
