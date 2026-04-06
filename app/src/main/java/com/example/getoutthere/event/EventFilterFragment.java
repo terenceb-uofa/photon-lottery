@@ -18,10 +18,37 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import java.util.Calendar;
 
+/**
+ * Acts as a bottom sheet dialogue for filtering events.
+ * <p>
+ * Provides a user interface for participants to filter the events list by event type,
+ * minimum capacity, and a specific date range. It communicates the selected filters
+ * back to the parent activity or fragment using a custom listener interface.
+ * </p>
+ *
+ * Outstanding Issues:
+ * - No issues
+ */
+
+/**
+ * Represents the fragment used to configure and apply event search filters.
+ * @version 1.0
+ */
 // The following code is from Anthropic, Claude, "Add filter fragment with eventType, minCapacity, and date range to EventListActivity", 2026-04-02
 public class EventFilterFragment extends BottomSheetDialogFragment {
 
+    /**
+     * Interface definition for a callback to be invoked when filters are applied.
+     */
     public interface FilterListener {
+        /**
+         * Called when the user applies the configured filters.
+         *
+         * @param eventType The selected type of event to filter by, or "All" if no specific type is selected.
+         * @param minCapacity The minimum capacity limit for the event.
+         * @param minStartDate The earliest acceptable start date in milliseconds.
+         * @param maxStartDate The latest acceptable start date in milliseconds.
+         */
         void onFiltersApplied(String eventType, int minCapacity, long minStartDate, long maxStartDate);
     }
 
@@ -35,16 +62,36 @@ public class EventFilterFragment extends BottomSheetDialogFragment {
     private long minStartDateMillis = 0;
     private long maxStartDateMillis = Long.MAX_VALUE;
 
+    /**
+     * Sets the listener that will be notified when the user applies or clears the filters.
+     *
+     * @param listener The FilterListener implementation to receive filter updates.
+     */
     public void setFilterListener(FilterListener listener) {
         this.filterListener = listener;
     }
 
+    /**
+     * Called to have the fragment instantiate its user interface view.
+     *
+     * @param inflater The LayoutInflater object that can be used to inflate any views in the fragment.
+     * @param container If non-null, this is the parent view that the fragment's UI should be attached to.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state.
+     * @return The View for the fragment's UI.
+     */
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_event_filter, container, false);
     }
 
+    /**
+     * Called immediately after onCreateView has returned. Sets up the input fields,
+     * dropdown adapters, date pickers, and click listeners for the apply and clear buttons.
+     *
+     * @param view The View returned by onCreateView.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state.
+     */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -103,9 +150,9 @@ public class EventFilterFragment extends BottomSheetDialogFragment {
 
     /**
      * Opens a DatePickerDialog and stores the selected date as milliseconds,
-     * displaying it in the appropriate input field.
+     * displaying the formatted date string in the appropriate input field.
      *
-     * @param isMin true if picking the minimum start date, false for maximum
+     * @param isMin true if picking the minimum start date, false for the maximum start date.
      */
     private void showDatePicker(boolean isMin) {
         Calendar calendar = Calendar.getInstance();
