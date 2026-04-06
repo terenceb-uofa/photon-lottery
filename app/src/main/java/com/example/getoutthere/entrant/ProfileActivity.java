@@ -1,5 +1,6 @@
 package com.example.getoutthere.entrant;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.widget.Button;
@@ -16,6 +17,7 @@ import com.example.getoutthere.R;
 import com.example.getoutthere.models.EntrantProfile;
 import com.example.getoutthere.navigation.NavBottomHelper;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.button.MaterialButton;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 /**
@@ -36,6 +38,9 @@ public class ProfileActivity extends AppCompatActivity {
     private Button saveButton, deleteButton;
     private String deviceId;
     private FirebaseFirestore db;
+
+    private MaterialButton notificationButton;
+
 
     /**
      * Initializes the Activity, sets up the UI elements, fetches the
@@ -68,6 +73,15 @@ public class ProfileActivity extends AppCompatActivity {
         loadProfile();
         saveButton.setOnClickListener(v -> saveProfile());
         deleteButton.setOnClickListener(v -> deleteProfile());
+
+        notificationButton = findViewById(R.id.notificationButton);
+
+        if (notificationButton != null) {
+            notificationButton.setOnClickListener(v -> {
+                Intent intent = new Intent(ProfileActivity.this, EntrantNotificationActivity.class);
+                startActivity(intent);
+            });
+        }
 
 
         BottomNavigationView bottomNav = findViewById(R.id.bottomNavigation);

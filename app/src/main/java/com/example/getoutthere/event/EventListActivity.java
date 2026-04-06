@@ -18,6 +18,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.getoutthere.R;
+import com.example.getoutthere.entrant.EntrantNotificationActivity;
 import com.example.getoutthere.navigation.NavBottomHelper;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.button.MaterialButton;
@@ -56,7 +57,7 @@ public class EventListActivity extends AppCompatActivity implements EventFilterF
 
     private EditText searchInput;
     private MaterialButton filterButton;
-
+    private MaterialButton  notificationButton;
 
     private String activeEventType = "All";
     private int activeMinCapacity = 0;
@@ -91,6 +92,15 @@ public class EventListActivity extends AppCompatActivity implements EventFilterF
         filterButton = findViewById(R.id.filterButton);
         adapter = new EventDiscoverAdapter(this, filteredEvents);
         listView.setAdapter(adapter);
+
+        notificationButton = findViewById(R.id.notificationButton);
+
+        if (notificationButton != null) {
+            notificationButton.setOnClickListener(v -> {
+                Intent intent = new Intent(EventListActivity.this, EntrantNotificationActivity.class);
+                startActivity(intent);
+            });
+        }
 
         // fetch event from db
         db.collection("events").get().addOnSuccessListener(queryDocumentSnapshots -> {

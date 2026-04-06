@@ -1,5 +1,6 @@
 package com.example.getoutthere.entrant;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.widget.ArrayAdapter;
@@ -15,8 +16,10 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.getoutthere.R;
 import com.example.getoutthere.event.Event;
+import com.example.getoutthere.event.EventListActivity;
 import com.example.getoutthere.navigation.NavBottomHelper;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.button.MaterialButton;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -42,6 +45,10 @@ public class EventHistory extends AppCompatActivity {
     private List<String> historyDisplayList = new ArrayList<>();
     private ArrayAdapter<String> adapter;
 
+
+    private MaterialButton notificationButton;
+
+
     /**
      * Initializes the Activity, sets up the user interface elements (ListView and Back Button),
      * and triggers the loading of the user's event history from the database.
@@ -61,6 +68,15 @@ public class EventHistory extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        notificationButton = findViewById(R.id.notificationButton);
+
+        if (notificationButton != null) {
+            notificationButton.setOnClickListener(v -> {
+                Intent intent = new Intent(EventHistory.this, EntrantNotificationActivity.class);
+                startActivity(intent);
+            });
+        }
 
         listView = findViewById(R.id.historyListView);
         //backButton = findViewById(R.id.HistoryBackButton);

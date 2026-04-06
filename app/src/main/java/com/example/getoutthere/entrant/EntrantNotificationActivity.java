@@ -45,7 +45,7 @@ public class EntrantNotificationActivity extends AppCompatActivity {
 
     private RecyclerView rvNotifications;
     private TextView emptyNotificationText;
-    private Button btnBack;
+    private View btnBack;
 
     private FirebaseFirestore db;
     private String deviceId;
@@ -73,6 +73,7 @@ public class EntrantNotificationActivity extends AppCompatActivity {
         rvNotifications = findViewById(R.id.rvNotifications);
         emptyNotificationText = findViewById(R.id.emptyNotificationText);
         btnBack = findViewById(R.id.NotificationBackButton);
+        btnBack.setOnClickListener(v -> finish());
 
         rvNotifications.setLayoutManager(new LinearLayoutManager(this));
         adapter = new NotificationAdapter();
