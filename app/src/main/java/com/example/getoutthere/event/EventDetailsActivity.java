@@ -328,7 +328,7 @@ public class EventDetailsActivity extends AppCompatActivity {
      * Toggles the UI state of the waitlist button, changing its text and color
      * depending on whether the current user is already on the waiting list.
      */
-    private void updateToggleButton() {
+     void updateToggleButton() {
         if (isOnWaitingList) {
             btnToggleWaitingList.setText("Leave Waitlist");
             btnToggleWaitingList.setBackgroundTintList(getResources().getColorStateList(R.color.error, null));
