@@ -2,11 +2,13 @@
 package com.example.getoutthere.admin;
 
 import android.content.Intent;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -88,7 +90,7 @@ public class ManageImagesActivity extends AppCompatActivity {
             return insets;
         });
 
-        Button ImagesManagerBackButton = findViewById(R.id.ImagesManagerBackButton);
+        FrameLayout ImagesManagerBackButton = findViewById(R.id.ImagesManagerBackButton);
 
         ImagesManagerBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -144,57 +146,88 @@ public class ManageImagesActivity extends AppCompatActivity {
      */
     private void render() {
 
-        imagesContainer.removeAllViews();  // clearing anything previously present
+        imagesContainer.removeAllViews();
 
         for (int index = 0; index < eventList.size(); index++) {
-            //Junk data shield, skip invalid entries
             try {
                 Event currentEvent = eventList.get(index);
 
-                // creating linear layout for image + delete button
                 LinearLayout row = new LinearLayout(this);
                 row.setOrientation(LinearLayout.HORIZONTAL);
-                row.setBackgroundColor(0xFF59A91E);
                 row.setGravity(Gravity.CENTER_VERTICAL);
-                row.setPadding(24, 16, 16, 16);
 
                 LinearLayout.LayoutParams rowParams = new LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.MATCH_PARENT,
                         LinearLayout.LayoutParams.WRAP_CONTENT
                 );
-                rowParams.setMargins(0, 0, 0, 8);
+                rowParams.setMargins(0, 0, 0, 12);
                 row.setLayoutParams(rowParams);
 
+                FrameLayout imageFrame = new FrameLayout(this);
+                LinearLayout.LayoutParams frameParams = new LinearLayout.LayoutParams(
+                        0,
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                        1f
+                );
+                frameParams.setMargins(0, 0, 16, 0);
+                imageFrame.setLayoutParams(frameParams);
+                imageFrame.setPadding(10, 10, 10, 10);
+
+                GradientDrawable frameBackground = new GradientDrawable();
+                frameBackground.setColor(getResources().getColor(R.color.glass, getTheme()));
+                frameBackground.setCornerRadius(32f);
+                frameBackground.setStroke(2, getResources().getColor(R.color.glassBorder, getTheme()));
+                imageFrame.setBackground(frameBackground);
 
                 ImageView imageView = new ImageView(this);
-                imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
-                LinearLayout.LayoutParams imageParams = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 2f);
-                imageParams.height = 300;
+                imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+
+                FrameLayout.LayoutParams imageParams = new FrameLayout.LayoutParams(
+                        FrameLayout.LayoutParams.MATCH_PARENT,
+                        300
+                );
                 imageView.setLayoutParams(imageParams);
 
                 if (currentEvent.getPosterUrl() != null) {
-                    Glide.with(this).load(currentEvent.getPosterUrl()).into(imageView);  // converting image url into actual image
+                    Glide.with(this)
+                            .load(currentEvent.getPosterUrl())
+                            .transform(new com.bumptech.glide.load.resource.bitmap.RoundedCorners(24))
+                            .into(imageView);
                 } else {
-                    Glide.with(this).load("https://firebasestorage.googleapis.com/v0/b/photon-lottery.firebasestorage.app/o/event_posters%2Felementor-placeholder-image.png?alt=media&token=570ea3b4-1f99-4f52-be3f-86fa2a71f1a5").into(imageView);
+                    Glide.with(this)
+                            .load("https://firebasestorage.googleapis.com/v0/b/photon-lottery.firebasestorage.app/o/event_posters%2Felementor-placeholder-image.png?alt=media&token=570ea3b4-1f99-4f52-be3f-86fa2a71f1a5")
+                            .transform(new com.bumptech.glide.load.resource.bitmap.RoundedCorners(24))
+                            .into(imageView);
                 }
 
-                Button deleteButton = new Button(this);
-                deleteButton.setText("DELETE");
-                deleteButton.setBackgroundColor(0xFFCC0000);
-                deleteButton.setTextColor(0xFFFFFFFF);
-                deleteButton.setPadding(16, 8, 16, 8);
-                LinearLayout.LayoutParams btnParams = new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.WRAP_CONTENT,
-                        LinearLayout.LayoutParams.WRAP_CONTENT
-                );
-                btnParams.setMargins(8, 0, 0, 0);
-                deleteButton.setLayoutParams(btnParams);
+                imageFrame.addView(imageView);
 
-                row.addView(imageView);
-                row.addView(deleteButton);
+                FrameLayout deleteCircle = new FrameLayout(this);
+                LinearLayout.LayoutParams deleteParams = new LinearLayout.LayoutParams(48, 48);
+                deleteCircle.setLayoutParams(deleteParams);
+                deleteCircle.setClickable(true);
+                deleteCircle.setFocusable(true);
+
+                GradientDrawable deleteBg = new GradientDrawable();
+                deleteBg.setColor(getResources().getColor(R.color.glass, getTheme()));
+                deleteBg.setShape(GradientDrawable.OVAL);
+                deleteBg.setStroke(2, getResources().getColor(R.color.glassBorder, getTheme()));
+                deleteCircle.setBackground(deleteBg);
+
+                ImageView deleteIcon = new ImageView(this);
+                FrameLayout.LayoutParams iconParams = new FrameLayout.LayoutParams(24, 24);
+                iconParams.gravity = Gravity.CENTER;
+                deleteIcon.setLayoutParams(iconParams);
+                deleteIcon.setImageResource(R.drawable.ic_delete);
+                deleteIcon.setColorFilter(getResources().getColor(R.color.error, getTheme()));
+
+                deleteCircle.addView(deleteIcon);
+
+                row.addView(imageFrame);
+                row.addView(deleteCircle);
                 imagesContainer.addView(row);
 
-                deleteButton.setOnClickListener(v -> {
+                deleteCircle.setOnClickListener(v -> {
                     new AlertDialog.Builder(v.getContext())
                             .setTitle("Delete Event Image")
                             .setMessage("Are you sure you want to permanently delete the image for '" + currentEvent.getName() + "'?")
@@ -202,23 +235,18 @@ public class ManageImagesActivity extends AppCompatActivity {
 
                                 String imageUrl = currentEvent.getPosterUrl();
 
-                                // Check if it's an actual user image and not Hassan's placeholder URL
                                 if (imageUrl != null && !imageUrl.contains("placeholder-image.png")) {
-                                    // Delete from Storage
                                     FirebaseStorage.getInstance().getReferenceFromUrl(imageUrl).delete()
-                                            .addOnCompleteListener(task -> {
-                                                // Regardless of storage outcome, clear the link in Firestore
-                                                removeImageUrlFromFirestore(currentEvent);
-                                            });
+                                            .addOnCompleteListener(task -> removeImageUrlFromFirestore(currentEvent));
                                 } else {
-                                    // Just clear Firestore if it's already empty or a placeholder
                                     removeImageUrlFromFirestore(currentEvent);
                                 }
                             })
                             .setNegativeButton("Cancel", null)
                             .show();
                 });
-            }catch (Exception e){
+
+            } catch (Exception e) {
                 Log.e("Render", "Skipping corrupted event at index " + index, e);
             }
         }
