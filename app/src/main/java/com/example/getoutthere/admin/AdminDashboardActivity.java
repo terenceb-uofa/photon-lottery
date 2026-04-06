@@ -97,7 +97,7 @@ public class AdminDashboardActivity extends AppCompatActivity {
         NavToNotificationLogs.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            Intent intent = new Intent(AdminDashboardActivity.this, EntrantNotificationActivity.class);
+            Intent intent = new Intent(AdminDashboardActivity.this, NotificationLogsActivity.class);
             startActivity(intent);
         }
     });

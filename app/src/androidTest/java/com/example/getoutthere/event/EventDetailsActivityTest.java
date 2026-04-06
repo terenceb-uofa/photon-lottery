@@ -97,7 +97,7 @@ public class EventDetailsActivityTest {
         intent.putExtra("eventId", "testEvent123");
 
         try (ActivityScenario<EventDetailsActivity> scenario = ActivityScenario.launch(intent)) {
-            Espresso.onView(ViewMatchers.withId(R.id.btnViewComments))
+            Espresso.onView(ViewMatchers.withId(R.id.backButton))
                     .perform(ViewActions.click());
 
             // Verify the dialog title is displayed
