@@ -267,8 +267,6 @@ public class EventDetailsActivity extends AppCompatActivity {
         }
     }
 
-        eventCapacity.setText(spotsAvailable + "/" + capacity + " spots available");
-    }
     /**
      * Checks whether the current time falls within the event's registration period.
      *

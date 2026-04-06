@@ -17,9 +17,11 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.getoutthere.R;
+import com.example.getoutthere.event.EventListActivity;
 import com.example.getoutthere.models.EntrantProfile;
 import com.example.getoutthere.navigation.NavBottomHelper;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -74,6 +76,16 @@ public class ProfileActivity extends AppCompatActivity {
         notificationSwitch = findViewById(R.id.switchNotifications);
         saveButton = findViewById(R.id.buttonSaveProfile);
         deleteButton = findViewById(R.id.buttonDeleteProfile);
+
+
+        notificationButton = findViewById(R.id.notificationButton);
+
+        if (notificationButton != null) {
+            notificationButton.setOnClickListener(v -> {
+                Intent intent = new Intent(ProfileActivity.this, EntrantNotificationActivity.class);
+                startActivity(intent);
+            });
+        }
 
         // Setup the switch visual listener
         setupSwitchVisuals();
