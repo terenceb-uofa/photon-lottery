@@ -8,8 +8,11 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.text.TextUtils;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -68,12 +71,15 @@ public class OrganizerEditEventActivity extends AppCompatActivity {
     private EditText feeInput;
     private EditText waitlistLimitInput;
 
+    private AutoCompleteTextView eventTypeInput;
+    private AutoCompleteTextView eventVisibilityInput;
+
     // Buttons
 
     private Button uploadPosterButton;
     private Button createEventButton;
 
-    private Button backButton;
+    private FrameLayout backButton;
 
 
     @Nullable
@@ -138,6 +144,23 @@ public class OrganizerEditEventActivity extends AppCompatActivity {
         uploadPosterButton = findViewById(R.id.uploadPosterButton);
         createEventButton = findViewById(R.id.createEventButton);
 
+        // The following code is from Anthropic, Claude, "Create Event Android XML layout with event type dropdown", 2026-04-01
+        eventTypeInput = findViewById(R.id.eventTypeInput);
+        ArrayAdapter<CharSequence> eventTypeAdapter = ArrayAdapter.createFromResource(
+                this,
+                R.array.event_types,
+                android.R.layout.simple_dropdown_item_1line
+        );
+        eventTypeInput.setAdapter(eventTypeAdapter);
+
+        eventVisibilityInput = findViewById(R.id.eventVisibilityInput);
+        ArrayAdapter<CharSequence> eventVisibilityAdapter = ArrayAdapter.createFromResource(
+                this,
+                R.array.visibility_types,
+                android.R.layout.simple_dropdown_item_1line
+        );
+        eventVisibilityInput.setAdapter(eventVisibilityAdapter);
+
         // date pickers
         startDateInput.setKeyListener(null);
         endDateInput.setKeyListener(null);
@@ -181,7 +204,7 @@ public class OrganizerEditEventActivity extends AppCompatActivity {
 
         createEventButton.setOnClickListener(v -> updateExistingEvent());
 
-        Button backButton = findViewById(R.id.backButton);
+        FrameLayout backButton = findViewById(R.id.backButton);
         backButton.setOnClickListener(v -> finish());
 
         TextView screenTitle = findViewById(R.id.screenTitle);
@@ -205,6 +228,8 @@ public class OrganizerEditEventActivity extends AppCompatActivity {
         String capacityText = capacityInput.getText().toString().trim();
         String feeText = feeInput.getText().toString().trim();
         String waitlistLimitText = waitlistLimitInput.getText().toString().trim();
+        String eventType = eventTypeInput.getText().toString().trim();
+        String eventVisibility = eventVisibilityInput.getText().toString().trim();
 
         if (name.isEmpty()) {
             nameInput.setError("Event name is required");
@@ -265,6 +290,19 @@ public class OrganizerEditEventActivity extends AppCompatActivity {
             feeInput.requestFocus();
             return;
         }
+
+        if (eventType.isEmpty()) {
+            eventTypeInput.setError("Event type is required");
+            eventTypeInput.requestFocus();
+            return;
+        }
+
+        if (eventVisibility.isEmpty()) {
+            eventVisibilityInput.setError("Event visibility is required");
+            eventVisibilityInput.requestFocus();
+            return;
+        }
+
 
         int capacity;
         double signupFee;
@@ -332,6 +370,8 @@ public class OrganizerEditEventActivity extends AppCompatActivity {
         updatedEvent.setCapacity(capacity);
         updatedEvent.setSignupFee(signupFee);
         updatedEvent.setWaitlistLimit(waitlistLimit);
+        updatedEvent.setEventType(eventType);
+        updatedEvent.setEventVisibility(eventVisibility);
 
         if (selectedImageUri == null) {
             updatedEvent.setPosterUrl(existingEvent.getPosterUrl());
@@ -494,6 +534,14 @@ public class OrganizerEditEventActivity extends AppCompatActivity {
 
                     if (event.getWaitlistLimit() != null) {
                         waitlistLimitInput.setText(String.valueOf(event.getWaitlistLimit()));
+                    }
+
+                    if (event.getEventType() != null) {
+                        eventTypeInput.setText(event.getEventType(), false);
+                    }
+
+                    if (event.getEventVisibility() != null) {
+                        eventVisibilityInput.setText(event.getEventVisibility(), false);
                     }
 
 

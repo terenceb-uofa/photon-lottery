@@ -121,7 +121,28 @@ public class OrganizerEventAdapter extends ArrayAdapter<Event> {
             Timestamp drawDate = event.getDrawDate();
             Timestamp registrationEnd = event.getRegistrationEnd();
 
-            if (eventStart != null && eventStart.toDate().before(now)) {
+            String status = event.getStatus();
+
+            if (status != null && !status.trim().isEmpty()) {
+                String normalizedStatus = status.trim().toUpperCase(Locale.getDefault());
+                textStatus.setText(normalizedStatus);
+
+                switch (normalizedStatus) {
+                    case "ENDED":
+                        textStatus.setTextColor(ContextCompat.getColor(getContext(), R.color.error));
+                        break;
+                    case "DRAWN":
+                        textStatus.setTextColor(ContextCompat.getColor(getContext(), R.color.status));
+                        break;
+                    case "CLOSED":
+                        textStatus.setTextColor(ContextCompat.getColor(getContext(), R.color.white));
+                        break;
+                    case "OPEN":
+                    default:
+                        textStatus.setTextColor(ContextCompat.getColor(getContext(), R.color.success));
+                        break;
+                }
+            } else if (eventStart != null && eventStart.toDate().before(now)) {
                 textStatus.setText("ENDED");
                 textStatus.setTextColor(ContextCompat.getColor(getContext(), R.color.error));
             } else if (drawDate != null && drawDate.toDate().before(now)) {

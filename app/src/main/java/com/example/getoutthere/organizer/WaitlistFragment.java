@@ -48,8 +48,13 @@ public class WaitlistFragment extends Fragment {
     // UI elements
     private RecyclerView rvWaitlist;
     private Button btnNotifyWaitlist;
+    private Button btnNotifyWaitlistPrivate;
     private Button btnDrawLottery;
-    private Button btnInviteToWaitlist; // NEW: Button for private invites
+    private Button btnDrawLotteryPrivate;
+    private Button btnInviteToWaitlist;
+
+    private View publicButtonRow;
+    private View privateTopButtonRow;
 
     public WaitlistFragment() {
         // Required empty public constructor
@@ -101,6 +106,11 @@ public class WaitlistFragment extends Fragment {
         btnNotifyWaitlist = view.findViewById(R.id.btnNotifyWaitlist);
         btnDrawLottery = view.findViewById(R.id.btnDrawLottery);
         btnInviteToWaitlist = view.findViewById(R.id.btnInviteToWaitlist);
+        publicButtonRow = view.findViewById(R.id.publicButtonRow);
+        privateTopButtonRow = view.findViewById(R.id.privateTopButtonRow);
+
+        btnNotifyWaitlistPrivate = view.findViewById(R.id.btnNotifyWaitlistPrivate);
+        btnDrawLotteryPrivate = view.findViewById(R.id.btnDrawLotteryPrivate);
 
         // Set up RecyclerView
         adapter = new EntrantAdapter(waitlistEntrants, eventId);
@@ -116,10 +126,15 @@ public class WaitlistFragment extends Fragment {
                             String eventName = documentSnapshot.getString("name");
 
                             if ("Private".equalsIgnoreCase(visibility)) {
-                                btnInviteToWaitlist.setVisibility(View.VISIBLE);
+                                publicButtonRow.setVisibility(View.GONE);
+                                privateTopButtonRow.setVisibility(View.VISIBLE);
+                                btnDrawLotteryPrivate.setVisibility(View.VISIBLE);
+
                                 btnInviteToWaitlist.setOnClickListener(v -> showInviteDialog(eventId, eventName));
                             } else {
-                                btnInviteToWaitlist.setVisibility(View.GONE);
+                                publicButtonRow.setVisibility(View.VISIBLE);
+                                privateTopButtonRow.setVisibility(View.GONE);
+                                btnDrawLotteryPrivate.setVisibility(View.GONE);
                             }
                         }
                     });
@@ -128,9 +143,11 @@ public class WaitlistFragment extends Fragment {
 
         // Draw Lottery button
         btnDrawLottery.setOnClickListener(v -> drawLottery());
+        btnDrawLotteryPrivate.setOnClickListener(v -> drawLottery());
 
         // Notify Waitlist button
         btnNotifyWaitlist.setOnClickListener(v -> notifyWaitlistEntrants());
+        btnNotifyWaitlistPrivate.setOnClickListener(v -> notifyWaitlistEntrants());
 
         return view;
     }

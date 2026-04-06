@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -72,7 +73,7 @@ public class OrganizerCreateEventActivity extends AppCompatActivity {
     private Button uploadPosterButton;
     private Button createEventButton;
 
-    private Button backButton;
+    private FrameLayout backButton;
 
 
     @Nullable
@@ -190,7 +191,7 @@ public class OrganizerCreateEventActivity extends AppCompatActivity {
 
         createEventButton.setOnClickListener(v -> saveEvent());
 
-        Button backButton = findViewById(R.id.backButton);
+        FrameLayout backButton = findViewById(R.id.backButton);
         backButton.setOnClickListener(v -> finish());
 
         TextView screenTitle = findViewById(R.id.screenTitle);

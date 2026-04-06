@@ -15,7 +15,9 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.getoutthere.R;
+import com.example.getoutthere.entrant.EntrantNotificationActivity;
 import com.example.getoutthere.event.Event;
+import com.example.getoutthere.event.EventListActivity;
 import com.example.getoutthere.navigation.NavBottomHelper;
 import com.example.getoutthere.repositories.EventRepository;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -44,6 +46,8 @@ public class OrganizerEventListActivity extends AppCompatActivity {
 
     private MaterialButton buttonCreateEvent;
 
+    private MaterialButton  notificationButton;
+
     /**
      * Initializes the Activity, sets up the list view, and fetches the organizer's events.
      * Sets an onItemClickListener to fire an Intent to OrganizerEventDetailsActivity.
@@ -66,6 +70,16 @@ public class OrganizerEventListActivity extends AppCompatActivity {
 
         listView = findViewById(R.id.organizerEventListView);
         Button buttonCreateEvent = findViewById(R.id.buttonCreateEvent);
+
+        notificationButton = findViewById(R.id.notificationButton);
+
+        if (notificationButton != null) {
+            notificationButton.setOnClickListener(v -> {
+                Intent intent = new Intent(OrganizerEventListActivity.this, EntrantNotificationActivity.class);
+                startActivity(intent);
+            });
+        }
+
         adapter =  new OrganizerEventAdapter(this, myEvents);
         listView.setAdapter(adapter);
 

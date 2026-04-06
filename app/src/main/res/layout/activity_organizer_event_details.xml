@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background"
-    android:fillViewport="true">
+    android:background="@color/background">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/buttonManageWaitlist"
+        android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -108,20 +113,6 @@
                 android:layout_width="12dp"
                 android:layout_height="wrap_content" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/buttonManageWaitlist"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:minHeight="48dp"
-                android:text="Manage Waitlist"
-                android:textColor="@color/white"
-                app:backgroundTint="@color/accent"
-                app:cornerRadius="999dp" />
-
-            <View
-                android:layout_width="12dp"
-                android:layout_height="wrap_content" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/buttonManageComments"
@@ -420,3 +411,19 @@
 
     </LinearLayout>
 </ScrollView>
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/buttonManageWaitlist"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginTop="24dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="24dp"
+        android:minHeight="52dp"
+        android:text="Manage Waitlist"
+        android:textColor="@color/white"
+        app:backgroundTint="@color/accent"
+        app:cornerRadius="999dp" />
+
+</RelativeLayout>

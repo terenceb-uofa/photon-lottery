@@ -1,47 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:background="#333333"
-    android:padding="16dp"
-    android:layout_marginBottom="8dp">
-
-    <TextView
-        android:id="@+id/tvNotificationMessage"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="@color/white"
-        android:textSize="16sp"
-        android:paddingBottom="8dp"/>
+    android:layout_marginStart="4dp"
+    android:layout_marginEnd="4dp"
+    android:layout_marginBottom="12dp"
+    app:cardBackgroundColor="@color/sepBackground"
+    app:cardCornerRadius="999dp"
+    app:cardElevation="0dp"
+    app:strokeWidth="2dp"
+    app:strokeColor="@color/greyAccent">
 
     <LinearLayout
-        android:id="@+id/layoutInviteButtons"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:visibility="gone"
-        android:weightSum="2">
+        android:orientation="vertical"
+        android:padding="16dp">
 
-        <Button
-            android:id="@+id/btnDecline"
-            android:layout_width="0dp"
+        <TextView
+            android:id="@+id/tvNotificationMessage"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Decline"
-            android:backgroundTint="#CC0000"
+            android:lineSpacingExtra="2dp"
             android:textColor="@color/white"
-            android:layout_marginEnd="4dp"/>
+            android:textSize="16sp"
+            android:textStyle="normal" />
 
-        <Button
-            android:id="@+id/btnAccept"
-            android:layout_width="0dp"
+        <LinearLayout
+            android:id="@+id/layoutInviteButtons"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Accept"
-            android:backgroundTint="#59A91E"
-            android:textColor="@color/white"
-            android:layout_marginStart="4dp"/>
+            android:layout_marginTop="14dp"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            android:weightSum="2">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnDecline"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="1"
+                android:layout_marginEnd="6dp"
+                android:text="Decline"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                app:backgroundTint="@color/error"
+                app:cornerRadius="999dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnAccept"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="1"
+                android:layout_marginStart="6dp"
+                android:text="Accept"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                app:backgroundTint="@color/accent"
+                app:cornerRadius="999dp" />
+        </LinearLayout>
+
     </LinearLayout>
 
-</LinearLayout>
+</com.google.android.material.card.MaterialCardView>

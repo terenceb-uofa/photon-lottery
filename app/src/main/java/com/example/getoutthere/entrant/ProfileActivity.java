@@ -43,6 +43,9 @@ public class ProfileActivity extends AppCompatActivity {
     private String deviceId;
     private FirebaseFirestore db;
 
+    private MaterialButton notificationButton;
+
+
     /**
      * Initializes the Activity, sets up the UI elements, fetches the
      * Android device ID, and binds click listeners to the Save and Delete buttons.
@@ -78,6 +81,15 @@ public class ProfileActivity extends AppCompatActivity {
         loadProfile();
         saveButton.setOnClickListener(v -> saveProfile());
         deleteButton.setOnClickListener(v -> deleteProfile());
+
+        notificationButton = findViewById(R.id.notificationButton);
+
+        if (notificationButton != null) {
+            notificationButton.setOnClickListener(v -> {
+                Intent intent = new Intent(ProfileActivity.this, EntrantNotificationActivity.class);
+                startActivity(intent);
+            });
+        }
 
 
         BottomNavigationView bottomNav = findViewById(R.id.bottomNavigation);

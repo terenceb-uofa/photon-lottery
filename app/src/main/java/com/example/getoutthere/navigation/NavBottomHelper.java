@@ -67,8 +67,6 @@ public class NavBottomHelper {
                 intent = new Intent(activity, OrganizerEventListActivity.class);
             } else if (itemId == R.id.nav_history) {
                 intent = new Intent(activity, EventHistory.class);
-            } else if (itemId == R.id.nav_notifications) {
-                intent = new Intent(activity, EntrantNotificationActivity.class);
             } else if (itemId == R.id.nav_profile) {
                 intent = new Intent(activity, ProfileActivity.class);
             } else if (itemId == R.id.nav_admin) {

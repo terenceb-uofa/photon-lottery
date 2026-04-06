@@ -1,6 +1,7 @@
 package com.example.getoutthere.organizer;
 
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 
 import androidx.activity.EdgeToEdge;
@@ -21,7 +22,7 @@ public class OrganizerWaitlistActivity extends AppCompatActivity {
     // UI elements
     private TabLayout tabLayout;
     private ViewPager2 viewPager;
-    private Button btnBack;
+    private View btnBack;
 
     // Event ID passed from OrganizerEventDetailsActivity
     private String eventId;

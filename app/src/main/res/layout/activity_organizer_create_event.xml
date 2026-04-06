@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#121212"
+    android:background="@color/background"
     android:fillViewport="true">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -12,37 +12,45 @@
         android:padding="24dp"
         android:paddingBottom="100dp">
 
-        <com.google.android.material.button.MaterialButton
+
+        <FrameLayout
             android:id="@+id/backButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="⬅️ Back"
-            android:textColor="#FFFFFF"
-            app:backgroundTint="#333333"
-            app:cornerRadius="8dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackgroundBorderless">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_arrow_back"
+                app:tint="@color/white" />
+        </FrameLayout>
 
         <TextView
             android:id="@+id/screenTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Create Event"
-            android:textColor="#59A91E"
-            android:textSize="36sp"
+            android:textColor="@color/white"
+            android:textSize="32sp"
             android:textStyle="bold"
-            android:layout_marginTop="16dp"
+            android:gravity="center"
             android:layout_marginBottom="16dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/backButton" />
+
+
 
         <ImageView
             android:id="@+id/posterPreview"
             android:layout_width="0dp"
             android:layout_height="180dp"
             android:layout_marginTop="16dp"
-            android:background="#1E1E1E"
+            android:background="@color/navBackground"
             android:scaleType="centerCrop"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -52,15 +60,19 @@
             android:id="@+id/uploadPosterButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:minHeight="56dp"
+            android:layout_marginTop="15dp"
+            android:minHeight="48dp"
             android:text="Upload Poster"
-            android:textColor="#FFFFFF"
-            app:backgroundTint="#333333"
-            app:cornerRadius="8dp"
+            android:textColor="@color/white"
+            app:backgroundTint="@color/ghostButton"
+            app:cornerRadius="999dp"
+            app:strokeColor="@color/ghostBorder"
+            app:strokeWidth="1dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/posterPreview" />
+
+
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/nameInputLayout"
@@ -69,11 +81,16 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:hint="Event Name"
-            android:textColorHint="#B0B0B0"
-            app:boxBackgroundColor="#1E1E1E"
-            app:boxStrokeColor="#59A91E"
+            android:textColorHint="@color/textHint"
+            app:boxBackgroundColor="@color/sepBackground"
+            app:boxStrokeColor="@color/accent"
             app:boxStrokeWidth="1dp"
-            app:hintTextColor="#59A91E"
+            app:boxStrokeWidthFocused="2dp"
+            app:hintTextColor="@color/textHint"
+            app:boxCornerRadiusTopStart="999dp"
+            app:boxCornerRadiusTopEnd="999dp"
+            app:boxCornerRadiusBottomStart="999dp"
+            app:boxCornerRadiusBottomEnd="999dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/uploadPosterButton">
@@ -82,66 +99,88 @@
                 android:id="@+id/nameInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="#FFFFFF"
+                android:textColor="@color/white"
                 android:inputType="textCapWords" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- The following code is from Anthropic, Claude, "Create Event Android XML layout with event type dropdown", 2026-04-01 -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/eventTypeInputLayout"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+        <LinearLayout
+            android:id="@+id/eventDropdownRow"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:hint="Event Type"
-            android:textColorHint="#B0B0B0"
-            app:boxBackgroundColor="#1E1E1E"
-            app:boxStrokeColor="#59A91E"
-            app:boxStrokeWidth="1dp"
-            app:hintTextColor="#59A91E"
+            android:orientation="horizontal"
+            android:weightSum="2"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/nameInputLayout">
 
-            <AutoCompleteTextView
-                android:id="@+id/eventTypeInput"
-                android:layout_width="match_parent"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/eventTypeInputLayout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:textColor="#FFFFFF"
-                android:inputType="none"
-                android:focusable="false"
-                android:cursorVisible="false"
-                android:saveEnabled="false"
-                android:entries="@array/event_types" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:layout_marginEnd="8dp"
+                android:layout_weight="1"
+                android:hint="Event Type"
+                android:textColorHint="@color/textHint"
+                app:boxBackgroundColor="@color/sepBackground"
+                app:boxStrokeColor="@color/accent"
+                app:boxStrokeWidth="1dp"
+                app:boxStrokeWidthFocused="2dp"
+                app:hintTextColor="@color/textHint"
+                app:endIconMode="dropdown_menu"
+                app:endIconTint="@color/textHint"
+                app:boxCornerRadiusTopStart="999dp"
+                app:boxCornerRadiusTopEnd="999dp"
+                app:boxCornerRadiusBottomStart="999dp"
+                app:boxCornerRadiusBottomEnd="999dp">
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/eventVisibilityInputLayout"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:hint="Visibility"
-            android:textColorHint="#B0B0B0"
-            app:boxBackgroundColor="#1E1E1E"
-            app:boxStrokeColor="#59A91E"
-            app:boxStrokeWidth="1dp"
-            app:hintTextColor="#59A91E"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/eventTypeInputLayout">
+                <AutoCompleteTextView
+                    android:id="@+id/eventTypeInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:inputType="none"
+                    android:focusable="false"
+                    android:cursorVisible="false"
+                    android:saveEnabled="false"
+                    android:entries="@array/event_types" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <AutoCompleteTextView
-                android:id="@+id/eventVisibilityInput"
-                android:layout_width="match_parent"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/eventVisibilityInputLayout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:textColor="#FFFFFF"
-                android:inputType="none"
-                android:focusable="false"
-                android:cursorVisible="false"
-                android:saveEnabled="false"
-                android:entries="@array/visibility_types" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:layout_marginStart="8dp"
+                android:layout_weight="1"
+                android:hint="Visibility"
+                android:textColorHint="@color/textHint"
+                app:boxBackgroundColor="@color/sepBackground"
+                app:boxStrokeColor="@color/accent"
+                app:boxStrokeWidth="1dp"
+                app:boxStrokeWidthFocused="2dp"
+                app:hintTextColor="@color/textHint"
+                app:endIconMode="dropdown_menu"
+                app:endIconTint="@color/textHint"
+                app:boxCornerRadiusTopStart="999dp"
+                app:boxCornerRadiusTopEnd="999dp"
+                app:boxCornerRadiusBottomStart="999dp"
+                app:boxCornerRadiusBottomEnd="999dp">
+
+                <AutoCompleteTextView
+                    android:id="@+id/eventVisibilityInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:inputType="none"
+                    android:focusable="false"
+                    android:cursorVisible="false"
+                    android:saveEnabled="false"
+                    android:entries="@array/visibility_types" />
+            </com.google.android.material.textfield.TextInputLayout>
+        </LinearLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/descriptionInputLayout"
@@ -150,23 +189,30 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             android:hint="Description"
-            android:textColorHint="#B0B0B0"
-            app:boxBackgroundColor="#1E1E1E"
-            app:boxStrokeColor="#59A91E"
+            android:textColorHint="@color/textHint"
+            app:boxBackgroundColor="@color/sepBackground"
+            app:boxStrokeColor="@color/accent"
             app:boxStrokeWidth="1dp"
-            app:hintTextColor="#59A91E"
+            app:boxStrokeWidthFocused="2dp"
+            app:hintTextColor="@color/textHint"
+            app:boxCornerRadiusTopStart="24dp"
+            app:boxCornerRadiusTopEnd="24dp"
+            app:boxCornerRadiusBottomStart="24dp"
+            app:boxCornerRadiusBottomEnd="24dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/eventVisibilityInputLayout">
+            app:layout_constraintTop_toBottomOf="@id/eventDropdownRow">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/descriptionInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="top|start"
-                android:inputType="textMultiLine"
-                android:textColor="#FFFFFF"
-                android:minLines="3" />
+                android:inputType="textMultiLine|textCapSentences"
+                android:textColor="@color/white"
+                android:minLines="4"
+                android:maxLines="6"
+                android:scrollbars="vertical" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -176,11 +222,16 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             android:hint="Address"
-            android:textColorHint="#B0B0B0"
-            app:boxBackgroundColor="#1E1E1E"
-            app:boxStrokeColor="#59A91E"
+            android:textColorHint="@color/textHint"
+            app:boxBackgroundColor="@color/sepBackground"
+            app:boxStrokeColor="@color/accent"
             app:boxStrokeWidth="1dp"
-            app:hintTextColor="#59A91E"
+            app:boxStrokeWidthFocused="2dp"
+            app:hintTextColor="@color/textHint"
+            app:boxCornerRadiusTopStart="999dp"
+            app:boxCornerRadiusTopEnd="999dp"
+            app:boxCornerRadiusBottomStart="999dp"
+            app:boxCornerRadiusBottomEnd="999dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/descriptionInputLayout">
@@ -189,8 +240,8 @@
                 android:id="@+id/addressInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="#FFFFFF"
-                android:inputType="textPostalAddress" />
+                android:inputType="textPostalAddress"
+                android:textColor="@color/white" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <LinearLayout
@@ -211,20 +262,26 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:layout_weight="1"
-                android:textColorHint="#B0B0B0"
-                app:boxBackgroundColor="#1E1E1E"
-                app:boxStrokeColor="#59A91E"
+                android:hint="Start Date"
+                android:textColorHint="@color/textHint"
+                app:boxBackgroundColor="@color/sepBackground"
+                app:boxStrokeColor="@color/accent"
                 app:boxStrokeWidth="1dp"
-                app:hintTextColor="#59A91E"
-                android:hint="Start Date">
+                app:boxStrokeWidthFocused="2dp"
+                app:hintTextColor="@color/textHint"
+                app:boxCornerRadiusTopStart="999dp"
+                app:boxCornerRadiusTopEnd="999dp"
+                app:boxCornerRadiusBottomStart="999dp"
+                app:boxCornerRadiusBottomEnd="999dp">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/startDateInput"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:focusable="false"
-                    android:textColor="#FFFFFF"
-                    android:inputType="none" />
+                    android:clickable="true"
+                    android:inputType="none"
+                    android:textColor="@color/white" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -234,20 +291,26 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_weight="1"
-                android:textColorHint="#B0B0B0"
-                app:boxBackgroundColor="#1E1E1E"
-                app:boxStrokeColor="#59A91E"
+                android:hint="End Date"
+                android:textColorHint="@color/textHint"
+                app:boxBackgroundColor="@color/sepBackground"
+                app:boxStrokeColor="@color/accent"
                 app:boxStrokeWidth="1dp"
-                app:hintTextColor="#59A91E"
-                android:hint="End Date">
+                app:boxStrokeWidthFocused="2dp"
+                app:hintTextColor="@color/textHint"
+                app:boxCornerRadiusTopStart="999dp"
+                app:boxCornerRadiusTopEnd="999dp"
+                app:boxCornerRadiusBottomStart="999dp"
+                app:boxCornerRadiusBottomEnd="999dp">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/endDateInput"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:focusable="false"
-                    android:textColor="#FFFFFF"
-                    android:inputType="none" />
+                    android:clickable="true"
+                    android:inputType="none"
+                    android:textColor="@color/white" />
             </com.google.android.material.textfield.TextInputLayout>
         </LinearLayout>
 
@@ -258,11 +321,16 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             android:hint="Draw Date"
-            android:textColorHint="#B0B0B0"
-            app:boxBackgroundColor="#1E1E1E"
-            app:boxStrokeColor="#59A91E"
+            android:textColorHint="@color/textHint"
+            app:boxBackgroundColor="@color/sepBackground"
+            app:boxStrokeColor="@color/accent"
             app:boxStrokeWidth="1dp"
-            app:hintTextColor="#59A91E"
+            app:boxStrokeWidthFocused="2dp"
+            app:hintTextColor="@color/textHint"
+            app:boxCornerRadiusTopStart="999dp"
+            app:boxCornerRadiusTopEnd="999dp"
+            app:boxCornerRadiusBottomStart="999dp"
+            app:boxCornerRadiusBottomEnd="999dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/eventDateRow">
@@ -272,8 +340,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:focusable="false"
-                android:textColor="#FFFFFF"
-                android:inputType="none" />
+                android:clickable="true"
+                android:inputType="none"
+                android:textColor="@color/white" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <LinearLayout
@@ -294,20 +363,26 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:layout_weight="1"
-                android:textColorHint="#B0B0B0"
-                app:boxBackgroundColor="#1E1E1E"
-                app:boxStrokeColor="#59A91E"
+                android:hint="Reg. Start"
+                android:textColorHint="@color/textHint"
+                app:boxBackgroundColor="@color/sepBackground"
+                app:boxStrokeColor="@color/accent"
                 app:boxStrokeWidth="1dp"
-                app:hintTextColor="#59A91E"
-                android:hint="Reg. Start">
+                app:boxStrokeWidthFocused="2dp"
+                app:hintTextColor="@color/textHint"
+                app:boxCornerRadiusTopStart="999dp"
+                app:boxCornerRadiusTopEnd="999dp"
+                app:boxCornerRadiusBottomStart="999dp"
+                app:boxCornerRadiusBottomEnd="999dp">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/registrationStartInput"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:focusable="false"
-                    android:textColor="#FFFFFF"
-                    android:inputType="none" />
+                    android:clickable="true"
+                    android:inputType="none"
+                    android:textColor="@color/white" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -317,46 +392,94 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_weight="1"
-                android:textColorHint="#B0B0B0"
-                app:boxBackgroundColor="#1E1E1E"
-                app:boxStrokeColor="#59A91E"
+                android:hint="Reg. End"
+                android:textColorHint="@color/textHint"
+                app:boxBackgroundColor="@color/sepBackground"
+                app:boxStrokeColor="@color/accent"
                 app:boxStrokeWidth="1dp"
-                app:hintTextColor="#59A91E"
-                android:hint="Reg. End">
+                app:boxStrokeWidthFocused="2dp"
+                app:hintTextColor="@color/textHint"
+                app:boxCornerRadiusTopStart="999dp"
+                app:boxCornerRadiusTopEnd="999dp"
+                app:boxCornerRadiusBottomStart="999dp"
+                app:boxCornerRadiusBottomEnd="999dp">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/registrationEndInput"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:focusable="false"
-                    android:textColor="#FFFFFF"
-                    android:inputType="none" />
+                    android:clickable="true"
+                    android:inputType="none"
+                    android:textColor="@color/white" />
             </com.google.android.material.textfield.TextInputLayout>
         </LinearLayout>
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/capacityInputLayout"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        <LinearLayout
+            android:id="@+id/capacityRow"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:hint="Capacity"
-            android:textColorHint="#B0B0B0"
-            app:boxBackgroundColor="#1E1E1E"
-            app:boxStrokeColor="#59A91E"
-            app:boxStrokeWidth="1dp"
-            app:hintTextColor="#59A91E"
+            android:orientation="horizontal"
+            android:weightSum="2"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/registrationDateRow">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/capacityInput"
-                android:layout_width="match_parent"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/capacityInputLayout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:textColor="#FFFFFF"
-                android:inputType="number" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:layout_marginEnd="8dp"
+                android:layout_weight="1"
+                android:hint="Capacity"
+                android:textColorHint="@color/textHint"
+                app:boxBackgroundColor="@color/sepBackground"
+                app:boxStrokeColor="@color/accent"
+                app:boxStrokeWidth="1dp"
+                app:boxStrokeWidthFocused="2dp"
+                app:hintTextColor="@color/textHint"
+                app:boxCornerRadiusTopStart="999dp"
+                app:boxCornerRadiusTopEnd="999dp"
+                app:boxCornerRadiusBottomStart="999dp"
+                app:boxCornerRadiusBottomEnd="999dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/capacityInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="number"
+                    android:textColor="@color/white" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/waitlistLimitInputLayout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_weight="1"
+                android:hint="Waitlist Limit (Optional)"
+                android:textColorHint="@color/textHint"
+                app:boxBackgroundColor="@color/sepBackground"
+                app:boxStrokeColor="@color/accent"
+                app:boxStrokeWidth="1dp"
+                app:boxStrokeWidthFocused="2dp"
+                app:hintTextColor="@color/textHint"
+                app:boxCornerRadiusTopStart="999dp"
+                app:boxCornerRadiusTopEnd="999dp"
+                app:boxCornerRadiusBottomStart="999dp"
+                app:boxCornerRadiusBottomEnd="999dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/waitlistLimitInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="number"
+                    android:textColor="@color/white" />
+            </com.google.android.material.textfield.TextInputLayout>
+        </LinearLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/feeInputLayout"
@@ -365,60 +488,45 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             android:hint="Signup Fee"
-            android:textColorHint="#B0B0B0"
-            app:boxBackgroundColor="#1E1E1E"
-            app:boxStrokeColor="#59A91E"
+            android:textColorHint="@color/textHint"
+            app:boxBackgroundColor="@color/sepBackground"
+            app:boxStrokeColor="@color/accent"
             app:boxStrokeWidth="1dp"
-            app:hintTextColor="#59A91E"
+            app:boxStrokeWidthFocused="2dp"
+            app:hintTextColor="@color/textHint"
+            app:boxCornerRadiusTopStart="999dp"
+            app:boxCornerRadiusTopEnd="999dp"
+            app:boxCornerRadiusBottomStart="999dp"
+            app:boxCornerRadiusBottomEnd="999dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/capacityInputLayout">
+            app:layout_constraintTop_toBottomOf="@id/capacityRow">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/feeInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="#FFFFFF"
+                android:textColor="@color/white"
                 android:inputType="numberDecimal" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/waitlistLimitInputLayout"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:hint="Waitlist Limit (Optional)"
-            android:textColorHint="#B0B0B0"
-            app:boxBackgroundColor="#1E1E1E"
-            app:boxStrokeColor="#59A91E"
-            app:boxStrokeWidth="1dp"
-            app:hintTextColor="#59A91E"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/feeInputLayout">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/waitlistLimitInput"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="#FFFFFF"
-                android:inputType="number" />
-        </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/createEventButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
-            android:minHeight="56dp"
+            android:layout_marginTop="22dp"
+            android:minHeight="48dp"
             android:text="Create Event"
-            android:textColor="#FFFFFF"
-            app:backgroundTint="#59A91E"
-            app:cornerRadius="8dp"
+            android:textColor="@color/white"
+            app:backgroundTint="@color/accent"
+            app:cornerRadius="999dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/waitlistLimitInputLayout" />
+            app:layout_constraintTop_toBottomOf="@id/feeInputLayout" />
+
+
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
