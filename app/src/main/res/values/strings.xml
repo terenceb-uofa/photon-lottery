@@ -14,4 +14,9 @@
         <item>Dining</item>
         <item>Charity</item>
     </string-array>
+
+    <string-array name="visibility_types">
+        <item>Public</item>
+        <item>Private</item>
+    </string-array>
 </resources>

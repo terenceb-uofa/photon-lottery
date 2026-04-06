@@ -65,6 +65,7 @@ public class OrganizerCreateEventActivity extends AppCompatActivity {
     private EditText feeInput;
     private EditText waitlistLimitInput;
     private AutoCompleteTextView eventTypeInput;
+    private AutoCompleteTextView eventVisibilityInput;
 
     // Buttons
 
@@ -144,6 +145,14 @@ public class OrganizerCreateEventActivity extends AppCompatActivity {
         );
         eventTypeInput.setAdapter(eventTypeAdapter);
 
+        eventVisibilityInput = findViewById(R.id.eventVisibilityInput);
+        ArrayAdapter<CharSequence> eventVisibilityAdapter = ArrayAdapter.createFromResource(
+                this,
+                R.array.visibility_types,
+                android.R.layout.simple_dropdown_item_1line
+        );
+        eventVisibilityInput.setAdapter(eventVisibilityAdapter);
+
         // date pickers
         startDateInput.setKeyListener(null);
         endDateInput.setKeyListener(null);
@@ -205,6 +214,7 @@ public class OrganizerCreateEventActivity extends AppCompatActivity {
         String feeText = feeInput.getText().toString().trim();
         String waitlistLimitText = waitlistLimitInput.getText().toString().trim();
         String eventType = eventTypeInput.getText().toString().trim();
+        String eventVisibility = eventVisibilityInput.getText().toString().trim();
 
         if (name.isEmpty()) {
             nameInput.setError("Event name is required");
@@ -272,6 +282,12 @@ public class OrganizerCreateEventActivity extends AppCompatActivity {
             return;
         }
 
+        if (eventVisibility.isEmpty()) {
+            eventVisibilityInput.setError("Event visibility is required");
+            eventVisibilityInput.requestFocus();
+            return;
+        }
+
         int capacity;
         double signupFee;
         Integer waitlistLimit = null;
@@ -331,6 +347,7 @@ public class OrganizerCreateEventActivity extends AppCompatActivity {
         event.setSignupFee(signupFee);
         event.setWaitlistLimit(waitlistLimit);
         event.setEventType(eventType);
+        event.setEventVisibility(eventVisibility);
 
         setSavingState(true);
 

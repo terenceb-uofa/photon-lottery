@@ -43,6 +43,7 @@ public class Event {
 
     private List<String> coOrganizerIds;
     private String eventType;
+    private String eventVisibility;
 
     /**
      * Default constructor required for Firebase Firestore serialization.
@@ -279,5 +280,11 @@ public class Event {
      */
     public void setCoOrganizerIds(List<String> coOrganizerIds) { this.coOrganizerIds = coOrganizerIds; }
 
+    public String getEventVisibility() {
+        return eventVisibility;
+    }
 
+    public void setEventVisibility(String eventVisibility) {
+        this.eventVisibility = eventVisibility;
+    }
 }
