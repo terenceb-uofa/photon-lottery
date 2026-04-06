@@ -33,6 +33,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+
 /**
  * Displays detailed information about a specific event.
  * <p>
@@ -517,6 +524,95 @@ public class EventDetailsActivity extends AppCompatActivity {
                 }
             }
         }
+    }
+
+    /**
+     * Checks for location permissions, fetches the user's current coordinates,
+     * and proceeds to join the waitlist with location data attached.
+     */
+    private void fetchLocationAndJoin() {
+        FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
+        // Check if the user has granted location permissions
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            // If no permission, request it from the user
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 100);
+            return;
+        }
+
+        // Fetch the location
+        fusedLocationClient.getLastLocation()
+                .addOnSuccessListener(this, location -> {
+                    if (location != null) {
+                        joinWaitingList(location.getLatitude(), location.getLongitude());
+                    } else {
+                        Toast.makeText(this, "Could not find location. Please ensure GPS is on.", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    /**
+     * Handles the permission request response for location access.
+     */
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 100) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission was granted, try fetching and joining again
+                fetchLocationAndJoin();
+            } else {
+                Toast.makeText(this, "Location permission is required to join this event.", Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    /**
+     * Adds the entrant to the Firestore waitingList subcollection and updates the event's capacity limit.
+     * @param latitude The user's latitude (null if geolocation is not required)
+     * @param longitude The user's longitude (null if geolocation is not required)
+     */
+    private void joinWaitingList(Double latitude, Double longitude) {
+        HashMap<String, Object> waitlistData = new HashMap<>();
+        waitlistData.put("timestamp", FieldValue.serverTimestamp());
+        waitlistData.put("status", "Waiting");
+
+        if (latitude != null && longitude != null) {
+            waitlistData.put("latitude", latitude);
+            waitlistData.put("longitude", longitude);
+        }
+
+        // Add to waiting list collection
+        db.collection("events")
+                .document(event.getId())
+                .collection("waitingList")
+                .document(entrant.getDeviceId())
+                .set(waitlistData)
+                .addOnSuccessListener(aVoid -> {
+                    isOnWaitingList = true;
+
+                    // Increment the waitlist count
+                    db.collection("events")
+                            .document(event.getId())
+                            .update("currentWaitlistCount", FieldValue.increment(1))
+                            .addOnSuccessListener(unused -> {
+                                int newCount = event.getCurrentWaitlistCount() + 1;
+                                event.setCurrentWaitlistCount(newCount);
+                                updateSpotsUI();
+                                updateToggleButton();
+                                Toast.makeText(EventDetailsActivity.this, "Joined waiting list!", Toast.LENGTH_SHORT).show();
+                            })
+                            .addOnFailureListener(e -> {
+                                // Rollback local state if increment fails
+                                isOnWaitingList = false;
+                                Toast.makeText(EventDetailsActivity.this, "Failed to update waitlist count", Toast.LENGTH_SHORT).show();
+                            });
+                })
+                .addOnFailureListener(e ->
+                        Toast.makeText(EventDetailsActivity.this, "Failed to join waiting list", Toast.LENGTH_SHORT).show());
     }
 
 }
