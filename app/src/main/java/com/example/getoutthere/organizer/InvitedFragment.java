@@ -94,7 +94,7 @@ public class InvitedFragment extends Fragment {
         btnNotifyInvited = view.findViewById(R.id.btnNotifyInvited);
 
         // Set up RecyclerView
-        adapter = new EntrantAdapter(invitedEntrants);
+        adapter = new EntrantAdapter(invitedEntrants, eventId);
         rvInvited.setLayoutManager(new LinearLayoutManager(getContext()));
         rvInvited.setAdapter(adapter);
 

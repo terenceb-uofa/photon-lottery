@@ -25,6 +25,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
+import java.util.Objects;
 
 /**
  * Displays detailed information about a specific event.
@@ -50,6 +51,7 @@ public class EventDetailsActivity extends AppCompatActivity {
     private EntrantProfile entrant;
 
     boolean isOnWaitingList = false;
+    boolean isAOrganizer = false;
 
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -164,6 +166,12 @@ public class EventDetailsActivity extends AppCompatActivity {
 
                 // Check registration period before allowing join
                 if (!isRegistrationOpen()) {
+                    return;
+                }
+
+                // If user is an organizer, user cannot join waiting list
+                if (Objects.equals(event.getOrganizerId(), deviceId) || event.getCoOrganizerIds().contains(deviceId)) {
+                    Toast.makeText(EventDetailsActivity.this, "Organizers/Co-organizers cannot join waiting lists for their own events", Toast.LENGTH_SHORT).show();
                     return;
                 }
 

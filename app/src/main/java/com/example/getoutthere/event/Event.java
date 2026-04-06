@@ -2,6 +2,8 @@ package com.example.getoutthere.event;
 
 import com.google.firebase.Timestamp;
 
+import java.util.List;
+
 /**
  * Represents an Event entity within the application.
  * <p>
@@ -39,6 +41,7 @@ public class Event {
     private String qrCodeContent;
     private String status;
 
+    private List<String> coOrganizerIds;
     private String eventType;
 
     /**
@@ -263,4 +266,18 @@ public class Event {
      * @param eventType The string representing the event type.
      */
     public void setEventType(String eventType) { this.eventType = eventType; }
+
+    /**
+     * Gets the list of device IDs for the event's co-organizers.
+     * @return A list of co-organizer IDs, or null if none exist.
+     */
+    public List<String> getCoOrganizerIds() { return coOrganizerIds; }
+
+    /**
+     * Sets the list of device IDs for the event's co-organizers.
+     * @param coOrganizerIds The list of IDs.
+     */
+    public void setCoOrganizerIds(List<String> coOrganizerIds) { this.coOrganizerIds = coOrganizerIds; }
+
+
 }

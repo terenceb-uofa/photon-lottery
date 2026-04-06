@@ -21,6 +21,7 @@ public class EntrantAdapter extends RecyclerView.Adapter<EntrantAdapter.EntrantV
 
     // List of entrant data maps, each containing name, email, phone, status, deviceId
     private List<Map<String, String>> entrants;
+    private  String eventId;
 
     /**
      * Constructs an EntrantAdapter with the given list of entrants.
@@ -29,6 +30,10 @@ public class EntrantAdapter extends RecyclerView.Adapter<EntrantAdapter.EntrantV
      */
     public EntrantAdapter(List<Map<String, String>> entrants) {
         this.entrants = entrants;
+    }
+    public EntrantAdapter(List<Map<String, String>> entrants, String eventId) {
+        this.entrants = entrants;
+        this.eventId = eventId;
     }
 
     @NonNull
@@ -44,6 +49,45 @@ public class EntrantAdapter extends RecyclerView.Adapter<EntrantAdapter.EntrantV
         Map<String, String> entrant = entrants.get(position);
         holder.tvEntrantName.setText(entrant.get("name"));
         holder.tvEntrantEmail.setText(entrant.get("email"));
+
+        holder.itemView.setOnClickListener(v -> {
+            String selectedName = entrant.get("name");
+            String selectedDeviceId = entrant.get("deviceId");
+
+            new androidx.appcompat.app.AlertDialog.Builder(v.getContext())
+                    .setTitle("Promote to Co-Organizer?")
+                    .setMessage("Are you sure you want to promote " + selectedName + "?")
+                    .setPositiveButton("Promote", (dialog, which) -> {
+                        // Initialize DB
+                        com.google.firebase.firestore.FirebaseFirestore db = com.google.firebase.firestore.FirebaseFirestore.getInstance();
+
+                        //remove them from the waiting list subcollection (removes them from entrant pool)
+                        db.collection("events").document(eventId)
+                                .collection("waitingList").document(selectedDeviceId).delete();
+
+                        //decrement the waitlist count on the main Event document
+                        db.collection("events").document(eventId)
+                                .update("currentWaitlistCount", com.google.firebase.firestore.FieldValue.increment(-1));
+
+                        //construct and send the notification (US 01.09.01)
+                        java.util.HashMap<String, Object> notifData = new java.util.HashMap<>();
+                        notifData.put("eventId", eventId);
+                        notifData.put("message", "You have been invited to be a Co-Organizer for an event!");
+                        notifData.put("type", "co_organizer_invite");
+                        notifData.put("timestamp", com.google.firebase.Timestamp.now());
+
+                        db.collection("profiles").document(selectedDeviceId)
+                                .collection("notifications").add(notifData)
+                                .addOnSuccessListener(docRef -> {
+                                    android.widget.Toast.makeText(v.getContext(), "Promotion invite sent to " + selectedName, android.widget.Toast.LENGTH_SHORT).show();
+                                })
+                                .addOnFailureListener(e -> {
+                                    android.widget.Toast.makeText(v.getContext(), "Failed to send invite", android.widget.Toast.LENGTH_SHORT).show();
+                                });
+                    })
+                    .setNegativeButton("Cancel", null)
+                    .show();
+        });
     }
 
     @Override
