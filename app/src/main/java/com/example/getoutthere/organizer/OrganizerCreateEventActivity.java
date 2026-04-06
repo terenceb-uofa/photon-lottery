@@ -3,10 +3,11 @@ package com.example.getoutthere.organizer;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
-import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -23,14 +24,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.getoutthere.R;
 import com.example.getoutthere.event.Event;
 import com.example.getoutthere.repositories.EventRepository;
-
-import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.firebase.Timestamp;
 
-import java.util.Locale;
 import java.util.Calendar;
-import android.widget.AutoCompleteTextView;
-import android.widget.ArrayAdapter;
+import java.util.Locale;
 
 /**
  * Allows organizers to create a new event.
@@ -67,21 +64,17 @@ public class OrganizerCreateEventActivity extends AppCompatActivity {
     private EditText waitlistLimitInput;
     private AutoCompleteTextView eventTypeInput;
     private AutoCompleteTextView eventVisibilityInput;
-    private SwitchMaterial switchRequireGeolocation;
+    private AutoCompleteTextView geolocationRequirementInput;
 
     // Buttons
-
     private Button uploadPosterButton;
     private Button createEventButton;
-
     private FrameLayout backButton;
-
 
     @Nullable
     private Uri selectedImageUri = null;
 
     private EventRepository eventRepository;
-
 
     // Timestamps
     private Timestamp startDateTimestamp;
@@ -134,7 +127,6 @@ public class OrganizerCreateEventActivity extends AppCompatActivity {
         capacityInput = findViewById(R.id.capacityInput);
         feeInput = findViewById(R.id.feeInput);
         waitlistLimitInput = findViewById(R.id.waitlistLimitInput);
-        switchRequireGeolocation = findViewById(R.id.switchRequireGeolocation);
 
         uploadPosterButton = findViewById(R.id.uploadPosterButton);
         createEventButton = findViewById(R.id.createEventButton);
@@ -155,6 +147,14 @@ public class OrganizerCreateEventActivity extends AppCompatActivity {
                 android.R.layout.simple_dropdown_item_1line
         );
         eventVisibilityInput.setAdapter(eventVisibilityAdapter);
+
+        geolocationRequirementInput = findViewById(R.id.geolocationRequirementInput);
+        ArrayAdapter<CharSequence> geoAdapter = ArrayAdapter.createFromResource(
+                this,
+                R.array.geolocation_options,
+                android.R.layout.simple_dropdown_item_1line
+        );
+        geolocationRequirementInput.setAdapter(geoAdapter);
 
         // date pickers
         startDateInput.setKeyListener(null);
@@ -177,14 +177,6 @@ public class OrganizerCreateEventActivity extends AppCompatActivity {
 
         registrationEndInput.setOnClickListener(v ->
                 showDateTimePicker(registrationEndInput, timestamp -> registrationEndTimestamp = timestamp));
-
-        uploadPosterButton.setOnClickListener(v ->
-                pickMedia.launch(new PickVisualMediaRequest.Builder()
-                        .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
-                        .build())
-        );
-
-
         uploadPosterButton.setOnClickListener(v ->
                 pickMedia.launch(new PickVisualMediaRequest.Builder()
                         .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
@@ -218,7 +210,7 @@ public class OrganizerCreateEventActivity extends AppCompatActivity {
         String waitlistLimitText = waitlistLimitInput.getText().toString().trim();
         String eventType = eventTypeInput.getText().toString().trim();
         String eventVisibility = eventVisibilityInput.getText().toString().trim();
-        boolean requiresGeolocation = switchRequireGeolocation.isChecked();
+        String geoRequirement = geolocationRequirementInput.getText().toString().trim();
 
         if (name.isEmpty()) {
             nameInput.setError("Event name is required");
@@ -291,6 +283,14 @@ public class OrganizerCreateEventActivity extends AppCompatActivity {
             eventVisibilityInput.requestFocus();
             return;
         }
+
+        if (geoRequirement.isEmpty()) {
+            geolocationRequirementInput.setError("Geolocation requirement is required");
+            geolocationRequirementInput.requestFocus();
+            return;
+        }
+
+        boolean requiresGeolocation = geoRequirement.equalsIgnoreCase("Enable");
 
         int capacity;
         double signupFee;
@@ -474,6 +474,4 @@ public class OrganizerCreateEventActivity extends AppCompatActivity {
     private String getCurrentUserId() {
         return Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
     }
-
-
 }
