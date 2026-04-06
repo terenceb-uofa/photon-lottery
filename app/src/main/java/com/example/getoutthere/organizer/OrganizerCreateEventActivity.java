@@ -1,6 +1,5 @@
 package com.example.getoutthere.organizer;
 
-
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
@@ -25,6 +24,7 @@ import com.example.getoutthere.R;
 import com.example.getoutthere.event.Event;
 import com.example.getoutthere.repositories.EventRepository;
 
+import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.firebase.Timestamp;
 
 import java.util.Locale;
@@ -67,6 +67,7 @@ public class OrganizerCreateEventActivity extends AppCompatActivity {
     private EditText waitlistLimitInput;
     private AutoCompleteTextView eventTypeInput;
     private AutoCompleteTextView eventVisibilityInput;
+    private SwitchMaterial switchRequireGeolocation;
 
     // Buttons
 
@@ -133,6 +134,7 @@ public class OrganizerCreateEventActivity extends AppCompatActivity {
         capacityInput = findViewById(R.id.capacityInput);
         feeInput = findViewById(R.id.feeInput);
         waitlistLimitInput = findViewById(R.id.waitlistLimitInput);
+        switchRequireGeolocation = findViewById(R.id.switchRequireGeolocation);
 
         uploadPosterButton = findViewById(R.id.uploadPosterButton);
         createEventButton = findViewById(R.id.createEventButton);
@@ -216,6 +218,7 @@ public class OrganizerCreateEventActivity extends AppCompatActivity {
         String waitlistLimitText = waitlistLimitInput.getText().toString().trim();
         String eventType = eventTypeInput.getText().toString().trim();
         String eventVisibility = eventVisibilityInput.getText().toString().trim();
+        boolean requiresGeolocation = switchRequireGeolocation.isChecked();
 
         if (name.isEmpty()) {
             nameInput.setError("Event name is required");
@@ -349,6 +352,7 @@ public class OrganizerCreateEventActivity extends AppCompatActivity {
         event.setWaitlistLimit(waitlistLimit);
         event.setEventType(eventType);
         event.setEventVisibility(eventVisibility);
+        event.setRequiresGeolocation(requiresGeolocation);
 
         setSavingState(true);
 

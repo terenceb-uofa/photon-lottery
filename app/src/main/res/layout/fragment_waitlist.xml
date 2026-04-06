@@ -118,4 +118,14 @@
         app:backgroundTint="@color/accent"
         app:cornerRadius="999dp" />
 
+    <Button
+        android:id="@+id/btnViewMap"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="View Entrant Map"
+        android:textColor="@color/white"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"/>
+
 </LinearLayout>

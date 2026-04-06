@@ -103,7 +103,6 @@
                 android:inputType="textCapWords" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- The following code is from Anthropic, Claude, "Create Event Android XML layout with event type dropdown", 2026-04-01 -->
         <LinearLayout
             android:id="@+id/eventDropdownRow"
             android:layout_width="0dp"
@@ -510,6 +509,19 @@
                 android:inputType="numberDecimal" />
         </com.google.android.material.textfield.TextInputLayout>
 
+        <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/switchRequireGeolocation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Require Geolocation to Join Waitlist"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            app:thumbTint="@color/accent"
+            app:trackTint="@color/sepBackground"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/feeInputLayout" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/createEventButton"
@@ -523,10 +535,7 @@
             app:cornerRadius="999dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/feeInputLayout" />
-
-
-
+            app:layout_constraintTop_toBottomOf="@id/switchRequireGeolocation" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
