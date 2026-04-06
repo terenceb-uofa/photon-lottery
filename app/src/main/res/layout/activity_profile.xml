@@ -129,7 +129,7 @@
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="32dp"
+            android:layout_marginBottom="16dp"
             android:hint="Phone Number (Optional)"
             android:textColorHint="@color/textHint"
             app:boxBackgroundColor="@color/sepBackground"
@@ -151,6 +151,20 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <LinearLayout
+        <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/switchNotifications"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="32dp"
+            android:text="Receive Notifications?"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:useMaterialThemeColors="false"
+            android:checked="true" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonSaveProfile"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"

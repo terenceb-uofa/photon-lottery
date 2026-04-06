@@ -256,14 +256,16 @@ public class EventDetailsActivity extends AppCompatActivity {
 
     /**
      * Calculates the remaining spots available by subtracting the current waitlist
-     * count from the total capacity, and updates the UI TextView accordingly.
+     * count from the Waitlist capacity limit, and updates the UI TextView accordingly.
      */
     void updateSpotsUI() {
-        if (event == null) return;
-
-        int capacity = event.getCapacity();
-        int waitlistCount = Math.max(0, event.getCurrentWaitlistCount());
-        int spotsAvailable = Math.max(0, capacity - waitlistCount);
+        if (event.getWaitlistLimit() != null) {
+            int spotsAvailable = event.getWaitlistLimit() - event.getCurrentWaitlistCount();
+            eventCapacity.setText("Available spots: " + spotsAvailable + "/" + event.getWaitlistLimit());
+        } else {
+            eventCapacity.setText("There is no waitlist limit for this event.");
+        }
+    }
 
         eventCapacity.setText(spotsAvailable + "/" + capacity + " spots available");
     }

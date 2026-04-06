@@ -13,6 +13,7 @@ public class EntrantProfile {
     private String email;
     private String phoneNumber;
     private String accountType;
+    private boolean notificationsEnabled;
 
     /**
      * Default constructor required for Firebase Firestore
@@ -22,18 +23,20 @@ public class EntrantProfile {
     /**
      * Constructs a new EntrantProfile with all required user details.
      *
-     * @param deviceId    The unique Android device ID used for authentication.
-     * @param name        The display name of the user.
-     * @param email       The email address of the user.
-     * @param phoneNumber The contact phone number of the user.
-     * @param accountType The role of the user (e.g., "user").
+     * @param deviceId             The unique Android device ID used for authentication.
+     * @param name                 The display name of the user.
+     * @param email                The email address of the user.
+     * @param phoneNumber          The contact phone number of the user.
+     * @param accountType          The role of the user (e.g., "user").
+     * @param notificationsEnabled Whether user opted in to receiving notifications.
      */
-    public EntrantProfile(String deviceId, String name, String email, String phoneNumber, String accountType) {
+    public EntrantProfile(String deviceId, String name, String email, String phoneNumber, String accountType, boolean notificationsEnabled) {
         this.deviceId = deviceId;
         this.name = name;
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.accountType = accountType;
+        this.notificationsEnabled = notificationsEnabled;
     }
 
     /**
@@ -114,5 +117,21 @@ public class EntrantProfile {
      */
     public void setRole(String accountType) {
         this.accountType = accountType;
+    }
+
+    /**
+     * Gets whether notifications are enabled for this user.
+     * @return true if enabled, false otherwise.
+     */
+    public boolean isNotificationsEnabled() {
+        return notificationsEnabled;
+    }
+
+    /**
+     * Sets whether notifications are enabled for this user.
+     * @param notificationsEnabled the new preference.
+     */
+    public void setNotificationsEnabled(boolean notificationsEnabled) {
+        this.notificationsEnabled = notificationsEnabled;
     }
 }

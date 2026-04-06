@@ -132,6 +132,7 @@ public class InvitedFragment extends Fragment {
                         entrant.put("name", "Loading...");
                         entrant.put("email", "");
                         entrant.put("phone", "");
+                        entrant.put("notificationsEnabled", "true");
                         invitedEntrants.add(entrant);
                         int index = invitedEntrants.size() - 1;
                         loadProfileInfo(doc.getId(), index);
@@ -162,20 +163,24 @@ public class InvitedFragment extends Fragment {
                     String name = "Unknown user";
                     String email = "";
                     String phone = "";
+                    boolean notificationsEnabled = true;
 
                     if (profileDoc.exists()) {
                         String fetchedName = profileDoc.getString("name");
                         String fetchedEmail = profileDoc.getString("email");
                         String fetchedPhone = profileDoc.getString("phone");
+                        Boolean fetchedNotif = profileDoc.getBoolean("notificationsEnabled");
 
                         if (fetchedName != null && !fetchedName.isEmpty()) name = fetchedName;
                         if (fetchedEmail != null) email = fetchedEmail;
                         if (fetchedPhone != null) phone = fetchedPhone;
+                        if (fetchedNotif != null) notificationsEnabled = fetchedNotif;
                     }
 
                     entrant.put("name", name);
                     entrant.put("email", email);
                     entrant.put("phone", phone);
+                    entrant.put("notificationsEnabled", String.valueOf(notificationsEnabled));
 
                     adapter.updateData(new ArrayList<>(invitedEntrants));
                 })
@@ -185,6 +190,7 @@ public class InvitedFragment extends Fragment {
                     invitedEntrants.get(index).put("name", "Unknown user");
                     invitedEntrants.get(index).put("email", "");
                     invitedEntrants.get(index).put("phone", "");
+                    invitedEntrants.get(index).put("notificationsEnabled", "true");
                     adapter.updateData(new ArrayList<>(invitedEntrants));
                 });
     }
@@ -239,20 +245,28 @@ public class InvitedFragment extends Fragment {
                 return;
             }
 
+            int notifiedCount = 0;
             // Send notification to each invited entrant
             for (Map<String, String> entrant : invitedEntrants) {
                 String deviceId = entrant.get("deviceId");
-                Map<String, Object> notification = NotificationUtils.buildNotification(message, eventId);
 
-                db.collection("profiles")
-                        .document(deviceId)
-                        .collection("notifications")
-                        .add(notification)
-                        .addOnFailureListener(e ->
-                                Toast.makeText(getContext(), "Failed to send notification: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                // Respect notification preference
+                String enabledStr = entrant.get("notificationsEnabled");
+                boolean notifsEnabled = enabledStr == null || Boolean.parseBoolean(enabledStr);
+
+                if (notifsEnabled) {
+                    Map<String, Object> notification = NotificationUtils.buildNotification(message, eventId);
+                    db.collection("profiles")
+                            .document(deviceId)
+                            .collection("notifications")
+                            .add(notification)
+                            .addOnFailureListener(e ->
+                                    Toast.makeText(getContext(), "Failed to send notification: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                    notifiedCount++;
+                }
             }
 
-            Toast.makeText(getContext(), "Notified " + invitedEntrants.size() + " invited entrants!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Notified " + notifiedCount + " invited entrants!", Toast.LENGTH_SHORT).show();
         });
 
         builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());

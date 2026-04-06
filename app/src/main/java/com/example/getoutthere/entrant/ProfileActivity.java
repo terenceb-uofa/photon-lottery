@@ -1,14 +1,17 @@
 package com.example.getoutthere.entrant;
 
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.util.Patterns;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -17,7 +20,7 @@ import com.example.getoutthere.R;
 import com.example.getoutthere.models.EntrantProfile;
 import com.example.getoutthere.navigation.NavBottomHelper;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.button.MaterialButton;
+import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 /**
@@ -35,6 +38,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 public class ProfileActivity extends AppCompatActivity {
 
     private EditText nameInput, emailInput, phoneInput;
+    private SwitchMaterial notificationSwitch;
     private Button saveButton, deleteButton;
     private String deviceId;
     private FirebaseFirestore db;
@@ -67,8 +71,12 @@ public class ProfileActivity extends AppCompatActivity {
         nameInput = findViewById(R.id.editTextName);
         emailInput = findViewById(R.id.editTextEmail);
         phoneInput = findViewById(R.id.editTextPhone);
+        notificationSwitch = findViewById(R.id.switchNotifications);
         saveButton = findViewById(R.id.buttonSaveProfile);
         deleteButton = findViewById(R.id.buttonDeleteProfile);
+
+        // Setup the switch visual listener
+        setupSwitchVisuals();
 
         loadProfile();
         saveButton.setOnClickListener(v -> saveProfile());
@@ -89,6 +97,15 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     /**
+     * Updates the color of the notification switch thumb based on its state.
+     */
+    private void setupSwitchVisuals() {
+        notificationSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            updateSwitchThumbColor(isChecked);
+        });
+    }
+
+    /**
      * Fetches the user's existing profile data from the Firestore collection
      * using their device ID and populates the EditText fields if a profile exists.
      */
@@ -100,12 +117,26 @@ public class ProfileActivity extends AppCompatActivity {
                             nameInput.setText(profile.getName());
                             emailInput.setText(profile.getEmail());
                             phoneInput.setText(profile.getPhoneNumber());
+                            notificationSwitch.setChecked(profile.isNotificationsEnabled());
+                            // Trigger visual update for initial load
+                            updateSwitchThumbColor(profile.isNotificationsEnabled());
                         }
                     }
                 })
                 .addOnFailureListener(e -> {
                     Toast.makeText(this, "Failed to load profile", Toast.LENGTH_SHORT).show();
                 });
+    }
+
+    /**
+     * Updates the thumb color of the switch (Green for enabled, Red for disabled).
+     */
+    private void updateSwitchThumbColor(boolean isEnabled) {
+        if (isEnabled) {
+            notificationSwitch.setThumbTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.success)));
+        } else {
+            notificationSwitch.setThumbTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.error)));
+        }
     }
 
     /**
@@ -116,6 +147,7 @@ public class ProfileActivity extends AppCompatActivity {
         String name = nameInput.getText().toString().trim();
         String email = emailInput.getText().toString().trim();
         String phone = phoneInput.getText().toString().trim();
+        boolean notificationsEnabled = notificationSwitch.isChecked();
 
         // Basic Validation
         if (name.isEmpty() || email.isEmpty()) {
@@ -123,8 +155,22 @@ public class ProfileActivity extends AppCompatActivity {
             return;
         }
 
+        // Email Format Validation
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            Toast.makeText(this, "Please enter a valid email address", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // STRICT Phone Format Validation
+        // This Regex requires 10 digits and optionally allows country codes, dashes, spaces, and parentheses.
+        String phoneRegex = "^(\\+\\d{1,3}\\s?)?\\(?\\d{3}\\)?[\\s.-]?\\d{3}[\\s.-]?\\d{4}$";
+        if (!phone.isEmpty() && !phone.matches(phoneRegex)) {
+            Toast.makeText(this, "Please enter a valid 10-digit phone number", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         // Satisfies US 01.02.01 & US 01.02.02
-        EntrantProfile profile = new EntrantProfile(deviceId, name, email, phone, "user");
+        EntrantProfile profile = new EntrantProfile(deviceId, name, email, phone, "user", notificationsEnabled);
 
         db.collection("profiles").document(deviceId).set(profile)
                 .addOnSuccessListener(aVoid -> Toast.makeText(this, "Profile Saved Successfully!", Toast.LENGTH_SHORT).show())
@@ -132,23 +178,22 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     /**
-     * Deletes the user's profile from the Firestore database and clears the UI
-     * input fields to reflect the deletion.
+     * Deletes the user's profile from the Firestore database and kicks them back
+     * to the SignUpActivity screen.
      */
     private void deleteProfile() {
         // Satisfies US 01.02.04
         db.collection("profiles").document(deviceId).delete()
                 .addOnSuccessListener(aVoid -> {
                     Toast.makeText(this, "Profile Deleted", Toast.LENGTH_SHORT).show();
-                    // Clear UI
-                    nameInput.setText("");
-                    emailInput.setText("");
-                    phoneInput.setText("");
+
+                    // Kick user back to the sign-up page
+                    Intent intent = new Intent(ProfileActivity.this, SignUpActivity.class);
+                    // Clear the back stack so they can't press back to return to their deleted profile
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                    finish();
                 })
                 .addOnFailureListener(e -> Toast.makeText(this, "Error deleting profile", Toast.LENGTH_SHORT).show());
-
     }
-
-
-
 }
