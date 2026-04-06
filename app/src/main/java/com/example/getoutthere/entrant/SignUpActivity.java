@@ -3,6 +3,7 @@ package com.example.getoutthere.entrant;
 import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.util.Patterns;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -23,8 +24,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
  * to the main dashboard.
  * <p>
  * Outstanding Issues:
- * - Input validation only checks for empty strings; it does not verify proper
- * email formats or phone number lengths.
+ * - None at the moment.
  */
 public class SignUpActivity extends AppCompatActivity {
     private EditText nameInput, emailInput, phoneInput;
@@ -68,6 +68,18 @@ public class SignUpActivity extends AppCompatActivity {
 
         if (name.isEmpty() || email.isEmpty()) {
             Toast.makeText(this, "Name and Email are required!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Email Format Validation
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            Toast.makeText(this, "Please enter a valid email address", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Phone Format Validation (Only validate if they actually typed something)
+        if (!phone.isEmpty() && !Patterns.PHONE.matcher(phone).matches()) {
+            Toast.makeText(this, "Please enter a valid phone number", Toast.LENGTH_SHORT).show();
             return;
         }
 
