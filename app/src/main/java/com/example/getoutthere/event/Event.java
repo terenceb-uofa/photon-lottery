@@ -270,9 +270,14 @@ public class Event {
 
     /**
      * Gets the list of device IDs for the event's co-organizers.
-     * @return A list of co-organizer IDs, or null if none exist.
+     * @return A list of co-organizer IDs. Guaranteed to not be null.
      */
-    public List<String> getCoOrganizerIds() { return coOrganizerIds; }
+    public List<String> getCoOrganizerIds() {
+        if (coOrganizerIds == null) {
+            return new java.util.ArrayList<>();
+        }
+        return coOrganizerIds;
+    }
 
     /**
      * Sets the list of device IDs for the event's co-organizers.
