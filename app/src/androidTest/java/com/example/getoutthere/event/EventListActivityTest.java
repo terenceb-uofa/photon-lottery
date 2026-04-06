@@ -41,6 +41,7 @@ public class EventListActivityTest {
         Intents.release();
     }
 
+
     /**
      * Test - events in Firestore appear in the list and can be opened
      * @throws InterruptedException

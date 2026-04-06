@@ -36,8 +36,7 @@ public class ManageEventsActivityTest {
         try { Thread.sleep(2000); } catch (InterruptedException e) { }
 
         // Click the first "DELETE" button in the event list
-        onView(withIndex(withText("DELETE"), 0)).perform(click());
-
+        onView(withIndex(withContentDescription("Delete Action"), 0)).perform(click());
         // Verify that the Dialog for Event deletion specifically appears
         onView(withText("Delete Event")).check(matches(isDisplayed()));
 

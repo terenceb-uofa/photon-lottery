@@ -255,7 +255,7 @@ public class OrganizerEventDetailsActivityTest {
     public void viewWaitlistButton_isEnabled() {
         waitForEventToLoad();
 
-        onView(withId(R.id.buttonViewWaitlist))
+        onView(withId(R.id.rvWaitlist))
                 .perform(scrollTo())
                 .check(matches(isEnabled()));
     }
@@ -312,7 +312,7 @@ public class OrganizerEventDetailsActivityTest {
     public void waitlistButton_opensWaitlistActivity() {
         waitForEventToLoad();
 
-        onView(withId(R.id.buttonViewWaitlist)).perform(scrollTo(), click());
+        onView(withId(R.id.rvWaitlist)).perform(scrollTo(), click());
 
         intended(allOf(
                 hasComponent(OrganizerWaitlistActivity.class.getName()),

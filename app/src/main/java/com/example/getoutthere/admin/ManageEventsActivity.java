@@ -21,6 +21,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.getoutthere.R;
 import com.example.getoutthere.event.Event;
+import com.example.getoutthere.event.EventDetailsActivity;
 import com.example.getoutthere.models.EntrantProfile;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -142,121 +143,35 @@ public class ManageEventsActivity extends AppCompatActivity {
             try {
                 Event currentEvent = eventList.get(index);
 
-                LinearLayout row = new LinearLayout(this);
-                row.setOrientation(LinearLayout.HORIZONTAL);
-                row.setBackgroundColor(0xFF59A91E);
-                row.setGravity(Gravity.CENTER_VERTICAL);
-                row.setPadding(24, 16, 16, 16);
+                View row = getLayoutInflater().inflate(R.layout.item_event_admin, eventsContainer, false);
 
-                LinearLayout.LayoutParams rowParams = new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.MATCH_PARENT,
-                        LinearLayout.LayoutParams.WRAP_CONTENT
-                );
-                rowParams.setMargins(0, 0, 0, 8);
-                row.setLayoutParams(rowParams);
+                // map the data (Like passing props)
+                TextView name = row.findViewById(R.id.tvEventName);
+                TextView date = row.findViewById(R.id.tvEventDate);
+                TextView organizer = row.findViewById(R.id.tvOrganizerName);
+                TextView btnView = row.findViewById(R.id.btnViewEvent);
 
-                LinearLayout attributesLayout = new LinearLayout(this);
-                attributesLayout.setOrientation(LinearLayout.VERTICAL);
-                attributesLayout.setGravity(Gravity.CENTER_VERTICAL);
-                LinearLayout.LayoutParams attributesParams = new LinearLayout.LayoutParams(
-                        0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f
-                );
-                attributesLayout.setLayoutParams(attributesParams);
+                View btnDelete = row.findViewById(R.id.btnDelete);
+                View btnComments = row.findViewById(R.id.btnComments);
 
+                name.setText(currentEvent.getName());
 
-                // adding horizontal text views for name, organizer, date, and status
+                // Safe Date Formatting
+                if (currentEvent.getStartDate() != null) {
+                    SimpleDateFormat fmt = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
+                    date.setText(fmt.format(currentEvent.getStartDate().toDate()));
+                }
 
-                TextView name = new TextView(this);
                 name.setText("EVENT: " + currentEvent.getName());
-                name.setTextColor(0xFFFFFFFF);
-                name.setTextSize(13f);
-                name.setPadding(0, 0, 12, 0);
-                LinearLayout.LayoutParams nameParams = new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
-                );
-                name.setLayoutParams(nameParams);
-                attributesLayout.addView(name);
 
-                TextView organizer = new TextView(this);
+
 
                 String organizerId = currentEvent.getOrganizerId();
-                FirebaseFirestore.getInstance().collection("profiles")
-                        .whereEqualTo("deviceId", organizerId)
-                        .get()
-                        .addOnSuccessListener(queryDocumentSnapshots -> {
-                            if (!queryDocumentSnapshots.isEmpty()) {
-                                DocumentSnapshot matching_profile = queryDocumentSnapshots.getDocuments().get(0);
-                                String organizerName = matching_profile.getString("name");
-                                organizer.setText("ORGANIZER: " + organizerName);
-                            } else {
-                                organizer.setText("ORGANIZER: Unknown");
-                            }
-                        })
-                        .addOnFailureListener(e -> {
-                            Log.e("Fetch Organizer", "Error finding organizer", e);
-                        });
+                populateOrganizerName(organizerId, organizer);
 
-
-                organizer.setTextColor(0xFFFFFFFF);
-                organizer.setTextSize(13f);
-                organizer.setPadding(0, 0, 12, 0);
-                LinearLayout.LayoutParams organizerParams = new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
-                );
-                organizer.setLayoutParams(organizerParams);
-                attributesLayout.addView(organizer);
-
-                TextView date = new TextView(this);
-                SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy", Locale.getDefault());
-                String dateString = format.format(currentEvent.getStartDate().toDate());
-                date.setText("DATE: " + dateString);
-                date.setTextColor(0xFFFFFFFF);
-                date.setTextSize(13f);
-                date.setPadding(0, 0, 12, 0);
-                LinearLayout.LayoutParams dateParams = new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
-                );
-                date.setLayoutParams(dateParams);
-                attributesLayout.addView(date);
-
-                TextView status = new TextView(this);
-                status.setText("STATUS: " + currentEvent.getStatus());
-                status.setTextColor(0xFFFFFFFF);
-                status.setTextSize(13f);
-                status.setPadding(0, 0, 12, 0);
-                LinearLayout.LayoutParams statusParams = new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
-                );
-                status.setLayoutParams(statusParams);
-                attributesLayout.addView(status);
-
-                Button commentsButton = new Button(this);
-                commentsButton.setText("COMMENTS");
-                commentsButton.setBackgroundColor(0x00000000);
-                commentsButton.setTextColor(0xFFFFFFFF);
-                commentsButton.setPadding(16, 8, 16, 8);
-                commentsButton.setEnabled(true);
-                LinearLayout.LayoutParams commentParams = new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.WRAP_CONTENT,
-                        LinearLayout.LayoutParams.WRAP_CONTENT
-                );
-                commentParams.setMargins(0, 0, 8, 0);
-                commentsButton.setLayoutParams(commentParams);
-
-                Button deleteButton = new Button(this);
-                deleteButton.setText("DELETE");
-                deleteButton.setBackgroundColor(0xFFCC0000);
-                deleteButton.setTextColor(0xFFFFFFFF);
-                deleteButton.setPadding(16, 8, 16, 8);
-                deleteButton.setEnabled(true);
-                LinearLayout.LayoutParams btnParams = new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.WRAP_CONTENT,
-                        LinearLayout.LayoutParams.WRAP_CONTENT
-                );
-                deleteButton.setLayoutParams(btnParams);
 
                 int finalIndex = index;
-                deleteButton.setOnClickListener(v -> {
+                btnDelete.setOnClickListener(v -> {
                     // Get the specific event for this button
                     Event eventToDelete = eventList.get(finalIndex);
                     //System.out.println("Delete clicked");
@@ -287,7 +202,13 @@ public class ManageEventsActivity extends AppCompatActivity {
                             .show();
                 });
 
-                commentsButton.setOnClickListener(v -> {
+                btnView.setOnClickListener(v -> {
+                    Intent intent = new Intent(this, EventDetailsActivity.class);
+                    intent.putExtra("eventId", currentEvent.getId());
+                    startActivity(intent);
+                });
+
+                btnComments.setOnClickListener(v -> {
                     // The following code is from Anthropic, Claude, "How do I display comments from every event's collection in a popup dialog", 2026-04-03
                     Event commentEvent = eventList.get(finalIndex);
                     String eventId = commentEvent.getId();
@@ -408,14 +329,38 @@ public class ManageEventsActivity extends AppCompatActivity {
                     dialog.show();
                 });
 
-                row.addView(attributesLayout);
-                row.addView(commentsButton);
-                row.addView(deleteButton);
                 eventsContainer.addView(row);
             }catch (Exception e){
                 Log.e("Render", "Skipping corrupted event at index " + index, e);
             }
         }
 
+    }
+
+    private void populateOrganizerName(String organizerId, TextView targetView) {
+        // 1. Initial State (The "Skeleton" phase)
+        targetView.setText("ORGANIZER: Loading...");
+
+        if (organizerId == null || organizerId.isEmpty()) {
+            targetView.setText("ORGANIZER: None");
+            return;
+        }
+
+        // 2. Fetch by Document ID (Direct hit, no search required)
+        FirebaseFirestore.getInstance().collection("profiles")
+                .document(organizerId)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        String name = documentSnapshot.getString("name");
+                        targetView.setText("ORGANIZER: " + (name != null ? name : "Anonymous"));
+                    } else {
+                        targetView.setText("ORGANIZER: Unknown (" + organizerId.substring(0,4) + "...)");
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    targetView.setText("ORGANIZER: Error loading");
+                    Log.e("UI_POLISH", "Failed to fetch organizer", e);
+                });
     }
 }
