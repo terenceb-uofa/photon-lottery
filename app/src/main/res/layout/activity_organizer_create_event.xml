@@ -103,7 +103,6 @@
                 android:inputType="textCapWords" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- The following code is from Anthropic, Claude, "Create Event Android XML layout with event type dropdown", 2026-04-01 -->
         <LinearLayout
             android:id="@+id/eventDropdownRow"
             android:layout_width="0dp"
@@ -510,6 +509,40 @@
                 android:inputType="numberDecimal" />
         </com.google.android.material.textfield.TextInputLayout>
 
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/geolocationRequirementInputLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:hint="Require Geolocation"
+            android:textColorHint="@color/textHint"
+            app:boxBackgroundColor="@color/sepBackground"
+            app:boxStrokeColor="@color/accent"
+            app:boxStrokeWidth="1dp"
+            app:boxStrokeWidthFocused="2dp"
+            app:hintTextColor="@color/textHint"
+            app:endIconMode="dropdown_menu"
+            app:endIconTint="@color/textHint"
+            app:boxCornerRadiusTopStart="999dp"
+            app:boxCornerRadiusTopEnd="999dp"
+            app:boxCornerRadiusBottomStart="999dp"
+            app:boxCornerRadiusBottomEnd="999dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/feeInputLayout">
+
+            <AutoCompleteTextView
+                android:id="@+id/geolocationRequirementInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:inputType="none"
+                android:focusable="false"
+                android:cursorVisible="false"
+                android:saveEnabled="false"
+                android:entries="@array/geolocation_options" />
+        </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/createEventButton"
@@ -523,10 +556,7 @@
             app:cornerRadius="999dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/feeInputLayout" />
-
-
-
+            app:layout_constraintTop_toBottomOf="@id/geolocationRequirementInputLayout" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

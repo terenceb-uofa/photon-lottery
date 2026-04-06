@@ -149,6 +149,13 @@ public class WaitlistFragment extends Fragment {
         btnNotifyWaitlist.setOnClickListener(v -> notifyWaitlistEntrants());
         btnNotifyWaitlistPrivate.setOnClickListener(v -> notifyWaitlistEntrants());
 
+        Button btnViewMap = view.findViewById(R.id.btnViewMap);
+        btnViewMap.setOnClickListener(v -> {
+            android.content.Intent intent = new android.content.Intent(getContext(), EventMapActivity.class);
+            intent.putExtra("eventId", eventId);
+            startActivity(intent);
+        });
+
         return view;
     }
 

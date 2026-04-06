@@ -19,4 +19,9 @@
         <item>Public</item>
         <item>Private</item>
     </string-array>
+
+    <string-array name="geolocation_options">
+        <item>Enable</item>
+        <item>Disable</item>
+    </string-array>
 </resources>

@@ -73,6 +73,7 @@ public class OrganizerEditEventActivity extends AppCompatActivity {
 
     private AutoCompleteTextView eventTypeInput;
     private AutoCompleteTextView eventVisibilityInput;
+    private AutoCompleteTextView geolocationRequirementInput;
 
     // Buttons
 
@@ -161,6 +162,14 @@ public class OrganizerEditEventActivity extends AppCompatActivity {
         );
         eventVisibilityInput.setAdapter(eventVisibilityAdapter);
 
+        geolocationRequirementInput = findViewById(R.id.geolocationRequirementInput);
+        ArrayAdapter<CharSequence> geoAdapter = ArrayAdapter.createFromResource(
+                this,
+                R.array.geolocation_options,
+                android.R.layout.simple_dropdown_item_1line
+        );
+        geolocationRequirementInput.setAdapter(geoAdapter);
+
         // date pickers
         startDateInput.setKeyListener(null);
         endDateInput.setKeyListener(null);
@@ -230,6 +239,7 @@ public class OrganizerEditEventActivity extends AppCompatActivity {
         String waitlistLimitText = waitlistLimitInput.getText().toString().trim();
         String eventType = eventTypeInput.getText().toString().trim();
         String eventVisibility = eventVisibilityInput.getText().toString().trim();
+        String geoRequirement = geolocationRequirementInput.getText().toString().trim();
 
         if (name.isEmpty()) {
             nameInput.setError("Event name is required");
@@ -303,6 +313,12 @@ public class OrganizerEditEventActivity extends AppCompatActivity {
             return;
         }
 
+        if (geoRequirement.isEmpty()) {
+            geolocationRequirementInput.setError("Geolocation requirement is required");
+            geolocationRequirementInput.requestFocus();
+            return;
+        }
+        boolean requiresGeolocation = geoRequirement.equalsIgnoreCase("Enable");
 
         int capacity;
         double signupFee;
@@ -372,6 +388,7 @@ public class OrganizerEditEventActivity extends AppCompatActivity {
         updatedEvent.setWaitlistLimit(waitlistLimit);
         updatedEvent.setEventType(eventType);
         updatedEvent.setEventVisibility(eventVisibility);
+        updatedEvent.setRequiresGeolocation(requiresGeolocation);
 
         if (selectedImageUri == null) {
             updatedEvent.setPosterUrl(existingEvent.getPosterUrl());
@@ -543,6 +560,7 @@ public class OrganizerEditEventActivity extends AppCompatActivity {
                     if (event.getEventVisibility() != null) {
                         eventVisibilityInput.setText(event.getEventVisibility(), false);
                     }
+                    geolocationRequirementInput.setText(event.isRequiresGeolocation() ? "Enable" : "Disable", false);
 
 
                     String posterUrl = event.getPosterUrl();
