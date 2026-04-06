@@ -27,6 +27,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 /**
  * Displays a list of all currently available events the user can enroll in.
@@ -97,6 +98,10 @@ public class EventListActivity extends AppCompatActivity implements EventFilterF
 
             for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
                 Event event = doc.toObject(Event.class);
+
+                if (Objects.equals(event.getEventVisibility(), "Private")) {
+                    continue;
+                }
                 event.setId(doc.getId());
                 allEvents.add(event);
             }
